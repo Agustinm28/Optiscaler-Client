@@ -1,4 +1,4 @@
-﻿using System.Management;
+using System.Management;
 using Microsoft.Win32;
 
 namespace OptiscalerClient.Services
@@ -30,7 +30,7 @@ namespace OptiscalerClient.Services
     /// <summary>
     /// Service to detect GPU information using WMI
     /// </summary>
-    public class GpuDetectionService
+    public class WindowsGpuDetectionService : IGpuDetectionService
     {
         /// <summary>
         /// Detects all GPUs in the system

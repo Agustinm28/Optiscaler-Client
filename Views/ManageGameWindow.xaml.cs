@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -13,7 +13,7 @@ namespace OptiscalerClient.Views
     public partial class ManageGameWindow : Window
     {
         private readonly Game _game;
-        private readonly Services.GpuDetectionService _gpuService;
+        private readonly Services.IGpuDetectionService _gpuService;
 
         /// <summary>
         /// True if an install or uninstall completed successfully.
@@ -25,7 +25,7 @@ namespace OptiscalerClient.Views
         {
             InitializeComponent();
             _game = game;
-            _gpuService = new Services.GpuDetectionService();
+            _gpuService = new Services.WindowsGpuDetectionService();
 
             SetupUI();
             _ = LoadVersionsAsync();

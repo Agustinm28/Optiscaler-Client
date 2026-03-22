@@ -22,7 +22,7 @@ namespace OptiscalerClient.Views
         private System.Collections.ObjectModel.ObservableCollection<Models.Game> _games;
 
         private readonly Services.ComponentManagementService _componentService;
-        private readonly Services.GpuDetectionService _gpuService;
+        private readonly Services.IGpuDetectionService _gpuService;
 
         // Held as a field because FindName from XAML x:Name can lag in IDE analysis
         private System.Windows.Controls.ScrollViewer? _gameListScrollViewer;
@@ -34,7 +34,7 @@ namespace OptiscalerClient.Views
             _persistenceService = new Services.GamePersistenceService();
             _componentService = new Services.ComponentManagementService();
             App.ChangeLanguage(_componentService.Config.Language);
-            _gpuService = new Services.GpuDetectionService();
+            _gpuService = new Services.WindowsGpuDetectionService();
             _games = new System.Collections.ObjectModel.ObservableCollection<Models.Game>();
             LstGames.ItemsSource = _games;
             CollectionViewSource.GetDefaultView(_games).Filter = FilterGames;
