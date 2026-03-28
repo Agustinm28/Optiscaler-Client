@@ -18,6 +18,7 @@
             <StackPanel Orientation="Horizontal" Spacing="10">
                 <Button Content="Clear Logs" Click="BtnClear_Click" Padding="10,5"/>
                 <Button Content="Copy All" Click="BtnCopy_Click" Padding="10,5"/>
+                <Button Content="Open cache folder" Click="BtnOpenCacheFolder_Click" Padding="10,5"/>
             </StackPanel>
         </Border>
     </Grid>

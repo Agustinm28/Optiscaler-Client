@@ -4,6 +4,8 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 
 namespace OptiscalerClient.Views
@@ -91,6 +93,29 @@ namespace OptiscalerClient.Views
         private async void BtnCopy_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(_logContent.ToString());
+        }
+
+        private void BtnOpenCacheFolder_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            try
+            {
+                var cachePath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "OptiscalerClient");
+
+                Directory.CreateDirectory(cachePath);
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = cachePath,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Log(() => $"[DebugWindow] Failed to open cache folder: {ex.Message}");
+            }
         }
     }
 }

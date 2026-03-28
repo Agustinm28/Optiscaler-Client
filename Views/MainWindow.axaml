@@ -561,6 +561,48 @@
                          </Grid>
                      </Border>
 
+                     <!-- SteamGridDB API Key -->
+                     <Border Background="{StaticResource BrBgCard}"
+                             BorderBrush="{StaticResource BrBorderSubtle}"
+                             BorderThickness="1"
+                             CornerRadius="{StaticResource RadiusLarge}"
+                             Padding="20,16"
+                             Margin="0,16,0,0">
+                         <Grid RowDefinitions="Auto,Auto">
+                             <Grid Grid.Row="0">
+                                 <Grid.ColumnDefinitions>
+                                     <ColumnDefinition Width="*"/>
+                                     <ColumnDefinition Width="Auto"/>
+                                 </Grid.ColumnDefinitions>
+
+                                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                     <TextBlock Text="{DynamicResource TxtSteamGridApiKey}"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource BrTextPrimary}"/>
+                                     <TextBlock Text="{DynamicResource TxtSteamGridApiKeyDesc}"
+                                                Foreground="{StaticResource BrTextSecondary}"
+                                                TextWrapping="Wrap"
+                                                Margin="0,4,16,0"
+                                                FontSize="{StaticResource FontSizeCaption}"/>
+                                 </StackPanel>
+
+                                 <Button Name="BtnSteamGridApiGuide"
+                                         Grid.Column="1"
+                                         Content="{DynamicResource TxtSteamGridGetApiKey}"
+                                         Classes="BtnBase"
+                                         Padding="16,8"
+                                         VerticalAlignment="Center"
+                                         Click="BtnSteamGridApiGuide_Click"/>
+                             </Grid>
+
+                             <TextBox Name="TxtSteamGridApiKey"
+                                      Grid.Row="1"
+                                      Margin="0,12,0,0"
+                                      Watermark="{DynamicResource TxtSteamGridApiKeyPlaceholder}"
+                                      LostFocus="TxtSteamGridApiKey_LostFocus"/>
+                         </Grid>
+                     </Border>
+
                      <!-- FSR4 INT8 Default Version -->
                      <Border Background="{StaticResource BrBgCard}"
                              BorderBrush="{StaticResource BrBorderSubtle}"
