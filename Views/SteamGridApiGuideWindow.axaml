@@ -1,0 +1,156 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="OptiscalerClient.Views.SteamGridApiGuideWindow"
+        Title="{DynamicResource TxtSteamGridGuideTitle}"
+        Width="600"
+        Height="520"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Window.Styles>
+        <Style Selector="Button.LinkInlineButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Foreground" Value="#5AA9FF"/>
+        </Style>
+        <Style Selector="Button.LinkInlineButton:pointerover">
+            <Setter Property="Foreground" Value="#8CC4FF"/>
+        </Style>
+    </Window.Styles>
+
+    <Panel Margin="16" Name="RootPanel" Opacity="0">
+        <Border CornerRadius="12"
+                Background="{StaticResource BrBgBase}"
+                BoxShadow="0 10 30 0 #A0000000">
+            <Grid>
+                <Border CornerRadius="12"
+                        BorderBrush="{StaticResource BrBorderSubtle}"
+                        BorderThickness="1"
+                        ZIndex="10"
+                        IsHitTestVisible="False"/>
+
+                <Border CornerRadius="12"
+                        Background="Transparent"
+                        ClipToBounds="True">
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <Border Grid.Row="0"
+                                Name="TitleBar"
+                                Background="{StaticResource BrBgDeep}"
+                                Padding="24,18"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource TxtSteamGridGuideHeader}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                <TextBlock Text="{DynamicResource TxtSteamGridGuideHeaderDesc}"
+                                           FontSize="12"
+                                           Foreground="{StaticResource BrTextSecondary}"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <ScrollViewer Grid.Row="1">
+                            <StackPanel Margin="24,18" Spacing="12">
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep1Title}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <WrapPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource TxtSteamGridGuideStep1Prefix}"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource BrTextPrimary}"/>
+                                            <Button Classes="LinkInlineButton"
+                                                    VerticalAlignment="Center"
+                                                    Click="BtnOpenSteamGridPage_Click">
+                                                <TextBlock Text="https://www.steamgriddb.com/profile/preferences/api"
+                                                           TextDecorations="Underline"/>
+                                            </Button>
+                                            <TextBlock Text="{DynamicResource TxtSteamGridGuideStep1Suffix}"
+                                                       VerticalAlignment="Center"
+                                                       Foreground="{StaticResource BrTextPrimary}"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep2Title}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep2Desc}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep3Title}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep3Desc}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="14,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep4Title}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <TextBlock Text="{DynamicResource TxtSteamGridGuideStep4Desc}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <Border Grid.Row="2"
+                                Background="{StaticResource BrBgDeep}"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,1,0,0"
+                                Padding="24,16">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12">
+                                <Button Content="{DynamicResource TxtGotIt}"
+                                        Classes="BtnPrimary"
+                                        Padding="16,8"
+                                        Click="BtnClose_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Panel>
+</Window>

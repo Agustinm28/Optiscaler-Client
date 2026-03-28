@@ -195,4 +195,27 @@
     <x:String x:Key="TxtNoGames">Oyun Yok</x:String>
     <x:String x:Key="TxtNoGamesFound">Oyun bulunamadı. Lütfen önce oyunları tarayın.</x:String>
 
+
+    <!-- SteamGridDB -->
+    <x:String x:Key="TxtSteamGridGuideStep1Title">1. Open the SteamGridDB API page</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">Used to improve cover-art matching accuracy. Optional, but recommended.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. Generate your API key</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">Go to https://www.steamgriddb.com/profile/preferences/api and sign in.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">After saving the key, run a new scan so covers can be refreshed with better accuracy.</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">Get API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">Create a new API key on that page and copy it.</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">Open page</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. Re-scan your games</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeader">Get your SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideTitle">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">Quick guide to improve game cover detection.</x:String>
+    <x:String x:Key="TxtSteamGridApiKey">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Paste your SteamGridDB API key here</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. Paste it in Settings</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Desc">Return to the app and paste the key into the SteamGridDB API Key field.</x:String>
+
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">Go to </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> and sign in.</x:String>
 </ResourceDictionary>
+
+

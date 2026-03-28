@@ -278,6 +278,11 @@ namespace OptiscalerClient.Views
             {
                 tglBetaVersions.IsChecked = _componentService.Config.ShowBetaVersions;
             }
+            var txtSteamGridApiKey = this.FindControl<TextBox>("TxtSteamGridApiKey");
+            if (txtSteamGridApiKey != null)
+            {
+                txtSteamGridApiKey.Text = _componentService.Config.SteamGridDBApiKey ?? string.Empty;
+            }
 
             // Populate FSR4 INT8 default version selector
             var cmbDefaultExtras = this.FindControl<ComboBox>("CmbDefaultExtrasVersion");
@@ -431,6 +436,20 @@ namespace OptiscalerClient.Views
                 _lastDetectedGpu = null;
                 _ = LoadGpuInfoAsync();
             }
+        }
+
+        private void TxtSteamGridApiKey_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is not TextBox textBox) return;
+
+            _componentService.Config.SteamGridDBApiKey = (textBox.Text ?? string.Empty).Trim();
+            _componentService.SaveConfiguration();
+        }
+
+        private async void BtnSteamGridApiGuide_Click(object sender, RoutedEventArgs e)
+        {
+            var guideWindow = new SteamGridApiGuideWindow(this);
+            await guideWindow.ShowDialog(this);
         }
 
         private void UpdateAnimationsState(bool enabled)

@@ -196,4 +196,27 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtNoGames">Sin Juegos</x:String>
     <x:String x:Key="TxtNoGamesFound">No se encontraron juegos. Por favor, escanea primero.</x:String>
 
+
+    <!-- SteamGridDB -->
+    <x:String x:Key="TxtSteamGridGuideStep1Title">1. Abrí la página de API de SteamGridDB</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">Se usa para mejorar la precisión al obtener carátulas. Es opcional, pero recomendada.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. Generá tu API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">Entrá a https://www.steamgriddb.com/profile/preferences/api e iniciá sesión.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">Después de guardar la key, ejecutá un nuevo escaneo para refrescar carátulas con mayor precisión.</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">Obtener API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">En esa página, creá una nueva API key y copiala.</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">Abrir página</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. Re-escanear juegos</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeader">Obtener API Key de SteamGridDB</x:String>
+    <x:String x:Key="TxtSteamGridGuideTitle">API Key de SteamGridDB</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">Guía rápida para mejorar la detección de carátulas.</x:String>
+    <x:String x:Key="TxtSteamGridApiKey">API Key de SteamGridDB</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Pegá aquí tu API key de SteamGridDB</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. Pegala en Configuración</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Desc">Volvé a la app y pegá la key en el campo SteamGridDB API Key.</x:String>
+
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">Entrá a </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> e iniciá sesión.</x:String>
 </ResourceDictionary>
+
+
