@@ -14,6 +14,7 @@ namespace OptiscalerClient.Services
 {
     public class AppUpdateService
     {
+        private static readonly HttpClient SharedHttpClient = CreateHttpClient();
         private readonly HttpClient _httpClient;
         private readonly ComponentManagementService _componentService;
 
@@ -25,8 +26,14 @@ namespace OptiscalerClient.Services
         public AppUpdateService(ComponentManagementService componentService)
         {
             _componentService = componentService;
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClientUpdater");
+            _httpClient = SharedHttpClient;
+        }
+
+        private static HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClientUpdater");
+            return client;
         }
 
         public async Task<bool> CheckForAppUpdateAsync()
@@ -103,36 +110,24 @@ namespace OptiscalerClient.Services
                         LatestVersion = LatestVersion.Substring(1);
 
                     // Support for comparison logs
-                    string logMsg = $"[AppUpdate] Normalized: Current='{currentVersionStr}', Latest='{LatestVersion}'";
-                    Console.WriteLine(logMsg);
-                    Console.Out.Flush();
-                    System.IO.File.AppendAllText("update_debug.log", logMsg + Environment.NewLine);
+                    var logMsg = $"[AppUpdate] Normalized: Current='{currentVersionStr}', Latest='{LatestVersion}'";
                     DebugWindow.Log(logMsg);
 
                     if (Version.TryParse(currentVersionStr, out var currentVer) && Version.TryParse(LatestVersion, out var newVer))
                     {
-                        string parseMsg = $"[AppUpdate] Parsed versions: Current='{currentVer}', New='{newVer}'";
-                        Console.WriteLine(parseMsg);
-                        Console.Out.Flush();
-                        System.IO.File.AppendAllText("update_debug.log", parseMsg + Environment.NewLine);
+                        var parseMsg = $"[AppUpdate] Parsed versions: Current='{currentVer}', New='{newVer}'";
                         DebugWindow.Log(parseMsg);
 
                         if (newVer > currentVer)
                         {
-                            string updateMsg = $"[AppUpdate] Detected UPDATE: {newVer} > {currentVer}";
-                            Console.WriteLine(updateMsg);
-                            Console.Out.Flush();
-                            System.IO.File.AppendAllText("update_debug.log", updateMsg + Environment.NewLine);
+                            var updateMsg = $"[AppUpdate] Detected UPDATE: {newVer} > {currentVer}";
                             DebugWindow.Log(updateMsg);
                             return true;
                         }
                     }
                     else
                     {
-                        string fallbackMsg = $"[AppUpdate] Fallback (non-SEMVER) comparison: '{LatestVersion}' != '{currentVersionStr}'";
-                        Console.WriteLine(fallbackMsg);
-                        Console.Out.Flush();
-                        System.IO.File.AppendAllText("update_debug.log", fallbackMsg + Environment.NewLine);
+                        var fallbackMsg = $"[AppUpdate] Fallback (non-SEMVER) comparison: '{LatestVersion}' != '{currentVersionStr}'";
                         DebugWindow.Log(fallbackMsg);
                         if (LatestVersion != currentVersionStr)
                             return true;
@@ -142,9 +137,6 @@ namespace OptiscalerClient.Services
             catch (Exception ex)
             { 
                 string errorMsg = $"[AppUpdate] FATAL ERROR: {ex.Message}";
-                Console.WriteLine(errorMsg);
-                Console.Out.Flush();
-                System.IO.File.AppendAllText("update_debug.log", errorMsg + Environment.NewLine);
                 DebugWindow.Log(errorMsg);
             }
             return false;

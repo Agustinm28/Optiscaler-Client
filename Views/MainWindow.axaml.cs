@@ -15,6 +15,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
 using OptiscalerClient.Helpers;
 
 namespace OptiscalerClient.Views
@@ -36,6 +37,7 @@ namespace OptiscalerClient.Views
         private readonly Dictionary<Button, DispatcherTimer> _quickInstallDotTimers = new();
         private readonly Dictionary<Button, double> _quickInstallDotPhases = new();
         private readonly Dictionary<Button, double> _quickInstallOriginalMinWidths = new();
+        private readonly CancellationTokenSource _windowLifetimeCts = new();
 
         private readonly GameAnalyzerService _analyzerService = new();
         private GameMetadataService _metadataService = null!;
@@ -88,6 +90,7 @@ namespace OptiscalerClient.Views
             
             _componentService.OnStatusChanged += ComponentStatusChanged;
             this.Loaded += MainWindow_Loaded;
+            this.Closed += MainWindow_Closed;
             
             // Restore window state
             RestoreWindowState();
@@ -98,6 +101,17 @@ namespace OptiscalerClient.Views
 
         private void ComponentStatusChanged()
         {
+        }
+
+        private void MainWindow_Closed(object? sender, EventArgs e)
+        {
+            if (!_windowLifetimeCts.IsCancellationRequested)
+            {
+                _windowLifetimeCts.Cancel();
+            }
+
+            _windowLifetimeCts.Dispose();
+            _componentService.OnStatusChanged -= ComponentStatusChanged;
         }
 
         private void MainWindow_Loaded(object? sender, RoutedEventArgs e)
@@ -113,9 +127,9 @@ namespace OptiscalerClient.Views
 
             if (_lstGames != null) _lstGames.ItemsSource = _games;
 
-            bool hadSavedGames = LoadSavedGames();
+            bool hadSavedGames = LoadSavedGames(_windowLifetimeCts.Token);
             _ = LoadGpuInfoAsync();
-            _ = CheckUpdatesOnStartupAsync();
+            _ = ScheduleStartupUpdatesAsync(_windowLifetimeCts.Token);
             
             UpdateAnimationsState(_componentService.Config.AnimationsEnabled);
 
@@ -427,18 +441,38 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private async Task CheckUpdatesOnStartupAsync()
+        private async Task ScheduleStartupUpdatesAsync(CancellationToken cancellationToken)
         {
             try
             {
+                await Task.Delay(TimeSpan.FromSeconds(8), cancellationToken);
+                if (cancellationToken.IsCancellationRequested) return;
+
+                await CheckUpdatesOnStartupAsync(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch
+            {
+            }
+        }
+
+        private async Task CheckUpdatesOnStartupAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtCheckingUpdates", "Checking for updates...");
                 await _componentService.CheckForUpdatesAsync();
             }
+            catch (OperationCanceledException) { }
             catch { }
             finally
             {
                 ComponentStatusChanged();
-                if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtReady", "Ready");
+                if (!cancellationToken.IsCancellationRequested && _txtStatus != null)
+                    _txtStatus.Text = GetResourceString("TxtReady", "Ready");
             }
         }
 
@@ -639,7 +673,7 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private bool LoadSavedGames()
+        private bool LoadSavedGames(CancellationToken cancellationToken)
         {
             var savedGames = _persistenceService.LoadGames();
             _allGames = savedGames;
@@ -653,8 +687,14 @@ namespace OptiscalerClient.Views
             {
                 _ = Task.Run(async () =>
                 {
+                    using var coverSemaphore = new SemaphoreSlim(2, 2);
+                    var coverTasks = new List<Task>();
+                    var analyzedCount = 0;
+
                     foreach (var game in savedGames)
                     {
+                        if (cancellationToken.IsCancellationRequested) return;
+
                         try { _analyzerService.AnalyzeGame(game); }
                         catch { }
 
@@ -663,20 +703,53 @@ namespace OptiscalerClient.Views
                             var appIdKey = !string.IsNullOrEmpty(game.AppId) ? game.AppId :
                                          !string.IsNullOrEmpty(game.Name) ? game.Name : Guid.NewGuid().ToString();
 
-                            game.CoverImageUrl = await _metadataService.FetchAndCacheCoverImageAsync(game.Name, appIdKey);
+                            await coverSemaphore.WaitAsync(cancellationToken);
+                            coverTasks.Add(Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    game.CoverImageUrl = await _metadataService.FetchAndCacheCoverImageAsync(game.Name, appIdKey);
+                                }
+                                catch
+                                {
+                                }
+                                finally
+                                {
+                                    coverSemaphore.Release();
+                                }
+                            }, cancellationToken));
+                        }
+
+                        analyzedCount++;
+                        if (analyzedCount % 4 == 0)
+                        {
+                            await Task.Delay(1, cancellationToken);
                         }
                     }
 
+                    try
+                    {
+                        await Task.WhenAll(coverTasks);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+
+                    if (cancellationToken.IsCancellationRequested) return;
+
                     Dispatcher.UIThread.Post(() =>
                     {
+                        if (cancellationToken.IsCancellationRequested) return;
+
                         if (_lstGames != null)
                         {
                             _lstGames.ItemsSource = null;
                             _lstGames.ItemsSource = _games;
                         }
-                        _persistenceService.SaveGames(_games);
+                        _persistenceService.SaveGames(savedGames);
                     });
-                });
+                }, cancellationToken);
             }
 
             return savedGames.Count > 0;
