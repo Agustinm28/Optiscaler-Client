@@ -11,14 +11,14 @@ namespace OptiscalerClient.Services;
 
 public class GameMetadataService
 {
+    private static readonly HttpClient SharedHttpClient = CreateHttpClient();
     private readonly HttpClient _httpClient;
     private readonly string _coversCachePath;
     private readonly ComponentManagementService? _componentService;
 
     public GameMetadataService(ComponentManagementService? componentService = null)
     {
-        _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClient/1.0");
+        _httpClient = SharedHttpClient;
         _componentService = componentService;
         
         // Caching covers in AppData
@@ -29,6 +29,13 @@ public class GameMetadataService
         {
             Directory.CreateDirectory(_coversCachePath);
         }
+    }
+
+    private static HttpClient CreateHttpClient()
+    {
+        var client = new HttpClient();
+        client.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClient/1.0");
+        return client;
     }
 
     /// <summary>
@@ -43,11 +50,11 @@ public class GameMetadataService
 
         if (File.Exists(localPath))
         {
-            DebugWindow.Log($"[Cover] Using cached cover for: {gameName}");
+            DebugWindow.Log(() => $"[Cover] Using cached cover for: {gameName}");
             return localPath;
         }
 
-        DebugWindow.Log($"[Cover] Fetching cover for: {gameName} (AppId: {appIdKey})");
+        DebugWindow.Log(() => $"[Cover] Fetching cover for: {gameName} (AppId: {appIdKey})");
 
         // Try 1: If appIdKey is a numeric Steam AppId, use it directly
         if (int.TryParse(appIdKey, out int steamAppId))
@@ -64,7 +71,7 @@ public class GameMetadataService
         var gridDbResult = await TryFetchFromSteamGridDB(gameName, localPath);
         if (gridDbResult != null) return gridDbResult;
 
-        DebugWindow.Log($"[Cover] No cover found for: {gameName}");
+        DebugWindow.Log(() => $"[Cover] No cover found for: {gameName}");
         return null;
     }
 
@@ -77,12 +84,12 @@ public class GameMetadataService
             var imgBytes = await _httpClient.GetByteArrayAsync(remoteUrl);
             await File.WriteAllBytesAsync(localPath, imgBytes);
             
-            DebugWindow.Log($"[Cover] Downloaded from Steam AppId {appId}: {gameName}");
+            DebugWindow.Log(() => $"[Cover] Downloaded from Steam AppId {appId}: {gameName}");
             return localPath;
         }
         catch
         {
-            DebugWindow.Log($"[Cover] Failed to download from Steam AppId {appId}");
+            DebugWindow.Log(() => $"[Cover] Failed to download from Steam AppId {appId}");
             return null;
         }
     }
@@ -98,7 +105,7 @@ public class GameMetadataService
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
-                DebugWindow.Log($"[Cover] Steam search API returned: {response.StatusCode}");
+                DebugWindow.Log(() => $"[Cover] Steam search API returned: {response.StatusCode}");
                 return null;
             }
 
@@ -127,29 +134,29 @@ public class GameMetadataService
                                 var imgBytes = await imgResponse.Content.ReadAsByteArrayAsync();
                                 await File.WriteAllBytesAsync(localPath, imgBytes);
                                 
-                                DebugWindow.Log($"[Cover] Downloaded from Steam search: {matchedName} (AppId: {actualAppId})");
+                                DebugWindow.Log(() => $"[Cover] Downloaded from Steam search: {matchedName} (AppId: {actualAppId})");
                                 return localPath;
                             }
                             else
                             {
-                                DebugWindow.Log($"[Cover] Steam image not found for AppId {actualAppId}: {imgResponse.StatusCode}");
+                                DebugWindow.Log(() => $"[Cover] Steam image not found for AppId {actualAppId}: {imgResponse.StatusCode}");
                             }
                         }
                         catch (Exception imgEx)
                         {
-                            DebugWindow.Log($"[Cover] Failed to download Steam image: {imgEx.Message}");
+                            DebugWindow.Log(() => $"[Cover] Failed to download Steam image: {imgEx.Message}");
                         }
                     }
                 }
             }
             else
             {
-                DebugWindow.Log($"[Cover] No Steam search results for: {cleanName}");
+                DebugWindow.Log(() => $"[Cover] No Steam search results for: {cleanName}");
             }
         }
         catch (Exception ex)
         {
-            DebugWindow.Log($"[Cover] Steam search failed: {ex.Message}");
+            DebugWindow.Log(() => $"[Cover] Steam search failed: {ex.Message}");
         }
 
         return null;
@@ -160,12 +167,12 @@ public class GameMetadataService
         // Get API key from user configuration
         string? apiKey = _componentService?.Config?.SteamGridDBApiKey;
         
-        DebugWindow.Log($"[Cover] Checking SteamGridDB/RAWG fallback (API key configured: {!string.IsNullOrEmpty(apiKey)})");
+        DebugWindow.Log(() => $"[Cover] Checking SteamGridDB/RAWG fallback (API key configured: {!string.IsNullOrEmpty(apiKey)})");
         
         if (string.IsNullOrEmpty(apiKey))
         {
             // Try public endpoint without API key (limited functionality)
-            DebugWindow.Log($"[Cover] No SteamGridDB API key, trying RAWG API...");
+            DebugWindow.Log("[Cover] No SteamGridDB API key, trying RAWG API...");
             return await TryFetchFromSteamGridDBPublic(gameName, localPath);
         }
 
@@ -213,7 +220,7 @@ public class GameMetadataService
                                 var imgBytes = await _httpClient.GetByteArrayAsync(imageUrl);
                                 await File.WriteAllBytesAsync(localPath, imgBytes);
                                 
-                                DebugWindow.Log($"[Cover] Downloaded from SteamGridDB: {gameName}");
+                                DebugWindow.Log(() => $"[Cover] Downloaded from SteamGridDB: {gameName}");
                                 return localPath;
                             }
                         }
@@ -223,7 +230,7 @@ public class GameMetadataService
         }
         catch (Exception ex)
         {
-            DebugWindow.Log($"[Cover] SteamGridDB failed: {ex.Message}");
+            DebugWindow.Log(() => $"[Cover] SteamGridDB failed: {ex.Message}");
         }
 
         return null;
@@ -232,12 +239,12 @@ public class GameMetadataService
     private async Task<string?> TryFetchFromSteamGridDBPublic(string gameName, string localPath)
     {
         // When SteamGridDB API key is not configured, try alternative Steam sources
-        DebugWindow.Log($"[Cover] Trying alternative Steam sources for: {gameName}");
+        DebugWindow.Log(() => $"[Cover] Trying alternative Steam sources for: {gameName}");
         
         var steamAltResult = await TryAlternativeSteamImages(gameName, localPath);
         if (steamAltResult != null) return steamAltResult;
         
-        DebugWindow.Log($"[Cover] All alternative sources exhausted for: {gameName}");
+        DebugWindow.Log(() => $"[Cover] All alternative sources exhausted for: {gameName}");
         return null;
     }
 
@@ -280,7 +287,7 @@ public class GameMetadataService
                         {
                             try
                             {
-                                DebugWindow.Log($"[Cover] Trying alternative Steam CDN: {imageUrl}");
+                                DebugWindow.Log(() => $"[Cover] Trying alternative Steam CDN: {imageUrl}");
                                 var imgResponse = await _httpClient.GetAsync(imageUrl);
                                 if (imgResponse.IsSuccessStatusCode)
                                 {
@@ -288,7 +295,7 @@ public class GameMetadataService
                                     if (imgBytes.Length > 5000) // Ensure it's a real image
                                     {
                                         await File.WriteAllBytesAsync(localPath, imgBytes);
-                                        DebugWindow.Log($"[Cover] Downloaded from alternative Steam CDN: {gameName}");
+                                        DebugWindow.Log(() => $"[Cover] Downloaded from alternative Steam CDN: {gameName}");
                                         return localPath;
                                     }
                                 }
@@ -304,7 +311,7 @@ public class GameMetadataService
         }
         catch (Exception ex)
         {
-            DebugWindow.Log($"[Cover] Alternative Steam images failed: {ex.Message}");
+            DebugWindow.Log(() => $"[Cover] Alternative Steam images failed: {ex.Message}");
         }
 
         return null;

@@ -1,4 +1,4 @@
-﻿// OptiScaler Client - A frontend for managing OptiScaler installations
+// OptiScaler Client - A frontend for managing OptiScaler installations
 // Copyright (C) 2026 Agustín Montaña (Agustinm28)
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using OptiscalerClient.Models;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -22,6 +23,9 @@ namespace OptiscalerClient.Services;
 
 public class GameAnalyzerService
 {
+    private static readonly object _cacheLock = new();
+    private static readonly Dictionary<string, AnalysisCacheEntry> _analysisCache = new(StringComparer.OrdinalIgnoreCase);
+
     private static readonly string[] _dlssNames = new[] { "nvngx_dlss.dll" };
     private static readonly string[] _dlssFrameGenNames = new[] { "nvngx_dlssg.dll" };
     private static readonly string[] _fsrNames = new[] {
@@ -40,6 +44,23 @@ public class GameAnalyzerService
     public void AnalyzeGame(Game game)
     {
         if (string.IsNullOrEmpty(game.InstallPath) || !Directory.Exists(game.InstallPath))
+            return;
+
+        string normalizedInstallPath;
+        DateTime directoryWriteStamp;
+
+        try
+        {
+            normalizedInstallPath = Path.GetFullPath(game.InstallPath);
+            directoryWriteStamp = Directory.GetLastWriteTimeUtc(normalizedInstallPath);
+        }
+        catch
+        {
+            normalizedInstallPath = game.InstallPath;
+            directoryWriteStamp = DateTime.MinValue;
+        }
+
+        if (TryApplyCachedAnalysis(game, normalizedInstallPath, directoryWriteStamp))
             return;
 
         // Reset current versions before analysis
@@ -162,6 +183,32 @@ public class GameAnalyzerService
 
         }
         catch { /* General error */ }
+
+        SaveAnalysisCache(game, normalizedInstallPath, directoryWriteStamp);
+    }
+
+    private static bool TryApplyCachedAnalysis(Game game, string installPath, DateTime directoryWriteStamp)
+    {
+        lock (_cacheLock)
+        {
+            if (!_analysisCache.TryGetValue(installPath, out var cached))
+                return false;
+
+            if (cached.DirectoryWriteStampUtc != directoryWriteStamp)
+                return false;
+
+            cached.ApplyTo(game);
+            return true;
+        }
+    }
+
+    private static void SaveAnalysisCache(Game game, string installPath, DateTime directoryWriteStamp)
+    {
+        var snapshot = AnalysisCacheEntry.FromGame(game, directoryWriteStamp);
+        lock (_cacheLock)
+        {
+            _analysisCache[installPath] = snapshot;
+        }
     }
 
     private void FindBestVersion(Game game, string path, string[] filePatterns, EnumerationOptions options, HashSet<string> ignoredFiles, Action<Game, string, string> updateAction)
@@ -234,6 +281,53 @@ public class GameAnalyzerService
         catch
         {
             return "0.0.0.0";
+        }
+    }
+
+    private sealed class AnalysisCacheEntry
+    {
+        public DateTime DirectoryWriteStampUtc { get; set; }
+        public string? DlssVersion { get; set; }
+        public string? DlssPath { get; set; }
+        public string? DlssFrameGenVersion { get; set; }
+        public string? DlssFrameGenPath { get; set; }
+        public string? FsrVersion { get; set; }
+        public string? FsrPath { get; set; }
+        public string? XessVersion { get; set; }
+        public string? XessPath { get; set; }
+        public bool IsOptiscalerInstalled { get; set; }
+        public string? OptiscalerVersion { get; set; }
+
+        public static AnalysisCacheEntry FromGame(Game game, DateTime directoryWriteStampUtc)
+        {
+            return new AnalysisCacheEntry
+            {
+                DirectoryWriteStampUtc = directoryWriteStampUtc,
+                DlssVersion = game.DlssVersion,
+                DlssPath = game.DlssPath,
+                DlssFrameGenVersion = game.DlssFrameGenVersion,
+                DlssFrameGenPath = game.DlssFrameGenPath,
+                FsrVersion = game.FsrVersion,
+                FsrPath = game.FsrPath,
+                XessVersion = game.XessVersion,
+                XessPath = game.XessPath,
+                IsOptiscalerInstalled = game.IsOptiscalerInstalled,
+                OptiscalerVersion = game.OptiscalerVersion
+            };
+        }
+
+        public void ApplyTo(Game game)
+        {
+            game.DlssVersion = DlssVersion;
+            game.DlssPath = DlssPath;
+            game.DlssFrameGenVersion = DlssFrameGenVersion;
+            game.DlssFrameGenPath = DlssFrameGenPath;
+            game.FsrVersion = FsrVersion;
+            game.FsrPath = FsrPath;
+            game.XessVersion = XessVersion;
+            game.XessPath = XessPath;
+            game.IsOptiscalerInstalled = IsOptiscalerInstalled;
+            game.OptiscalerVersion = OptiscalerVersion;
         }
     }
 }
