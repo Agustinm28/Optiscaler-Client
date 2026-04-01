@@ -53,7 +53,8 @@ namespace OptiscalerClient.Services
                                      bool installFakenvapi = false, string fakenvapiCachePath = "",
                                      bool installNukemFG = false, string nukemFGCachePath = "",
                                      string? optiscalerVersion = null,
-                                     string? overrideGameDir = null)
+                                     string? overrideGameDir = null,
+                                     OptiScalerProfile? profile = null)
         {
             DebugWindow.Log($"[Install] Starting OptiScaler installation for game: {game.Name}");
             DebugWindow.Log($"[Install] Version: {optiscalerVersion}, Injection: {injectionDllName}");
@@ -119,6 +120,7 @@ namespace OptiscalerClient.Services
             manifest.PreInstallKeyFiles = CapturePreInstallKeySnapshot(gameDir, injectionDllName);
             manifest.ExpectedFinalMarkers.Add(injectionDllName);
             manifest.ExpectedFinalMarkers.Add(Path.Combine(BackupFolderName, ManifestFileName));
+            manifest.AppliedProfileName = profile?.Name;
             var manifestPath = Path.Combine(backupDir, ManifestFileName);
 
             // Persist immediately as in-progress so crashes can be recovered later.
@@ -241,6 +243,25 @@ namespace OptiscalerClient.Services
 
             DebugWindow.Log($"[Install] Copied {additionalFileCount} additional files");
 
+            // Step 2.5: Generate OptiScaler.ini from profile if provided (skip for Default profile)
+            if (profile != null && profile.IniSettings.Count > 0)
+            {
+                try
+                {
+                    var profileService = new ProfileManagementService();
+                    profileService.WriteOptiScalerIniToFile(gameDir, profile);
+                    DebugWindow.Log($"[Install] Generated OptiScaler.ini from profile: {profile.Name}");
+                }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Install] Warning: Failed to generate OptiScaler.ini from profile: {ex.Message}");
+                }
+            }
+            else if (profile != null && profile.Name == "Default")
+            {
+                DebugWindow.Log($"[Install] Using Default profile - OptiScaler will use its default configuration");
+            }
+
             // Step 3: Install Fakenvapi if requested (AMD/Intel only)
             if (installFakenvapi && !string.IsNullOrEmpty(fakenvapiCachePath) && Directory.Exists(fakenvapiCachePath))
             {
@@ -290,6 +311,10 @@ namespace OptiscalerClient.Services
                 {
                     manifest.IncludesFakenvapi = true;
                     manifest.ExpectedFinalMarkers.Add("nvapi64.dll");
+                }
+                else
+                {
+                    throw new Exception("Installation failed because the Fakenvapi package is corrupt or incomplete.");
                 }
             }
 
@@ -346,6 +371,10 @@ namespace OptiscalerClient.Services
                 {
                     manifest.IncludesNukemFG = true;
                     manifest.ExpectedFinalMarkers.Add("dlssg_to_fsr3_amd_is_better.dll");
+                }
+                else
+                {
+                    throw new Exception("Installation failed because the NukemFG package is corrupt or incomplete.");
                 }
             }
 

@@ -34,6 +34,8 @@ namespace OptiscalerClient.Services
     {
         private static readonly object _downloadLock = new();
         private static readonly System.Collections.Generic.HashSet<string> _activeOptiDownloads = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly object _configLock = new();
+        private static AppConfiguration? _sharedConfig;
         private readonly string _baseDir;
         private readonly string _cacheDir;
         private readonly string _versionFile;
@@ -122,24 +124,52 @@ namespace OptiscalerClient.Services
         {
             try
             {
-                // Check local directory first (portable/dev friendly)
-                var localConfig = Path.Combine(AppContext.BaseDirectory, "config.json");
-                if (File.Exists(localConfig))
+                lock (_configLock)
                 {
-                    var json = File.ReadAllText(localConfig);
-                    _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
-                }
-                else if (File.Exists(_configFile))
-                {
-                    var json = File.ReadAllText(_configFile);
-                    _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
-                }
-                else
-                {
-                    // Create default config
-                    _config = new AppConfiguration();
-                    var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
-                    File.WriteAllText(_configFile, json);
+                    if (_sharedConfig != null)
+                    {
+                        _config = _sharedConfig;
+                        return;
+                    }
+
+                    // PRIORITY 1: Load from AppData (persistent user settings)
+                    if (File.Exists(_configFile))
+                    {
+                        var json = File.ReadAllText(_configFile);
+                        _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
+                        System.Diagnostics.Debug.WriteLine($"[Config] Loaded from AppData: {_configFile}");
+                    }
+                    // PRIORITY 2: If no AppData config exists, use project config.json as template
+                    else
+                    {
+                        var currentDirConfig = Path.Combine(Environment.CurrentDirectory, "config.json");
+                        var baseDirConfig = Path.Combine(AppContext.BaseDirectory, "config.json");
+                        var templateConfig = File.Exists(currentDirConfig)
+                            ? currentDirConfig
+                            : (File.Exists(baseDirConfig) ? baseDirConfig : null);
+
+                        if (templateConfig != null)
+                        {
+                            // Use project config as template for first-time setup
+                            var json = File.ReadAllText(templateConfig);
+                            _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
+                        }
+                        else
+                        {
+                            // No config found anywhere, use defaults
+                            _config = new AppConfiguration();
+                        }
+
+                        // Save initial config to AppData
+                        try
+                        {
+                            var normalized = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
+                            File.WriteAllText(_configFile, normalized);
+                        }
+                        catch { /* Ignore AppData write errors */ }
+                    }
+
+                    _sharedConfig = _config;
                 }
             }
             catch { /* Use defaults */ }
@@ -149,19 +179,18 @@ namespace OptiscalerClient.Services
         {
             try
             {
-                var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
-
-                var localConfig = Path.Combine(AppContext.BaseDirectory, "config.json");
-                if (File.Exists(localConfig))
+                lock (_configLock)
                 {
-                    File.WriteAllText(localConfig, json);
-                }
-                else
-                {
+                    var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
                     File.WriteAllText(_configFile, json);
+                    System.Diagnostics.Debug.WriteLine($"[Config] Saved to: {_configFile}");
+                    System.Diagnostics.Debug.WriteLine($"[Config] WindowMaximized: {_config.WindowMaximized}, PreferGridView: {_config.PreferGridView}");
                 }
             }
-            catch { /* Ignore save errors */ }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Config] Save error: {ex.Message}");
+            }
         }
 
         private void LoadLocalVersions()

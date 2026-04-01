@@ -61,6 +61,11 @@ namespace OptiscalerClient.Models
         public bool IncludesNukemFG { get; set; }
         public bool IncludesExtras { get; set; }
 
+        /// <summary>
+        /// Name of the OptiScaler profile that was applied during installation
+        /// </summary>
+        public string? AppliedProfileName { get; set; }
+
         public List<string> ExpectedFinalMarkers { get; set; } = new();
 
         /// <summary>
