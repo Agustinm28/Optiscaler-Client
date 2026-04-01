@@ -469,18 +469,47 @@
                                     <Image Name="ImgCoverPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
+                        </StackPanel>
 
-                            <!-- Path -->
-                            <Border Background="{StaticResource BrBgCard}" Padding="12,8" CornerRadius="{StaticResource RadiusMedium}" BorderBrush="{StaticResource BrBorderSubtle}" BorderThickness="1">
-                                <Grid ColumnDefinitions="Auto,*">
-                                    <TextBlock Text="&#xE8B7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" Foreground="{StaticResource BrTextSecondary}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <TextBlock Name="TxtCoverPath"
-                                               Grid.Column="1"
-                                               Text="Sin imagen seleccionada"
-                                               FontSize="{StaticResource FontSizeCaption}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextTrimming="CharacterEllipsis"/>
-                                </Grid>
+                        <!-- Vertical divider spanning rows 1, 2 and 3 -->
+                        <Border Grid.Row="1" Grid.RowSpan="3" Grid.Column="1"
+                                Width="1"
+                                Background="{StaticResource BrBorderSubtle}"
+                                Margin="20,0"/>
+
+                        <!-- Row 2, Col 0: Injector selector -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource TxtInjectionLbl}"
+                                       Foreground="{StaticResource BrTextSecondary}"
+                                       VerticalAlignment="Center"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       Width="65"/>
+                            <ComboBox Name="CmbInjectionMethodCover"
+                                      Width="220"
+                                      Classes="BtnSelector"
+                                      Padding="8,0,24,0"
+                                      SelectedIndex="0"
+                                      HorizontalContentAlignment="Left"
+                                      VerticalContentAlignment="Center">
+                                <ComboBoxItem Content="dxgi.dll"     Tag="dxgi.dll"/>
+                                <ComboBoxItem Content="winmm.dll"    Tag="winmm.dll"/>
+                                <ComboBoxItem Content="d3d12.dll"    Tag="d3d12.dll"/>
+                                <ComboBoxItem Content="dbghelp.dll"  Tag="dbghelp.dll"/>
+                                <ComboBoxItem Content="version.dll"  Tag="version.dll"/>
+                                <ComboBoxItem Content="wininet.dll"  Tag="wininet.dll"/>
+                                <ComboBoxItem Content="winhttp.dll"  Tag="winhttp.dll"/>
+                            </ComboBox>
+                                <Border Background="{StaticResource BrBgElevated}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1" CornerRadius="8"
+                                    Width="16" Height="16"
+                                    Margin="10,0,0,0"
+                                    ToolTip.ShowDelay="100" Cursor="Help"
+                                    ToolTip.Tip="{DynamicResource TxtTooltipInjectionMethod}">
+                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                            FontSize="10" FontWeight="Bold"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Margin="0,-1,0,0"/>
                             </Border>
 
                             <!-- Botones -->
@@ -491,7 +520,7 @@
                                         <TextBlock Text="Restaurar" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Button>
-                                
+
                                 <Button Name="BtnCoverSelect" Grid.Column="2" Content="Examinar..." Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverSelect_Click"/>
                                 <Button Name="BtnCoverCancel" Grid.Column="3" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverCancel_Click"/>
                                 <Button Name="BtnCoverApply" Grid.Column="4" Content="Aplicar" Classes="BtnSuccess" Padding="20,8" Click="BtnCoverApply_Click"/>
