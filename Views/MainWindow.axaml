@@ -782,9 +782,38 @@
                                     <TextBlock Grid.Column="0" Text="{DynamicResource TxtBuildDateLbl}" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Name="TxtBuildDate" Text="--/--/----" FontWeight="Bold" Foreground="{StaticResource BrTextSecondary}" VerticalAlignment="Center"/>
                                  </Grid>
+            
+                                <Separator Background="{StaticResource BrBorderSubtle}" Margin="0,0,0,16"/>
+                                 
+                                <!-- License Information -->
+                                <Border Background="{StaticResource BrBgSurface}" 
+                                        BorderBrush="{StaticResource BrBorderSubtle}" 
+                                        BorderThickness="1" 
+                                        CornerRadius="{StaticResource RadiusMedium}" 
+                                        Padding="12,10" 
+                                        Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="License &amp; Copyright" 
+                                                   FontWeight="SemiBold" 
+                                                   FontSize="13" 
+                                                   Foreground="{StaticResource BrTextPrimary}" 
+                                                   Margin="0,0,0,8"/>
+                                        <TextBlock TextWrapping="Wrap" 
+                                                   FontSize="12" 
+                                                   Foreground="{StaticResource BrTextSecondary}" 
+                                                   LineHeight="18">
+                                            <Run Text="Copyright 2026 Agustín Montaña (Agustinm28)"/><LineBreak/>
+                                            <LineBreak/>
+                                            <Run Text="Licensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details."/><LineBreak/>
+                                            <LineBreak/>
+                                            <Run Text="Third-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses."/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                                 
+                                <Separator Background="{StaticResource BrBorderSubtle}" Margin="0,0,0,16"/>
              
-                                 <Separator Background="{StaticResource BrBorderSubtle}" Margin="0,0,0,16"/>
-             
+
                                  <StackPanel Orientation="Horizontal">
                                      <Button Content="{DynamicResource TxtCheckUpdatesBtn}" 
                                              Name="BtnCheckUpdates" 
