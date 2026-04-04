@@ -50,7 +50,7 @@ namespace OptiscalerClient
         }
 
         public static string AppVersion { get; } =
-            Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
+            Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
 
         public static string CurrentLanguage = "en";
 
