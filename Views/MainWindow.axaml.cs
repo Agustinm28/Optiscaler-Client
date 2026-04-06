@@ -3584,6 +3584,44 @@ namespace OptiscalerClient.Views
                             );
                         });
 
+                        // ── FSR4 INT8 DLL injection (respect configured default extras)
+                        var configuredExtras = _componentService.Config.DefaultExtrasVersion;
+                        if (!string.IsNullOrEmpty(configuredExtras) && !configuredExtras.Equals("none", StringComparison.OrdinalIgnoreCase))
+                        {
+                            try
+                            {
+                                ShowToast($"Descargando FSR4 INT8 v{configuredExtras}... 0%", showProgress: true, progressPercent: 0);
+                                string extrasDllPath;
+                                var extrasProgress = new Progress<double>(p => UpdateToastProgress($"Descargando FSR4 INT8 v{configuredExtras}... {(int)p}%", p));
+                                extrasDllPath = await _componentService.DownloadExtrasDllAsync(configuredExtras, extrasProgress);
+
+                                // Copy into game directory
+                                var installSvc = new GameInstallationService();
+                                var gameDir = installSvc.DetermineInstallDirectory(selectedGame) ?? selectedGame.InstallPath;
+                                var destPath = System.IO.Path.Combine(gameDir, "amd_fidelityfx_upscaler_dx12.dll");
+                                if (!File.Exists(extrasDllPath))
+                                    throw new Exception("FSR4 INT8 package is corrupt or incomplete.");
+                                File.Copy(extrasDllPath, destPath, overwrite: true);
+                                selectedGame.Fsr4ExtraVersion = configuredExtras;
+                                ShowToast($"FSR4 INT8 v{configuredExtras} injected", showProgress: false, progressPercent: null);
+                                Dispatcher.UIThread.Post(() =>
+                                {
+                                    var icon = this.FindControl<TextBlock>("TxtToastIcon");
+                                    if (icon != null) icon.Text = string.Empty;
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                HideToast();
+                                await new ConfirmDialog(
+                                    this,
+                                    GetResourceString("TxtWarning", "Warning"),
+                                    $"FSR4 INT8 download/inject failed (OptiScaler was still installed):\n{ex.Message}",
+                                    isAlert: true
+                                ).ShowDialog<bool>(this);
+                            }
+                        }
+
                         // Update game status
                         selectedGame.IsOptiscalerInstalled = true;
                         selectedGame.OptiscalerVersion = versionToInstall;
@@ -3592,7 +3630,29 @@ namespace OptiscalerClient.Views
                         RefreshGameLists();
 
                         _persistenceService.SaveGames(_games);
-                        await HideToastAfterAsync(1200);
+
+                        // Final toast: report OptiScaler and optional FSR4 INT8 installed
+                        var configuredExtrasFinal = _componentService.Config.DefaultExtrasVersion;
+                        if (!string.IsNullOrEmpty(configuredExtrasFinal) && !configuredExtrasFinal.Equals("none", StringComparison.OrdinalIgnoreCase))
+                        {
+                            ShowToast($"Installed OptiScaler {versionToInstall} + FSR4 INT8 {configuredExtrasFinal}", showProgress: false, progressPercent: null);
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                var icon = this.FindControl<TextBlock>("TxtToastIcon");
+                                if (icon != null) icon.Text = string.Empty;
+                            });
+                        }
+                        else
+                        {
+                            ShowToast($"Installed OptiScaler {versionToInstall}", showProgress: false, progressPercent: null);
+                            Dispatcher.UIThread.Post(() =>
+                            {
+                                var icon = this.FindControl<TextBlock>("TxtToastIcon");
+                                if (icon != null) icon.Text = string.Empty;
+                            });
+                        }
+
+                        await HideToastAfterAsync(1500);
                     }
                 }
                 catch (Exception ex)
