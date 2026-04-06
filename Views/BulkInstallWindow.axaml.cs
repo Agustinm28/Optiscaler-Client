@@ -13,6 +13,7 @@ using Avalonia.Threading;
 using OptiscalerClient.Models;
 using OptiscalerClient.Services;
 using OptiscalerClient.Helpers;
+using System.Text.RegularExpressions;
 
 namespace OptiscalerClient.Views;
 
@@ -29,7 +30,7 @@ public partial class BulkInstallWindow : Window
     public BulkInstallWindow()
     {
         InitializeComponent();
-        
+
         // Initialize fields to avoid nullable warnings
         _componentService = null!;
         _installService = null!;
@@ -44,7 +45,7 @@ public partial class BulkInstallWindow : Window
         List<Game> games)
     {
         InitializeComponent();
-        
+
         _componentService = componentService;
         _installService = installService;
         _gameItems = new ObservableCollection<BulkGameItem>();
@@ -75,7 +76,7 @@ public partial class BulkInstallWindow : Window
                 OptiscalerVersion = game.OptiscalerVersion,
                 IsOptiscalerInstalled = game.IsOptiscalerInstalled
             };
-            
+
             _gameItems.Add(gameItem);
             _allGames.Add(gameItem);
             _filteredGameItems.Add(gameItem);
@@ -89,7 +90,7 @@ public partial class BulkInstallWindow : Window
 
         // Load versions
         _ = LoadVersionsAsync();
-        
+
         // Update selection count
         UpdateSelectionCount();
 
@@ -190,7 +191,7 @@ public partial class BulkInstallWindow : Window
             foreach (var ver in stableVersions)
             {
                 bool shouldMarkAsLatest = false;
-                    
+
                 if (!string.IsNullOrEmpty(latestStable))
                 {
                     shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
@@ -288,8 +289,8 @@ public partial class BulkInstallWindow : Window
 
         if (txtCount != null)
         {
-            txtCount.Text = selectedCount == 1 
-                ? "1 game selected" 
+            txtCount.Text = selectedCount == 1
+                ? "1 game selected"
                 : $"{selectedCount} games selected";
         }
 
@@ -317,7 +318,7 @@ public partial class BulkInstallWindow : Window
         }
 
         var selectedCount = selectableGames.Count(g => g.IsSelected);
-        
+
         if (selectedCount == 0)
             chkSelectAll.IsChecked = false;
         else if (selectedCount == selectableGames.Count)
@@ -351,7 +352,7 @@ public partial class BulkInstallWindow : Window
         var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
 
         if (cmbOptiVersion?.SelectedItem is not ComboBoxItem selectedItem) return;
-        
+
         string version = selectedItem.Tag?.ToString() ?? "";
         bool installFakenvapi = chkFakenvapi?.IsChecked == true;
         bool installNukemFG = chkNukemFG?.IsChecked == true;
@@ -367,7 +368,7 @@ public partial class BulkInstallWindow : Window
                             !selectedExtrasVersion.Equals("none", StringComparison.OrdinalIgnoreCase);
 
         _isInstalling = true;
-        
+
         var btnInstall = this.FindControl<Button>("BtnInstall");
         var btnCancel = this.FindControl<Button>("BtnCancel");
         var progressSection = this.FindControl<Border>("ProgressSection");
@@ -388,10 +389,10 @@ public partial class BulkInstallWindow : Window
 
             if (txtProgressStatus != null)
                 txtProgressStatus.Text = $"Installing {gameItem.Name}...";
-            
+
             if (txtProgressCount != null)
                 txtProgressCount.Text = $"{currentGame} / {totalGames}";
-            
+
             if (progressBar != null)
                 progressBar.Value = (currentGame - 1) * 100.0 / totalGames;
 
@@ -468,7 +469,7 @@ public partial class BulkInstallWindow : Window
         await Task.Delay(500);
 
         _isInstalling = false;
-        
+
         if (progressSection != null) progressSection.IsVisible = false;
         if (btnCancel != null) btnCancel.IsEnabled = true;
 
@@ -505,6 +506,63 @@ public partial class BulkInstallWindow : Window
     private void CmbOptiVersion_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         UpdateCheckboxStatesForVersion(sender as ComboBox);
+    }
+
+    private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
+    {
+        if (cmb == null) return;
+
+        var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+        bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
+
+        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
+        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+
+        // Disable Fakenvapi/NukemFG for any OptiScaler version >= 0.9 regardless of beta
+        bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
+
+        if (includedInPackage)
+        {
+            if (chkFakenvapi != null)
+            {
+                chkFakenvapi.IsEnabled = false;
+                chkFakenvapi.IsChecked = false;
+                ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+            }
+            if (chkNukemFG != null)
+            {
+                chkNukemFG.IsEnabled = false;
+                chkNukemFG.IsChecked = false;
+                ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+            }
+        }
+        else
+        {
+            if (chkFakenvapi != null)
+            {
+                chkFakenvapi.IsEnabled = true;
+                ToolTip.SetTip(chkFakenvapi, null);
+            }
+            if (chkNukemFG != null)
+            {
+                chkNukemFG.IsEnabled = true;
+                ToolTip.SetTip(chkNukemFG, null);
+            }
+        }
+    }
+
+    private static bool IsVersionGreaterOrEqual(string? ver, int targetMajor, int targetMinor)
+    {
+        if (string.IsNullOrEmpty(ver)) return false;
+
+        var m = Regex.Match(ver, "^\\d+(\\.\\d+)*");
+        if (!m.Success) return false;
+
+        if (!Version.TryParse(m.Value, out var parsed)) return false;
+
+        if (parsed.Major > targetMajor) return true;
+        if (parsed.Major < targetMajor) return false;
+        return parsed.Minor >= targetMinor;
     }
 
     /// <summary>
@@ -611,45 +669,7 @@ public partial class BulkInstallWindow : Window
         cmb.SelectedIndex = targetIndex;
     }
 
-    private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
-    {
-        if (cmb == null) return;
-
-        var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
-        bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
-
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
-
-        if (isBeta)
-        {
-            if (chkFakenvapi != null)
-            {
-                chkFakenvapi.IsEnabled = false;
-                chkFakenvapi.IsChecked = false;
-                ToolTip.SetTip(chkFakenvapi, "Included in beta version");
-            }
-            if (chkNukemFG != null)
-            {
-                chkNukemFG.IsEnabled = false;
-                chkNukemFG.IsChecked = false;
-                ToolTip.SetTip(chkNukemFG, "Included in beta version");
-            }
-        }
-        else
-        {
-            if (chkFakenvapi != null)
-            {
-                chkFakenvapi.IsEnabled = true;
-                ToolTip.SetTip(chkFakenvapi, null);
-            }
-            if (chkNukemFG != null)
-            {
-                chkNukemFG.IsEnabled = true;
-                ToolTip.SetTip(chkNukemFG, null);
-            }
-        }
-    }
+    // (Replaced by unified version earlier)
 
     private void TxtSearch_TextChanged(object? sender, TextChangedEventArgs e)
     {
@@ -671,7 +691,7 @@ public partial class BulkInstallWindow : Window
     private void ApplyFilter(string? searchText)
     {
         _filteredGameItems.Clear();
-        
+
         if (string.IsNullOrWhiteSpace(searchText))
         {
             // Show all games
@@ -683,9 +703,9 @@ public partial class BulkInstallWindow : Window
         else
         {
             // Filter games
-            var filtered = _allGames.Where(g => 
+            var filtered = _allGames.Where(g =>
                 g.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
-            
+
             foreach (var game in filtered)
             {
                 _filteredGameItems.Add(game);

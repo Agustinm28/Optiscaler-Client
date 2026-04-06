@@ -27,6 +27,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using OptiscalerClient.Models;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using Avalonia.Controls.Shapes;
 using Avalonia.Layout;
 using OptiscalerClient.Services;
@@ -472,39 +473,39 @@ namespace OptiscalerClient.Views
             var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
             bool isBeta = !string.IsNullOrEmpty(selectedTag) && _betaVersions.Contains(selectedTag);
 
+            // Disable Fakenvapi/NukemFG for any OptiScaler version >= 0.9 (included in package),
+            // regardless of whether it's a beta or stable build.
+            bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
+
             var chkFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
             var chkNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
             var betaInfoPanel = this.FindControl<Border>("BetaInfoPanel");
 
-            if (isBeta)
+            // Show or hide beta info panel as before
+            if (betaInfoPanel != null)
             {
-                // Show info panel
-                if (betaInfoPanel != null)
-                {
-                    betaInfoPanel.IsVisible = true;
-                }
+                betaInfoPanel.IsVisible = isBeta;
+            }
 
+            if (includedInPackage)
+            {
+                // For versions >= 0.9 the files are included; disable and clear selections
                 if (chkFakenvapi != null)
                 {
                     chkFakenvapi.IsEnabled = false;
                     chkFakenvapi.IsChecked = false;
-                    ToolTip.SetTip(chkFakenvapi, "Included in beta version");
+                    ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
                 }
                 if (chkNukemFG != null)
                 {
                     chkNukemFG.IsEnabled = false;
                     chkNukemFG.IsChecked = false;
-                    ToolTip.SetTip(chkNukemFG, "Included in beta version");
+                    ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
                 }
             }
             else
             {
-                // Hide info panel
-                if (betaInfoPanel != null)
-                {
-                    betaInfoPanel.IsVisible = false;
-                }
-
+                // For older versions (< 0.9) allow user to toggle these options regardless of beta
                 if (chkFakenvapi != null)
                 {
                     chkFakenvapi.IsEnabled = true;
@@ -516,6 +517,23 @@ namespace OptiscalerClient.Views
                     ToolTip.SetTip(chkNukemFG, null);
                 }
             }
+        }
+
+        private static bool IsVersionGreaterOrEqual(string? ver, int targetMajor, int targetMinor)
+        {
+            if (string.IsNullOrEmpty(ver)) return false;
+
+            // Extract numeric prefix (e.g. "0.9.1" from "0.9.1-beta")
+            var m = Regex.Match(ver, "^\\d+(\\.\\d+)*");
+            if (!m.Success) return false;
+
+            if (!Version.TryParse(m.Value, out var parsed)) return false;
+
+            if (parsed.Major > targetMajor) return true;
+            if (parsed.Major < targetMajor) return false;
+            // Majors equal
+            var minor = parsed.Minor;
+            return minor >= targetMinor;
         }
 
         private void SetupUI()
