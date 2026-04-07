@@ -67,3 +67,25 @@ public class BitmapValueConverter : IValueConverter
     }
 }
 
+public class MultiplyConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is double d)
+        {
+            if (parameter != null &&
+                double.TryParse(parameter.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var m))
+            {
+                return d * m;
+            }
+        }
+
+        return 0d;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotSupportedException();
+    }
+}
+
