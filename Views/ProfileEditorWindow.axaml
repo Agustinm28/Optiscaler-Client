@@ -17,7 +17,7 @@
         <Border CornerRadius="12"
                 Background="{StaticResource BrBgBase}"
                 BoxShadow="0 10 30 0 #A0000000">
-            
+
             <Grid>
                 <!-- Separate layer for the subtle border -->
                 <Border CornerRadius="12"
@@ -30,7 +30,7 @@
                 <Border CornerRadius="12"
                         Background="Transparent"
                         ClipToBounds="True">
-                    
+
                     <Grid RowDefinitions="Auto, *, Auto">
                         <!-- Custom Title Bar (Draggable) -->
                         <Border Grid.Row="0"
@@ -95,7 +95,7 @@
                                                      Watermark="Enter profile description (optional)"
                                                      Height="32"/>
                                         </StackPanel>
-                                        
+
                                         <StackPanel Spacing="4">
                                             <TextBlock Text="Mode"
                                                        Foreground="{StaticResource BrTextSecondary}"

@@ -17,7 +17,7 @@ namespace OptiscalerClient.Services
 
             try
             {
-                var assetsPath = Path.Combine(AppContext.BaseDirectory, "assets", "help-pages.json");
+                var assetsPath = Path.Combine(AppContext.BaseDirectory, "assets", "configs", "help-pages.json");
                 if (!File.Exists(assetsPath))
                 {
                     System.Diagnostics.Debug.WriteLine($"[HelpPageService] File not found: {assetsPath}");

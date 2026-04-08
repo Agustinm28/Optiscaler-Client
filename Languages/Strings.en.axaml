@@ -136,7 +136,7 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtBtnLater">Later</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">About</x:String>
+    <x:String x:Key="TxtAboutTitle">Help</x:String>
     <x:String x:Key="TxtAppInfoTitle">Application</x:String>
     <x:String x:Key="TxtExternalResourcesTitle">External Resources</x:String>
     <x:String x:Key="TxtFeedbackTitle">Feedback &amp; Support</x:String>

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -258,6 +259,7 @@ namespace OptiscalerClient.Views
             var btnDuplicate = this.FindControl<Button>("BtnDuplicate");
             var btnDelete = this.FindControl<Button>("BtnDelete");
             var btnSetDefault = this.FindControl<Button>("BtnSetDefault");
+            var btnExport = this.FindControl<Button>("BtnExport");
 
             if (_selectedProfile == null)
             {
@@ -265,16 +267,52 @@ namespace OptiscalerClient.Views
                 if (btnDuplicate != null) btnDuplicate.IsEnabled = false;
                 if (btnDelete != null) btnDelete.IsEnabled = false;
                 if (btnSetDefault != null) btnSetDefault.IsEnabled = false;
+                if (btnExport != null) btnExport.IsEnabled = false;
             }
             else
             {
                 if (btnEdit != null) btnEdit.IsEnabled = !_selectedProfile.IsBuiltIn;
                 if (btnDuplicate != null) btnDuplicate.IsEnabled = true;
                 if (btnDelete != null) btnDelete.IsEnabled = !_selectedProfile.IsBuiltIn;
+                if (btnExport != null) btnExport.IsEnabled = true;
                 if (btnSetDefault != null)
                 {
                     btnSetDefault.IsEnabled = !_selectedProfile.Name.Equals(_defaultProfileName, StringComparison.OrdinalIgnoreCase);
                 }
+            }
+        }
+
+        private async void BtnExportProfile_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_selectedProfile == null) return;
+
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null) return;
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+            {
+                Title = "Export profile as OptiScaler.ini",
+                SuggestedFileName = "OptiScaler.ini",
+                DefaultExtension = "ini",
+                FileTypeChoices = new[]
+                {
+                    new Avalonia.Platform.Storage.FilePickerFileType("INI files") { Patterns = new[] { "*.ini" } }
+                }
+            });
+
+            if (file == null) return;
+
+            try
+            {
+                var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OptiScaler_example.ini");
+                var iniContent = _profileService.GenerateOptiScalerIni(_selectedProfile, templatePath);
+                await using var stream = await file.OpenWriteAsync();
+                await using var writer = new StreamWriter(stream);
+                await writer.WriteAsync(iniContent);
+            }
+            catch (Exception ex)
+            {
+                await new ConfirmDialog(this, "Export Error", $"Failed to export profile: {ex.Message}").ShowDialog<object>(this);
             }
         }
 

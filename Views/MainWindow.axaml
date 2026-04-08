@@ -7,6 +7,7 @@
         xmlns:models="clr-namespace:OptiscalerClient.Models"
         mc:Ignorable="d"
         x:Class="OptiscalerClient.Views.MainWindow"
+        Name="MainWin"
         Title="{DynamicResource TxtAppTitle}"
         Height="720" Width="1280"
         MinHeight="520" MinWidth="760"
@@ -19,7 +20,6 @@
         <converters:NullToVisibilityConverter  x:Key="NullToVisibilityConverter"/>
         <converters:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
         <converters:BitmapValueConverter       x:Key="BitmapValueConverter"/>
-
 
         </Window.Resources>
 
@@ -1063,6 +1063,13 @@
                                      Padding="12,8"
                                      IsEnabled="False"
                                      Click="BtnDuplicateProfileView_Click"/>
+                             <Button Name="BtnExportProfileView"
+                                     Content="Export .ini"
+                                     Classes="BtnSecondary"
+                                     HorizontalAlignment="Stretch"
+                                     Padding="12,8"
+                                     IsEnabled="False"
+                                     Click="BtnExportProfileView_Click"/>
                              <Button Name="BtnDeleteProfileView"
                                      Content="Delete"
                                      Classes="BtnSecondary"
@@ -1299,379 +1306,302 @@
                                Margin="0"
                                Background="Transparent"
                                PointerPressed="SettingsBackground_PointerPressed">
-                    <Grid Name="SettingsGrid" Margin="24">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <!-- App Preferences Header -->
+                    <StackPanel Margin="24">
                         <TextBlock Text="{DynamicResource TxtAppPrefs}"
                                    Foreground="{StaticResource BrTextSecondary}"
                                    FontWeight="SemiBold"
-                                   Margin="0,0,0,12"
-                                   Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Grid.Row="0"/>
+                                   Margin="0,0,0,12"/>
 
-                        <!-- Language - Column 0, Row 1 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="0,0,8,16"
-                                Grid.Column="0"
-                                Grid.Row="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource TxtLanguage}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="{DynamicResource TxtLanguageDesc}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-
-                                <ComboBox Name="CmbLanguage"
-                                          Grid.Column="1"
-                                          Width="160"
-                                          VerticalAlignment="Center"
-                                          SelectionChanged="CmbLanguage_SelectionChanged">
-                                    <ComboBoxItem Tag="en" Content="English"/>
-                                    <ComboBoxItem Tag="es" Content="Español"/>
-                                    <ComboBoxItem Tag="pt-BR" Content="Português (Brasil)"/>
-                                    <ComboBoxItem Tag="fr" Content="Français"/>
-                                    <ComboBoxItem Tag="it" Content="Italiano"/>
-                                    <ComboBoxItem Tag="ru" Content="Русский"/>
-                                    <ComboBoxItem Tag="de" Content="Deutsch"/>
-                                    <ComboBoxItem Tag="ja" Content="日本語"/>
-                                    <ComboBoxItem Tag="zh-CN" Content="简体中文"/>
-                                    <ComboBoxItem Tag="zh-TW" Content="繁體中文"/>
-                                    <ComboBoxItem Tag="ko" Content="한국어"/>
-                                    <ComboBoxItem Tag="pl" Content="Polski"/>
-                                    <ComboBoxItem Tag="tr" Content="Türkçe"/>
-                                    <ComboBoxItem Tag="nl" Content="Nederlands"/>
-                                </ComboBox>
-                            </Grid>
-                        </Border>
-
-                        <!-- Cache Management - Column 1, Row 1 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="8,0,0,16"
-                                Grid.Column="1"
-                                Grid.Row="1">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource TxtCacheMgmt}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="{DynamicResource TxtCacheDesc}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-
-                                <Button Name="BtnManageCache"
-                                        Grid.Column="1"
-                                        Content="{DynamicResource TxtManage}"
-                                        Classes="BtnBase"
-                                        Padding="16,8"
-                                        VerticalAlignment="Center"
-                                        Click="BtnManageCache_Click"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- Scan Sources - Column 0, Row 2 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                            BorderBrush="{StaticResource BrBorderSubtle}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource RadiusLarge}"
-                            Padding="20,16"
-                            Margin="0,0,8,16"
-                            Grid.Column="0"
-                            Grid.Row="2">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource TxtScanSources}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="{DynamicResource TxtScanSourcesDesc}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-
-                                <Button Name="BtnManageScanSources"
-                                        Grid.Column="1"
-                                        Content="{DynamicResource TxtManage}"
-                                        Classes="BtnBase"
-                                        Padding="16,8"
-                                        VerticalAlignment="Center"
-                                        Click="BtnManageScanSources_Click"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- FSR4 INT8 - moved to Column 1, Row 2 to balance layout -->
-                        <Border Background="{StaticResource BrBgCard}"
-                            BorderBrush="{StaticResource BrBorderSubtle}"
-                            BorderThickness="1"
-                            CornerRadius="{StaticResource RadiusLarge}"
-                            Padding="20,16"
-                            Margin="8,0,0,16"
-                            Grid.Column="1"
-                            Grid.Row="2">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="FSR4 INT8 Default"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="Default FSR4 INT8 mod version pre-selected when opening a game. RDNA 4 GPUs (RX 9000 series) default to None automatically."
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-                                <ComboBox Name="CmbDefaultExtrasVersion"
-                                          Grid.Column="1"
-                                          Width="200"
-                                          VerticalAlignment="Center"
-                                          SelectionChanged="CmbDefaultExtrasVersion_SelectionChanged"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- Default GPU - Column 1, Row 3 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="8,0,0,16"
-                                Grid.Column="1"
-                                Grid.Row="3">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="Default GPU"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="Used for defaults and GPU-specific guidance."
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-                                <ComboBox Name="CmbDefaultGpu"
-                                          Grid.Column="1"
-                                          Width="240"
-                                          VerticalAlignment="Center"
-                                          SelectionChanged="CmbDefaultGpu_SelectionChanged"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- Auto Scan - Column 0, Row 4 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="0,0,8,16"
-                                Grid.Column="0"
-                                Grid.Row="4">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource TxtAutoScan}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="{DynamicResource TxtAutoScanDesc}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-
-                                <ToggleSwitch Name="TglAutoScan"
-                                              Grid.Column="1"
-                                              VerticalAlignment="Center"
-                                              OnContent="" OffContent=""
-                                              IsChecked="True"
-                                              IsCheckedChanged="TglAutoScan_IsCheckedChanged"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- Default OptiScaler Version: Column 1, Row 4 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="8,0,0,16"
-                                Grid.Column="1"
-                                Grid.Row="4">
-                            <Grid ColumnDefinitions="*, Auto">
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="Default OptiScaler Version"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="Pre-selected version when opening Manage or using Quick Install. 'Auto' picks the latest recommended release."
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
-                                    <!-- Stable / Beta channel toggle -->
-                                    <Grid ColumnDefinitions="*,*">
-                                        <Button Name="BtnOptiDefaultStable"
-                                                Grid.Column="0"
-                                                Content="Stable"
-                                                Classes="BtnPrimary"
-                                                HorizontalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center"
-                                                FontSize="11"
-                                                Padding="8,5"
-                                                Margin="0,0,2,0"
-                                                Click="BtnOptiDefaultStable_Click"/>
-                                        <Button Name="BtnOptiDefaultBeta"
-                                                Grid.Column="1"
-                                                Content="Beta"
-                                                Classes="BtnSecondary"
-                                                HorizontalAlignment="Stretch"
-                                                HorizontalContentAlignment="Center"
-                                                FontSize="11"
-                                                Padding="8,5"
-                                                Margin="2,0,0,0"
-                                                Click="BtnOptiDefaultBeta_Click"/>
-                                    </Grid>
-                                    <ComboBox Name="CmbDefaultOptiScalerVersion"
-                                              Width="220"
-                                              SelectionChanged="CmbDefaultOptiScalerVersion_SelectionChanged"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- Animations - Column 0, Row 5 -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="0,0,8,0"
-                                Grid.Column="0"
-                                Grid.Row="5">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                    <TextBlock Text="{DynamicResource TxtAnimations}"
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Text="{DynamicResource TxtAnimationsDesc}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               TextWrapping="Wrap"
-                                               Margin="0,4,16,0"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
-                                </StackPanel>
-
-                                <ToggleSwitch Name="TglAnimations"
-                                              Grid.Column="1"
-                                              VerticalAlignment="Center"
-                                              OnContent="" OffContent=""
-                                              IsChecked="True"
-                                              IsCheckedChanged="TglAnimations_IsCheckedChanged"/>
-                            </Grid>
-                        </Border>
-
-                        <!-- SteamGridDB API Key - Column 1, Row 5 (spans full width) -->
-                        <Border Background="{StaticResource BrBgCard}"
-                                BorderBrush="{StaticResource BrBorderSubtle}"
-                                BorderThickness="1"
-                                CornerRadius="{StaticResource RadiusLarge}"
-                                Padding="20,16"
-                                Margin="8,0,0,0"
-                                Grid.Column="1"
-                                Grid.Row="5">
-                            <Grid RowDefinitions="Auto,Auto">
-                                <Grid Grid.Row="0">
+                        <WrapPanel Name="SettingsWrap" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Top"
+                                   SizeChanged="SettingsWrap_SizeChanged">
+                            <!-- Language -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="{DynamicResource TxtSteamGridApiKey}"
+                                        <TextBlock Text="{DynamicResource TxtLanguage}"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="{DynamicResource TxtSteamGridApiKeyDesc}"
+                                        <TextBlock Text="{DynamicResource TxtLanguageDesc}"
                                                    Foreground="{StaticResource BrTextSecondary}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,16,0"
                                                    FontSize="{StaticResource FontSizeCaption}"/>
                                     </StackPanel>
+                                    <ComboBox Name="CmbLanguage"
+                                              Grid.Column="1"
+                                              Width="160"
+                                              VerticalAlignment="Center"
+                                              SelectionChanged="CmbLanguage_SelectionChanged">
+                                        <ComboBoxItem Tag="en" Content="English"/>
+                                        <ComboBoxItem Tag="es" Content="Español"/>
+                                        <ComboBoxItem Tag="pt-BR" Content="Português (Brasil)"/>
+                                        <ComboBoxItem Tag="fr" Content="Français"/>
+                                        <ComboBoxItem Tag="it" Content="Italiano"/>
+                                        <ComboBoxItem Tag="ru" Content="Русский"/>
+                                        <ComboBoxItem Tag="de" Content="Deutsch"/>
+                                        <ComboBoxItem Tag="ja" Content="日本語"/>
+                                        <ComboBoxItem Tag="zh-CN" Content="简体中文"/>
+                                        <ComboBoxItem Tag="zh-TW" Content="繁體中文"/>
+                                        <ComboBoxItem Tag="ko" Content="한국어"/>
+                                        <ComboBoxItem Tag="pl" Content="Polski"/>
+                                        <ComboBoxItem Tag="tr" Content="Türkçe"/>
+                                        <ComboBoxItem Tag="nl" Content="Nederlands"/>
+                                    </ComboBox>
+                                </Grid>
+                            </Border>
 
-                                    <Button Name="BtnSteamGridApiGuide"
+                            <!-- Cache Management -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtCacheMgmt}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtCacheDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <Button Name="BtnManageCache"
                                             Grid.Column="1"
-                                            Content="{DynamicResource TxtSteamGridGetApiKey}"
+                                            Content="{DynamicResource TxtManage}"
                                             Classes="BtnBase"
                                             Padding="16,8"
                                             VerticalAlignment="Center"
-                                            Click="BtnSteamGridApiGuide_Click"/>
+                                            Click="BtnManageCache_Click"/>
                                 </Grid>
+                            </Border>
 
-                                <TextBox Name="TxtSteamGridApiKey"
-                                         Grid.Row="1"
-                                         Margin="0,12,0,0"
-                                         Watermark="{DynamicResource TxtSteamGridApiKeyPlaceholder}"
-                                         LostFocus="TxtSteamGridApiKey_LostFocus"/>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                            <!-- Scan Sources -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtScanSources}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtScanSourcesDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <Button Name="BtnManageScanSources"
+                                            Grid.Column="1"
+                                            Content="{DynamicResource TxtManage}"
+                                            Classes="BtnBase"
+                                            Padding="16,8"
+                                            VerticalAlignment="Center"
+                                            Click="BtnManageScanSources_Click"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- FSR4 INT8 -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="FSR4 INT8 Default"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="Default FSR4 INT8 mod version pre-selected when opening a game. RDNA 4 GPUs (RX 9000 series) default to None automatically."
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbDefaultExtrasVersion"
+                                              Grid.Column="1"
+                                              Width="200"
+                                              VerticalAlignment="Center"
+                                              SelectionChanged="CmbDefaultExtrasVersion_SelectionChanged"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Default GPU -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="Default GPU"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="Used for defaults and GPU-specific guidance."
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbDefaultGpu"
+                                              Grid.Column="1"
+                                              Width="240"
+                                              VerticalAlignment="Center"
+                                              SelectionChanged="CmbDefaultGpu_SelectionChanged"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Auto Scan -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtAutoScan}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtAutoScanDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <ToggleSwitch Name="TglAutoScan"
+                                                  Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  OnContent="" OffContent=""
+                                                  IsChecked="True"
+                                                  IsCheckedChanged="TglAutoScan_IsCheckedChanged"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Default OptiScaler Version -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="Default OptiScaler Version"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="Pre-selected version when opening Manage or using Quick Install. 'Auto' picks the latest recommended release."
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                                        <Grid ColumnDefinitions="*,*">
+                                            <Button Name="BtnOptiDefaultStable"
+                                                    Grid.Column="0"
+                                                    Content="Stable"
+                                                    Classes="BtnPrimary"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Center"
+                                                    FontSize="11"
+                                                    Padding="8,5"
+                                                    Margin="0,0,2,0"
+                                                    Click="BtnOptiDefaultStable_Click"/>
+                                            <Button Name="BtnOptiDefaultBeta"
+                                                    Grid.Column="1"
+                                                    Content="Beta"
+                                                    Classes="BtnSecondary"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Center"
+                                                    FontSize="11"
+                                                    Padding="8,5"
+                                                    Margin="2,0,0,0"
+                                                    Click="BtnOptiDefaultBeta_Click"/>
+                                        </Grid>
+                                        <ComboBox Name="CmbDefaultOptiScalerVersion"
+                                                  Width="220"
+                                                  SelectionChanged="CmbDefaultOptiScalerVersion_SelectionChanged"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Animations -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtAnimations}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtAnimationsDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <ToggleSwitch Name="TglAnimations"
+                                                  Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  OnContent="" OffContent=""
+                                                  IsChecked="True"
+                                                  IsCheckedChanged="TglAnimations_IsCheckedChanged"/>
+                                </Grid>
+                            </Border>
+                        </WrapPanel>
+                    </StackPanel>
                  </ScrollViewer>
              </Grid>
 

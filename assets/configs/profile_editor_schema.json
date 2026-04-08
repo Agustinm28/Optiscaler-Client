@@ -14,8 +14,8 @@
   "Sections": [
     {
       "Name": "Upscalers",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Dx11Upscaler",
@@ -64,15 +64,15 @@
             { "Value": "fsr31_12", "Label": "FSR 3.1/4 (DX12)" },
             { "Value": "dlss", "Label": "DLSS" }
           ],
-          "Row": 0,
-          "Column": 3
+          "Row": 1,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "Menu",
-      "Rows": 6,
-      "Columns": 3,
+      "Rows": 8,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "OverlayMenu",
@@ -103,8 +103,8 @@
           "Label": "Menu Shortcut Key",
           "Tooltip": "Press to set a key. Delete=Disabled, Esc=Cancel. Stored as hex virtual key code.",
           "ControlType": "keybind",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "FpsOverlayType",
@@ -121,7 +121,7 @@
             { "Value": "6", "Label": "6" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "Scale",
@@ -137,8 +137,8 @@
             { "Value": "1.75", "Label": "1.75" },
             { "Value": "2.0", "Label": "2.0" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "FpsScale",
@@ -154,8 +154,8 @@
             { "Value": "1.75", "Label": "1.75" },
             { "Value": "2.0", "Label": "2.0" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "ExtendedLimits",
@@ -166,7 +166,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -178,7 +178,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -190,8 +190,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "FpsOverlayPos",
@@ -204,24 +204,24 @@
             { "Value": "2", "Label": "Bottom Left" },
             { "Value": "3", "Label": "Bottom Right" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "FpsShortcutKey",
           "Label": "FPS Overlay Shortcut Key",
           "Tooltip": "Shortcut key for FPS overlay. Stored as hex virtual key code.",
           "ControlType": "keybind",
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "FpsCycleShortcutKey",
           "Label": "FPS Cycle Shortcut Key",
           "Tooltip": "Shortcut key for FPS overlay type cycle. Stored as hex virtual key code.",
           "ControlType": "keybind",
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "FpsOverlayHorizontal",
@@ -232,7 +232,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -248,7 +248,7 @@
             { "Value": "0.8", "Label": "0.8" },
             { "Value": "1.0", "Label": "1.0" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -256,24 +256,24 @@
           "Label": "FG Toggle Shortcut Key",
           "Tooltip": "Shortcut key for Frame Generation enabled/disabled. Stored as hex virtual key code.",
           "ControlType": "keybind",
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "TTFFontPath",
           "Label": "Custom Font Path",
           "Tooltip": "Path to a font to be used as HQ Font, requires UseHQFont=true",
           "ControlType": "text",
-          "Row": 5,
-          "Column": 0,
+          "Row": 7,
+          "Column": 1,
           "ColumnSpan": 3
         }
       ]
     },
     {
       "Name": "FrameGen",
-      "Rows": 6,
-      "Columns": 3,
+      "Rows": 9,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Enabled",
@@ -314,8 +314,8 @@
             { "Value": "xefg", "Label": "XeFG" },
             { "Value": "nukems", "Label": "Nukem FG" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "FTInput",
@@ -328,7 +328,7 @@
             { "Value": "2", "Label": "Zero" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "DebugView",
@@ -339,8 +339,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "DrawUIOverFG",
@@ -351,8 +351,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "UIPremultipliedAlpha",
@@ -363,7 +363,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -375,7 +375,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -387,8 +387,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "SkipReset",
@@ -399,8 +399,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "VelocityValidNow",
@@ -411,8 +411,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "HudlessValidNow",
@@ -423,8 +423,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "OnlyAcceptFirstHudless",
@@ -435,7 +435,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -447,7 +447,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -459,8 +459,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "ModifyBufferState",
@@ -471,8 +471,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 0
+          "Row": 7,
+          "Column": 1
         },
         {
           "Key": "ModifySCIndex",
@@ -483,15 +483,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 1
+          "Row": 8,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "Plugins",
-      "Rows": 2,
-      "Columns": 3,
+      "Rows": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Path",
@@ -535,15 +535,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "Log",
-      "Rows": 4,
-      "Columns": 3,
+      "Rows": 5,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "LogToFile",
@@ -581,8 +581,8 @@
             { "Value": "3", "Label": "Warning (3)" },
             { "Value": "4", "Label": "Error (4)" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "LogFile",
@@ -590,7 +590,7 @@
           "Tooltip": "Log file path. Default (auto) is OptiScaler.log in same folder",
           "ControlType": "text",
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "LogToNGX",
@@ -601,8 +601,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "LogToDebug",
@@ -613,8 +613,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "OpenConsole",
@@ -625,7 +625,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -637,7 +637,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -649,8 +649,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "LogAsyncThreads",
@@ -667,15 +667,15 @@
             { "Value": "7", "Label": "7" },
             { "Value": "8", "Label": "8" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         }
       ]
     },
     {
       "Name": "FSRFG",
-      "Rows": 2,
-      "Columns": 3,
+      "Rows": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "DebugTearLines",
@@ -710,8 +710,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "AllowAsync",
@@ -723,7 +723,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "UseMutexForSwapchain",
@@ -734,15 +734,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "FramePaceTuning",
-      "Rows": 3,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "FramePacingTuning",
@@ -778,8 +778,8 @@
             { "Value": "0.1", "Label": "0.1 (Default)" },
             { "Value": "0.3", "Label": "0.3 (Tuning B)" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "FPTHybridSpin",
@@ -791,7 +791,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "FPTHybridSpinTime",
@@ -804,8 +804,8 @@
             { "Value": "8", "Label": "8" },
             { "Value": "16", "Label": "16" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "FPTWaitForSingleObjectOnFence",
@@ -816,8 +816,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "EnableWatermark",
@@ -828,15 +828,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         }
       ]
     },
     {
       "Name": "XeFG",
-      "Rows": 3,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "IgnoreInitChecks",
@@ -872,8 +872,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "UIComposition",
@@ -885,7 +885,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "JitteredMV",
@@ -896,8 +896,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "HighResMV",
@@ -908,8 +908,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "DebugView",
@@ -920,7 +920,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -932,15 +932,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         }
       ]
     },
     {
       "Name": "OptiFG",
-      "Rows": 9,
-      "Columns": 3,
+      "Rows": 13,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "HUDFix",
@@ -978,8 +978,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "HudfixDisableRTV",
@@ -991,7 +991,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "HudfixDisableSRV",
@@ -1002,8 +1002,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "HudfixDisableUAV",
@@ -1014,8 +1014,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "HudfixDisableOM",
@@ -1026,7 +1026,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -1038,7 +1038,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -1050,8 +1050,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "HudfixDisableDI",
@@ -1062,8 +1062,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "HudfixDisableDII",
@@ -1074,8 +1074,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "HudfixDisableDispatch",
@@ -1086,8 +1086,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "HUDFixDontUseSwapchainBuffers",
@@ -1098,7 +1098,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -1110,7 +1110,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -1122,8 +1122,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "AlwaysTrackHeaps",
@@ -1134,8 +1134,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 0
+          "Row": 7,
+          "Column": 1
         },
         {
           "Key": "UseShards",
@@ -1146,8 +1146,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 1
+          "Row": 8,
+          "Column": 0
         },
         {
           "Key": "ResourceBlocking",
@@ -1158,8 +1158,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 2
+          "Row": 8,
+          "Column": 1
         },
         {
           "Key": "MakeDepthCopy",
@@ -1170,7 +1170,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
+          "Row": 9,
           "Column": 0
         },
         {
@@ -1182,7 +1182,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
+          "Row": 9,
           "Column": 1
         },
         {
@@ -1190,8 +1190,8 @@
           "Label": "Depth Scale Max",
           "Tooltip": "Scale value for EnableDepthScale. Depth value will be divided to this value",
           "ControlType": "text",
-          "Row": 6,
-          "Column": 2
+          "Row": 10,
+          "Column": 0
         },
         {
           "Key": "MakeMVCopy",
@@ -1202,8 +1202,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 7,
-          "Column": 0
+          "Row": 10,
+          "Column": 1
         },
         {
           "Key": "ResourceFlip",
@@ -1214,8 +1214,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 7,
-          "Column": 1
+          "Row": 11,
+          "Column": 0
         },
         {
           "Key": "ResourceFlipOffset",
@@ -1226,8 +1226,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 7,
-          "Column": 2
+          "Row": 11,
+          "Column": 1
         },
         {
           "Key": "AlwaysCaptureFSRFGSwapchain",
@@ -1238,15 +1238,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 8,
+          "Row": 12,
           "Column": 0
         }
       ]
     },
     {
       "Name": "Inputs",
-      "Rows": 5,
-      "Columns": 3,
+      "Rows": 7,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "EnableDlssInputs",
@@ -1281,8 +1281,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "UseFsr2Dx11Inputs",
@@ -1294,7 +1294,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "UseFsr2VulkanInputs",
@@ -1305,8 +1305,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "UseFsr2Inputs",
@@ -1317,8 +1317,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "Fsr2Pattern",
@@ -1329,7 +1329,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -1341,7 +1341,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -1353,8 +1353,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "Fsr3Pattern",
@@ -1365,8 +1365,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "EnableFfxInputs",
@@ -1377,8 +1377,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "UseFfxInputs",
@@ -1389,8 +1389,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "EnableHotSwapping",
@@ -1401,7 +1401,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         }
       ]
@@ -1409,7 +1409,7 @@
     {
       "Name": "FSRFGInputs",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "SkipConfigForHudless",
@@ -1440,7 +1440,7 @@
     {
       "Name": "Framerate",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "FramerateLimit",
@@ -1454,8 +1454,8 @@
     },
     {
       "Name": "XeSS",
-      "Rows": 2,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "BuildPipelines",
@@ -1494,15 +1494,15 @@
             { "Value": "4", "Label": "4 (Model 5)" },
             { "Value": "5", "Label": "5 (Model 6)" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "LibraryPath",
           "Label": "Library Path",
           "Tooltip": "Override path of libxess.dll. Example - D:\\Downloads\\OptiScaler\\libxess.dll. Default (auto) is same folder as mod dll",
           "ControlType": "folderpath",
-          "Row": 1,
+          "Row": 2,
           "Column": 0
         },
         {
@@ -1510,15 +1510,15 @@
           "Label": "DX11 Library Path",
           "Tooltip": "Override path of libxess_dx11.dll. Example - D:\\Downloads\\OptiScaler\\libxess_dx11.dll. Default (auto) is same folder as mod dll",
           "ControlType": "folderpath",
-          "Row": 1,
-          "Column": 1
+          "Row": 3,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "FSR",
-      "Rows": 9,
-      "Columns": 3,
+      "Rows": 14,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "VerticalFov",
@@ -1541,8 +1541,8 @@
           "Label": "Camera Near",
           "Tooltip": "Sets camera near value for FSR and FSR FG. 0.0 to max float value. Default (auto) is 0.1",
           "ControlType": "text",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "CameraFar",
@@ -1550,7 +1550,7 @@
           "Tooltip": "Sets camera far value for FSR and FSR FG. 0.0 to max float value. Default (auto) is 10000.0",
           "ControlType": "text",
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "UseFsrInputValues",
@@ -1561,8 +1561,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "DebugView",
@@ -1573,8 +1573,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "UpscalerIndex",
@@ -1586,7 +1586,7 @@
             { "Value": "1", "Label": "1 (FSR 3.1.5)" },
             { "Value": "2", "Label": "2 (FSR 2.3.4)" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -1598,7 +1598,7 @@
             { "Value": "0", "Label": "0 (FSR 4.0.0)" },
             { "Value": "1", "Label": "1 (FSR 3.1.6)" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -1606,39 +1606,39 @@
           "Label": "Velocity Factor",
           "Tooltip": "Sets Velocity Factor for FSR3.1.1 and above. Value of 0.0f can improve temporal stability of bright pixels. 0.0 to 1.0. Default (auto) is 1.0",
           "ControlType": "text",
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "ReactiveScale",
           "Label": "Reactive Scale",
           "Tooltip": "Sets Reactiveness Scale for FSR3.1.4 and above. Meant for development purpose to test if writing a larger value to reactive mask, reduces ghosting. 0.0 to infinite. Default (auto) is 1.0",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "ShadingScale",
           "Label": "Shading Scale",
           "Tooltip": "Sets Shading Scale for FSR3.1.4 and above. Increasing this scales fsr3.1 computed shading change value at read to have higher reactiveness. 0.0 to infinite. Default (auto) is 1.0",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "AccAddPerFrame",
           "Label": "Acc Add Per Frame",
           "Tooltip": "Sets Accumulation added per frame for FSR3.1.4 and above. 0.0 to 1.0. Default (auto) is 0.333",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "MinDisOccAcc",
           "Label": "Min DisOcc Acc",
           "Tooltip": "Sets Minimum Disocclusion Accumulation for FSR3.1.4 and above. -1.0 to 1.0. Default (auto) is -0.333",
           "ControlType": "text",
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -1650,7 +1650,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -1658,8 +1658,8 @@
           "Label": "DLSS Reactive Mask Bias",
           "Tooltip": "Bias to apply DLSS reactive mask when using with FSR. Higher the value, more bias on new frame. 0.0 - 0.9. Default (auto) is 0.45",
           "ControlType": "text",
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "Fsr4Update",
@@ -1670,8 +1670,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 0
+          "Row": 7,
+          "Column": 1
         },
         {
           "Key": "Fsr4Model",
@@ -1686,8 +1686,8 @@
             { "Value": "4", "Label": "4 (DRS)" },
             { "Value": "5", "Label": "5 (Ultra Performance)" }
           ],
-          "Row": 5,
-          "Column": 1
+          "Row": 8,
+          "Column": 0
         },
         {
           "Key": "Fsr4EnableDebugView",
@@ -1698,8 +1698,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 2
+          "Row": 8,
+          "Column": 1
         },
         {
           "Key": "Fsr4EnableWatermark",
@@ -1710,7 +1710,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
+          "Row": 9,
           "Column": 0
         },
         {
@@ -1722,7 +1722,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
+          "Row": 9,
           "Column": 1
         },
         {
@@ -1734,8 +1734,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
-          "Column": 2
+          "Row": 10,
+          "Column": 0
         },
         {
           "Key": "FsrNonLinearPQ",
@@ -1746,8 +1746,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 7,
-          "Column": 0
+          "Row": 10,
+          "Column": 1
         },
         {
           "Key": "FsrAgilitySDKUpgrade",
@@ -1758,31 +1758,31 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 7,
-          "Column": 1
+          "Row": 11,
+          "Column": 0
         },
         {
           "Key": "FfxDx12Path",
           "Label": "FFX DX12 Path",
           "Tooltip": "Override path of amd_fidelityfx_dx12.dll. Default (auto) is same folder as mod dll",
           "ControlType": "folderpath",
-          "Row": 7,
-          "Column": 2
+          "Row": 12,
+          "Column": 0
         },
         {
           "Key": "FfxVkPath",
           "Label": "FFX Vulkan Path",
           "Tooltip": "Override path of amd_fidelityfx_vk.dll. Default (auto) is same folder as mod dll",
           "ControlType": "folderpath",
-          "Row": 8,
+          "Row": 13,
           "Column": 0
         }
       ]
     },
     {
       "Name": "DLSS",
-      "Rows": 6,
-      "Columns": 3,
+      "Rows": 8,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Enabled",
@@ -1797,30 +1797,6 @@
           "Column": 0
         },
         {
-          "Key": "LibraryPath",
-          "Label": "Library Path",
-          "Tooltip": "Override path of nvngx.dll / _nvngx.dll. Default (auto) is path defined in registry",
-          "ControlType": "folderpath",
-          "Row": 0,
-          "Column": 1
-        },
-        {
-          "Key": "FeaturePath",
-          "Label": "Feature Path",
-          "Tooltip": "Path of streamline/nvngx_dlss.dll folder which will be used on initing nvngx api. Default (auto) is OptiScaler dll path",
-          "ControlType": "folderpath",
-          "Row": 0,
-          "Column": 2
-        },
-        {
-          "Key": "NVNGX_DLSS_Path",
-          "Label": "NVNGX DLSS Path",
-          "Tooltip": "Override path of nvngx_dlss.dll. Default (auto) means override disabled",
-          "ControlType": "folderpath",
-          "Row": 1,
-          "Column": 0
-        },
-        {
           "Key": "RenderPresetOverride",
           "Label": "Render Preset Override",
           "Tooltip": "Set this to true to enable custom render preset overrides",
@@ -1829,7 +1805,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
+          "Row": 0,
           "Column": 1
         },
         {
@@ -1856,7 +1832,7 @@
             { "Value": "15", "Label": "15 (O)" }
           ],
           "Row": 1,
-          "Column": 2
+          "Column": 0
         },
         {
           "Key": "RenderPresetDLAA",
@@ -1881,8 +1857,8 @@
             { "Value": "14", "Label": "14 (N)" },
             { "Value": "15", "Label": "15 (O)" }
           ],
-          "Row": 2,
-          "Column": 0
+          "Row": 1,
+          "Column": 1
         },
         {
           "Key": "RenderPresetUltraQuality",
@@ -1908,7 +1884,7 @@
             { "Value": "15", "Label": "15 (O)" }
           ],
           "Row": 2,
-          "Column": 1
+          "Column": 0
         },
         {
           "Key": "RenderPresetQuality",
@@ -1934,7 +1910,7 @@
             { "Value": "15", "Label": "15 (O)" }
           ],
           "Row": 2,
-          "Column": 2
+          "Column": 1
         },
         {
           "Key": "RenderPresetBalanced",
@@ -2011,8 +1987,8 @@
             { "Value": "14", "Label": "14 (N)" },
             { "Value": "15", "Label": "15 (O)" }
           ],
-          "Row": 3,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "UseGenericAppIdWithDlss",
@@ -2024,14 +2000,38 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 4,
+          "Column": 1
+        },
+        {
+          "Key": "LibraryPath",
+          "Label": "Library Path",
+          "Tooltip": "Override path of nvngx.dll / _nvngx.dll. Default (auto) is path defined in registry",
+          "ControlType": "folderpath",
+          "Row": 5,
+          "Column": 0
+        },
+        {
+          "Key": "FeaturePath",
+          "Label": "Feature Path",
+          "Tooltip": "Path of streamline/nvngx_dlss.dll folder which will be used on initing nvngx api. Default (auto) is OptiScaler dll path",
+          "ControlType": "folderpath",
+          "Row": 6,
+          "Column": 0
+        },
+        {
+          "Key": "NVNGX_DLSS_Path",
+          "Label": "NVNGX DLSS Path",
+          "Tooltip": "Override path of nvngx_dlss.dll. Default (auto) means override disabled",
+          "ControlType": "folderpath",
+          "Row": 7,
           "Column": 0
         }
       ]
     },
     {
       "Name": "DLSSD",
-      "Rows": 3,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "RenderPresetOverride",
@@ -2074,8 +2074,8 @@
             { "Value": "4", "Label": "4 (D)" },
             { "Value": "5", "Label": "5 (E)" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "RenderPresetUltraQuality",
@@ -2091,7 +2091,7 @@
             { "Value": "5", "Label": "5 (E)" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "RenderPresetQuality",
@@ -2106,8 +2106,8 @@
             { "Value": "4", "Label": "4 (D)" },
             { "Value": "5", "Label": "5 (E)" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "RenderPresetBalanced",
@@ -2122,8 +2122,8 @@
             { "Value": "4", "Label": "4 (D)" },
             { "Value": "5", "Label": "5 (E)" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "RenderPresetPerformance",
@@ -2138,7 +2138,7 @@
             { "Value": "4", "Label": "4 (D)" },
             { "Value": "5", "Label": "5 (E)" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -2154,7 +2154,7 @@
             { "Value": "4", "Label": "4 (D)" },
             { "Value": "5", "Label": "5 (E)" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         }
       ]
@@ -2162,7 +2162,7 @@
     {
       "Name": "Nukems",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "MakeDepthCopy",
@@ -2180,8 +2180,8 @@
     },
     {
       "Name": "Spoofing",
-      "Rows": 7,
-      "Columns": 3,
+      "Rows": 10,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "SpoofedVendorId",
@@ -2204,8 +2204,8 @@
           "Label": "Target Vendor ID",
           "Tooltip": "Target VendorID to be spoofed. Default (auto) is all",
           "ControlType": "text",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "TargetDeviceId",
@@ -2213,15 +2213,15 @@
           "Tooltip": "Target DeviceID to be spoofed. Default (auto) is all",
           "ControlType": "text",
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "SpoofedGPUName",
           "Label": "Spoofed GPU Name",
           "Tooltip": "Spoofed GPU name. NVIDIA GeForce RTX 4090 | Intel(R) Arc(TM) B580 Graphics | AMD Radeon RX 9070 XT. Default (auto) is NVIDIA GeForce RTX 4090",
           "ControlType": "text",
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "StreamlineSpoofing",
@@ -2232,8 +2232,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "Dxgi",
@@ -2244,7 +2244,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -2256,7 +2256,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -2264,16 +2264,16 @@
           "Label": "DXGI Blacklist",
           "Tooltip": "Skips DXGI GPU spoofing when caller method in the list. Be careful this will disable spoofing for rest of the calls, also does not work on Linux. Default (auto) is disabled",
           "ControlType": "text",
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "DxgiVRAM",
           "Label": "DXGI VRAM",
           "Tooltip": "Spoof amount of VRAM for DXGI. Spoofed amount in GBs. Default (auto) is disabled",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "Vulkan",
@@ -2284,8 +2284,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "VulkanExtensionSpoofing",
@@ -2296,15 +2296,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "VulkanVRAM",
           "Label": "Vulkan VRAM",
           "Tooltip": "Spoof amount of VRAM for Vulkan. Spoofed amount in GBs. Default (auto) is disabled",
           "ControlType": "text",
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -2316,7 +2316,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -2328,8 +2328,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "UEIntelAtomics",
@@ -2340,8 +2340,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 0
+          "Row": 7,
+          "Column": 1
         },
         {
           "Key": "Registry",
@@ -2352,16 +2352,16 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 5,
-          "Column": 1
+          "Row": 8,
+          "Column": 0
         },
         {
           "Key": "RegistryDriver",
           "Label": "Registry Driver",
           "Tooltip": "Driver version to be spoofed at registry. Default (auto) is 32.0.15.9155 (For Nvidia)",
           "ControlType": "text",
-          "Row": 5,
-          "Column": 2
+          "Row": 8,
+          "Column": 1
         },
         {
           "Key": "User32",
@@ -2372,15 +2372,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 6,
+          "Row": 9,
           "Column": 0
         }
       ]
     },
     {
       "Name": "NvApi",
-      "Rows": 2,
-      "Columns": 3,
+      "Rows": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "OverrideNvapiDll",
@@ -2411,8 +2411,8 @@
           "Label": "NvAPI DLL Path",
           "Tooltip": "If nvapi override enabled and file path defined here, will try to load it from here, otherwise will check current folder for nvapi64.dll. Default (auto) is local folder",
           "ControlType": "folderpath",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "DontUseFakenvapiForXeLLOnNvidia",
@@ -2423,7 +2423,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
+          "Row": 2,
           "Column": 0
         }
       ]
@@ -2431,7 +2431,7 @@
     {
       "Name": "Dx11withDx12",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "UseDelayedInit",
@@ -2461,8 +2461,8 @@
     },
     {
       "Name": "Hooks",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "EarlyHooking",
@@ -2497,15 +2497,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "Sharpness",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "OverrideSharpness",
@@ -2531,8 +2531,8 @@
     },
     {
       "Name": "OutputScaling",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Enabled",
@@ -2569,15 +2569,15 @@
             { "Value": "6", "Label": "6 (Kaiser3)" },
             { "Value": "7", "Label": "7 (MAGIC)" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "CAS",
-      "Rows": 3,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "Enabled",
@@ -2608,8 +2608,8 @@
           "Label": "Motion Sharpness",
           "Tooltip": "Sharpening will be added or removed according to motion length. value range between -1.3 and 1.3. Default (auto) is 0.4",
           "ControlType": "text",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "MotionThreshold",
@@ -2617,15 +2617,15 @@
           "Tooltip": "How much a pixel should move before Motion Sharpness applied. 0.0 - 100.0. Default (auto) is 0.0",
           "ControlType": "text",
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "MotionScaleLimit",
           "Label": "Motion Scale Limit",
           "Tooltip": "How much a pixel should move to reach maximum MotionSharpness value. Values between MotionThreshold and this value will use be used to scale sharpness value. 0.0 - 100.0. Default (auto) is 10.0",
           "ControlType": "text",
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "MotionSharpnessDebug",
@@ -2636,8 +2636,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "ContrastEnabled",
@@ -2648,7 +2648,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -2656,15 +2656,15 @@
           "Label": "Contrast",
           "Tooltip": "Contrast based sharpening value. Higher values increases sharpness at high contrast areas. High values might cause graphical GLITCHES when used with high sharpness values. 0.0 - 2.0. Default (auto) is 0.0",
           "ControlType": "text",
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         }
       ]
     },
     {
       "Name": "InitFlags",
-      "Rows": 2,
-      "Columns": 3,
+      "Rows": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "AutoExposure",
@@ -2699,8 +2699,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "JitterCancellation",
@@ -2712,7 +2712,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "DisplayResolution",
@@ -2723,8 +2723,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "DisableReactiveMask",
@@ -2735,15 +2735,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         }
       ]
     },
     {
       "Name": "UpscaleRatio",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "UpscaleRatioOverrideEnabled",
@@ -2769,8 +2769,8 @@
     },
     {
       "Name": "QualityOverrides",
-      "Rows": 3,
-      "Columns": 3,
+      "Rows": 4,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "QualityRatioOverrideEnabled",
@@ -2797,8 +2797,8 @@
           "Label": "Quality Ratio Ultra Quality",
           "Tooltip": "Set Custom Upscaling Ratio for Ultra Quality. Default (auto) is 1.3",
           "ControlType": "text",
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "QualityRatioQuality",
@@ -2806,30 +2806,30 @@
           "Tooltip": "Set Custom Upscaling Ratio for Quality. Default (auto) is 1.5",
           "ControlType": "text",
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "QualityRatioBalanced",
           "Label": "Quality Ratio Balanced",
           "Tooltip": "Set Custom Upscaling Ratio for Balanced. Default (auto) is 1.7",
           "ControlType": "text",
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "QualityRatioPerformance",
           "Label": "Quality Ratio Performance",
           "Tooltip": "Set Custom Upscaling Ratio for Performance. Default (auto) is 2.0",
           "ControlType": "text",
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "QualityRatioUltraPerformance",
           "Label": "Quality Ratio Ultra Performance",
           "Tooltip": "Set Custom Upscaling Ratio for Ultra Performance. Default (auto) is 3.0",
           "ControlType": "text",
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         }
       ]
@@ -2837,7 +2837,7 @@
     {
       "Name": "DRS",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "DrsMinOverrideEnabled",
@@ -2867,8 +2867,8 @@
     },
     {
       "Name": "HDR",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "ForceHDR",
@@ -2903,15 +2903,15 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "V-Sync",
-      "Rows": 1,
-      "Columns": 3,
+      "Rows": 2,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "OverrideVsync",
@@ -2948,15 +2948,15 @@
             { "Value": "2", "Label": "2" },
             { "Value": "3", "Label": "3" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         }
       ]
     },
     {
       "Name": "Anisotropy",
       "Rows": 2,
-      "Columns": 3,
+      "Columns": 1,
       "Settings": [
         {
           "Key": "AnisotropyOverride",
@@ -2993,8 +2993,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "SkipPointFilter",
@@ -3006,14 +3006,14 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         }
       ]
     },
     {
       "Name": "Mipmap",
       "Rows": 2,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "MipmapBiasOverride",
@@ -3044,8 +3044,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "MipmapBiasOverrideAll",
@@ -3057,14 +3057,14 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         }
       ]
     },
     {
       "Name": "ProcessFilter",
       "Rows": 1,
-      "Columns": 3,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "TargetProcessName",
@@ -3086,8 +3086,8 @@
     },
     {
       "Name": "Hotfix",
-      "Rows": 6,
-      "Columns": 3,
+      "Rows": 8,
+      "Columns": 2,
       "Settings": [
         {
           "Key": "CheckForUpdate",
@@ -3122,8 +3122,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 0,
-          "Column": 2
+          "Row": 1,
+          "Column": 0
         },
         {
           "Key": "PreferDedicatedGpu",
@@ -3135,7 +3135,7 @@
             { "Value": "false", "Label": "Disabled" }
           ],
           "Row": 1,
-          "Column": 0
+          "Column": 1
         },
         {
           "Key": "PreferFirstDedicatedGpu",
@@ -3146,8 +3146,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 1,
-          "Column": 1
+          "Row": 2,
+          "Column": 0
         },
         {
           "Key": "RoundInternalResolution",
@@ -3160,15 +3160,15 @@
             { "Value": "8", "Label": "8" },
             { "Value": "16", "Label": "16" }
           ],
-          "Row": 1,
-          "Column": 2
+          "Row": 2,
+          "Column": 1
         },
         {
           "Key": "SkipFirstFrames",
           "Label": "Skip First Frames",
           "Tooltip": "Skips upscaling of n frames. n is integer number. Default (auto) is disabled",
           "ControlType": "text",
-          "Row": 2,
+          "Row": 3,
           "Column": 0
         },
         {
@@ -3180,7 +3180,7 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
+          "Row": 3,
           "Column": 1
         },
         {
@@ -3192,8 +3192,8 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 2,
-          "Column": 2
+          "Row": 4,
+          "Column": 0
         },
         {
           "Key": "UsePrecompiledShaders",
@@ -3204,31 +3204,31 @@
             { "Value": "true", "Label": "Enabled" },
             { "Value": "false", "Label": "Disabled" }
           ],
-          "Row": 3,
-          "Column": 0
+          "Row": 4,
+          "Column": 1
         },
         {
           "Key": "ColorResourceBarrier",
           "Label": "Color Resource Barrier",
           "Tooltip": "Color texture resource state to fix for rainbow colors on AMD cards (for mostly UE games). For UE engine games on AMD, set Color to 4 (D3D12_RESOURCE_STATE_RENDER_TARGET)",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 1
+          "Row": 5,
+          "Column": 0
         },
         {
           "Key": "MotionVectorResourceBarrier",
           "Label": "Motion Vector Resource Barrier",
           "Tooltip": "For UE engine games on AMD, set MotionVector to 8 (D3D12_RESOURCE_STATE_UNORDERED_ACCESS)",
           "ControlType": "text",
-          "Row": 3,
-          "Column": 2
+          "Row": 5,
+          "Column": 1
         },
         {
           "Key": "DepthResourceBarrier",
           "Label": "Depth Resource Barrier",
           "Tooltip": "Depth resource barrier setting",
           "ControlType": "text",
-          "Row": 4,
+          "Row": 6,
           "Column": 0
         },
         {
@@ -3236,7 +3236,7 @@
           "Label": "Color Mask Resource Barrier",
           "Tooltip": "Color mask resource barrier setting",
           "ControlType": "text",
-          "Row": 4,
+          "Row": 6,
           "Column": 1
         },
         {
@@ -3244,16 +3244,16 @@
           "Label": "Exposure Resource Barrier",
           "Tooltip": "Exposure resource barrier setting",
           "ControlType": "text",
-          "Row": 4,
-          "Column": 2
+          "Row": 7,
+          "Column": 0
         },
         {
           "Key": "OutputResourceBarrier",
           "Label": "Output Resource Barrier",
           "Tooltip": "Output resource barrier setting",
           "ControlType": "text",
-          "Row": 5,
-          "Column": 0
+          "Row": 7,
+          "Column": 1
         }
       ]
     }

@@ -190,17 +190,50 @@ namespace OptiscalerClient.Services
             }
         }
 
+        private static string? _embeddedTemplate;
+
+        private static string? TryGetEmbeddedTemplate()
+        {
+            if (_embeddedTemplate != null) return _embeddedTemplate;
+            try
+            {
+                var asm = System.Reflection.Assembly.GetExecutingAssembly();
+                // Resource name: <AssemblyName>.<FileName>
+                var resourceName = asm.GetManifestResourceNames()
+                    .FirstOrDefault(n => n.EndsWith("OptiScaler_example.ini", StringComparison.OrdinalIgnoreCase));
+                if (resourceName == null) return null;
+                using var stream = asm.GetManifestResourceStream(resourceName);
+                if (stream == null) return null;
+                using var reader = new StreamReader(stream);
+                _embeddedTemplate = reader.ReadToEnd();
+                return _embeddedTemplate;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public string GenerateOptiScalerIni(OptiScalerProfile profile, string templatePath)
         {
-            if (!File.Exists(templatePath))
+            // Try disk file first, then embedded resource, then legacy fallback
+            string? templateContent = null;
+            if (File.Exists(templatePath))
             {
-                DebugWindow.Log($"[Profiles] Warning: Target OptiScaler.ini base not found at {templatePath}");
+                try { templateContent = File.ReadAllText(templatePath); }
+                catch { /* fall through */ }
+            }
+            templateContent ??= TryGetEmbeddedTemplate();
+
+            if (templateContent == null)
+            {
+                DebugWindow.Log("[Profiles] Warning: No OptiScaler.ini template available, using legacy generation.");
                 return GenerateOptiScalerIniLegacy(profile);
             }
 
             try
             {
-                var lines = File.ReadAllLines(templatePath).ToList();
+                var lines = templateContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var modifiedLines = new List<string>();
                 string? currentSection = null;
 
@@ -223,16 +256,16 @@ namespace OptiscalerClient.Services
                     }
 
                     // Check if this is a setting line (key=value)
-                    if (!string.IsNullOrWhiteSpace(trimmed) && 
-                        !trimmed.StartsWith(";") && 
-                        trimmed.Contains("=") && 
+                    if (!string.IsNullOrWhiteSpace(trimmed) &&
+                        !trimmed.StartsWith(";") &&
+                        trimmed.Contains("=") &&
                         currentSection != null)
                     {
                         var parts = trimmed.Split(new[] { '=' }, 2);
                         if (parts.Length == 2)
                         {
                             var key = parts[0].Trim();
-                            
+
                             // Check if this setting is configured in the profile
                             if (profile.IniSettings.ContainsKey(currentSection) &&
                                 profile.IniSettings[currentSection].ContainsKey(key))

@@ -177,7 +177,7 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtScanSourcesDesc">Administrar plataformas y carpetas personalizadas para escanear</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">Acerca de</x:String>
+    <x:String x:Key="TxtAboutTitle">Ayuda</x:String>
     <x:String x:Key="TxtAppInfoTitle">Aplicación</x:String>
     <x:String x:Key="TxtExternalResourcesTitle">Recursos Externos</x:String>
     <x:String x:Key="TxtFeedbackTitle">Comentarios y Soporte</x:String>

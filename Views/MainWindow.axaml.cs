@@ -1467,12 +1467,46 @@ namespace OptiscalerClient.Views
             var btnDup = this.FindControl<Button>("BtnDuplicateProfileView");
             var btnDel = this.FindControl<Button>("BtnDeleteProfileView");
             var btnDef = this.FindControl<Button>("BtnSetDefaultView");
+            var btnExp = this.FindControl<Button>("BtnExportProfileView");
 
             bool hasSelection = _selectedProfileView != null;
             if (btnEdit != null) btnEdit.IsEnabled = hasSelection && !(_selectedProfileView?.IsBuiltIn ?? true);
             if (btnDup != null) btnDup.IsEnabled = hasSelection;
             if (btnDel != null) btnDel.IsEnabled = hasSelection && !(_selectedProfileView?.IsBuiltIn ?? true);
             if (btnDef != null) btnDef.IsEnabled = hasSelection && !(_selectedProfileView?.Name.Equals(defaultName, StringComparison.OrdinalIgnoreCase) ?? false);
+            if (btnExp != null) btnExp.IsEnabled = hasSelection;
+        }
+
+        private async void BtnExportProfileView_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_selectedProfileView == null) return;
+            var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel == null) return;
+
+            var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                Title = "Export profile as OptiScaler.ini",
+                SuggestedFileName = "OptiScaler.ini",
+                DefaultExtension = "ini",
+                FileTypeChoices = new[]
+                {
+                    new FilePickerFileType("INI files") { Patterns = new[] { "*.ini" } }
+                }
+            });
+
+            if (file == null) return;
+            try
+            {
+                var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OptiScaler_example.ini");
+                var iniContent = _profileService.GenerateOptiScalerIni(_selectedProfileView, templatePath);
+                await using var stream = await file.OpenWriteAsync();
+                await using var writer = new System.IO.StreamWriter(stream);
+                await writer.WriteAsync(iniContent);
+            }
+            catch (Exception ex)
+            {
+                await new ConfirmDialog(this, "Export Error", $"Failed to export profile: {ex.Message}").ShowDialog<object>(this);
+            }
         }
 
         private void TxtProfileSearchView_TextChanged(object? sender, TextChangedEventArgs e)
@@ -1676,6 +1710,8 @@ namespace OptiscalerClient.Views
             if (txtSearch != null) txtSearch.Text = string.Empty;
 
             UpdateEditorModeButtons();
+            // Populate easy-mode virtual sections from canonical sections before building the UI
+            EditorSyncSchemaValues(fromEasyToAdvanced: false);
             BuildEditorSettingsUI();
             SwitchToView("ViewProfileEditor");
         }
@@ -1696,7 +1732,7 @@ namespace OptiscalerClient.Views
             _editorSectionBorders.Clear();
 
             string schemaFileName = _editorIsEasyMode ? "easy_profile_editor_schema.json" : "profile_editor_schema.json";
-            string schemaPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", schemaFileName);
+            string schemaPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", schemaFileName);
             if (!File.Exists(schemaPath))
             {
                 sectionsWrap.Children.Add(new TextBlock { Text = $"Error: Settings schema file not found: {schemaFileName}" });
@@ -1966,6 +2002,8 @@ namespace OptiscalerClient.Views
         private void BtnEasyModeEd_Click(object? sender, RoutedEventArgs e)
         {
             if (_editorIsEasyMode) return;
+            EditorFlushControlValues();
+            EditorSyncSchemaValues(fromEasyToAdvanced: false);
             _editorIsEasyMode = true;
             UpdateEditorModeButtons();
             BuildEditorSettingsUI();
@@ -1974,9 +2012,115 @@ namespace OptiscalerClient.Views
         private void BtnAdvancedModeEd_Click(object? sender, RoutedEventArgs e)
         {
             if (!_editorIsEasyMode) return;
+            EditorFlushControlValues();
+            EditorSyncSchemaValues(fromEasyToAdvanced: true);
             _editorIsEasyMode = false;
             UpdateEditorModeButtons();
             BuildEditorSettingsUI();
+        }
+
+        private void EditorFlushControlValues()
+        {
+            if (_editorProfile == null) return;
+            foreach (var section in _editorSettingControls)
+            {
+                if (!_editorProfile.IniSettings.ContainsKey(section.Key))
+                    _editorProfile.IniSettings[section.Key] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var setting in section.Value)
+                    _editorProfile.IniSettings[section.Key][setting.Key] = setting.Value.ValueGetter?.Invoke() ?? "auto";
+            }
+        }
+
+        private void EditorSyncSchemaValues(bool fromEasyToAdvanced)
+        {
+            if (_editorProfile == null) return;
+            try
+            {
+                var easyPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", "easy_profile_editor_schema.json");
+                var masterPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", "profile_editor_schema.json");
+                if (!File.Exists(easyPath) || !File.Exists(masterPath)) return;
+
+                var easySchema = JsonSerializer.Deserialize<SettingsSchema>(File.ReadAllText(easyPath));
+                var masterSchema = JsonSerializer.Deserialize<SettingsSchema>(File.ReadAllText(masterPath));
+                if (easySchema?.Sections == null || masterSchema?.Sections == null) return;
+
+                // key -> canonical section name
+                var keyToSection = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var sec in masterSchema.Sections)
+                {
+                    if (sec?.Settings == null || string.IsNullOrWhiteSpace(sec.Name)) continue;
+                    foreach (var s in sec.Settings)
+                        if (!string.IsNullOrWhiteSpace(s.Key) && !keyToSection.ContainsKey(s.Key))
+                            keyToSection[s.Key] = sec.Name!;
+                }
+
+                foreach (var easySection in easySchema.Sections)
+                {
+                    if (easySection?.Settings == null || string.IsNullOrWhiteSpace(easySection.Name)) continue;
+                    if (!_editorProfile.IniSettings.ContainsKey(easySection.Name))
+                        _editorProfile.IniSettings[easySection.Name] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                    foreach (var s in easySection.Settings)
+                    {
+                        if (s == null || string.IsNullOrWhiteSpace(s.Key)) continue;
+
+                        bool hasAppliesTo = s.AppliesTo != null && s.AppliesTo.Count > 0;
+
+                        if (!hasAppliesTo)
+                        {
+                            // passthrough key: sync directly with its canonical section
+                            if (!keyToSection.TryGetValue(s.Key, out var passCanon)) continue;
+                            if (fromEasyToAdvanced)
+                            {
+                                if (_editorProfile.IniSettings[easySection.Name].TryGetValue(s.Key, out var v) && !string.IsNullOrWhiteSpace(v))
+                                {
+                                    if (!_editorProfile.IniSettings.ContainsKey(passCanon))
+                                        _editorProfile.IniSettings[passCanon] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                                    _editorProfile.IniSettings[passCanon][s.Key] = v;
+                                }
+                            }
+                            else
+                            {
+                                if (_editorProfile.IniSettings.ContainsKey(passCanon) &&
+                                    _editorProfile.IniSettings[passCanon].TryGetValue(s.Key, out var cv) && !string.IsNullOrWhiteSpace(cv))
+                                    _editorProfile.IniSettings[easySection.Name][s.Key] = cv;
+                            }
+                            continue;
+                        }
+
+                        if (fromEasyToAdvanced)
+                        {
+                            if (!_editorProfile.IniSettings[easySection.Name].TryGetValue(s.Key, out var easyVal) || string.IsNullOrWhiteSpace(easyVal)) continue;
+                            foreach (var targetKey in s.AppliesTo!)
+                            {
+                                if (string.IsNullOrWhiteSpace(targetKey)) continue;
+                                if (keyToSection.TryGetValue(targetKey, out var canon))
+                                {
+                                    if (!_editorProfile.IniSettings.ContainsKey(canon))
+                                        _editorProfile.IniSettings[canon] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                                    _editorProfile.IniSettings[canon][targetKey] = easyVal;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var targetKey in s.AppliesTo!)
+                            {
+                                if (string.IsNullOrWhiteSpace(targetKey)) continue;
+                                if (keyToSection.TryGetValue(targetKey, out var canon) &&
+                                    _editorProfile.IniSettings.ContainsKey(canon) &&
+                                    _editorProfile.IniSettings[canon].TryGetValue(targetKey, out var canVal) &&
+                                    !string.IsNullOrWhiteSpace(canVal))
+                                {
+                                    _editorProfile.IniSettings[easySection.Name][s.Key] = canVal;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { /* ignore sync failures */ }
         }
 
         private void UpdateEditorModeButtons()
@@ -2013,19 +2157,10 @@ namespace OptiscalerClient.Views
                 _editorProfile.Name = txtName.Text.Trim();
             _editorProfile.Description = txtDesc?.Text?.Trim() ?? "";
 
-            foreach (var section in _editorSettingControls)
-            {
-                if (!_editorProfile.IniSettings.ContainsKey(section.Key))
-                    _editorProfile.IniSettings[section.Key] = new Dictionary<string, string>();
-                foreach (var setting in section.Value)
-                {
-                    var value = setting.Value.ValueGetter?.Invoke() ?? "auto";
-                    _editorProfile.IniSettings[section.Key][setting.Key] = value;
-                    if (_editorIsEasyMode && setting.Value.AppliesTo != null)
-                        foreach (var target in setting.Value.AppliesTo)
-                            _editorProfile.IniSettings[section.Key][target] = value;
-                }
-            }
+            // Flush all current control values then sync Easy→canonical
+            EditorFlushControlValues();
+            if (_editorIsEasyMode)
+                EditorSyncSchemaValues(fromEasyToAdvanced: true);
 
             try
             {
@@ -2400,6 +2535,30 @@ namespace OptiscalerClient.Views
 
             var focusManager = TopLevel.GetTopLevel(this)?.FocusManager;
             focusManager?.ClearFocus();
+        }
+
+        private void SettingsWrap_SizeChanged(object? sender, SizeChangedEventArgs e)
+        {
+            if (sender is not WrapPanel wrap) return;
+            ApplySettingsCardWidths(wrap, e.NewSize.Width);
+        }
+
+        private void ApplySettingsCardWidths(WrapPanel wrap, double availableWidth)
+        {
+            // Sidebar is 68px + 24px margin on each side = 116px total chrome
+            const double gutter = 48.0;
+            const double threshold = 760.0;
+            const double halfGap = 16.0; // gap between two cards
+
+            double cardWidth = availableWidth >= threshold
+                ? Math.Max(300.0, (availableWidth - gutter - halfGap) / 2.0)
+                : availableWidth - gutter;
+
+            foreach (var child in wrap.Children)
+            {
+                if (child is Border border)
+                    border.Width = cardWidth;
+            }
         }
 
         private void UpdateAnimationsState(bool enabled)
@@ -4243,6 +4402,13 @@ namespace OptiscalerClient.Views
                         var fakeCacheDir = _componentService.GetFakenvapiCachePath();
                         var nukemCacheDir = _componentService.GetNukemFGCachePath();
 
+                        // Resolve the configured default profile (null = built-in default → no .ini written)
+                        var profileService = new ProfileManagementService();
+                        var defaultProfileName = _componentService.Config.DefaultProfileName ?? OptiScalerProfile.BuiltInDefaultName;
+                        OptiScalerProfile? defaultProfile = null;
+                        if (!string.Equals(defaultProfileName, OptiScalerProfile.BuiltInDefaultName, StringComparison.OrdinalIgnoreCase))
+                            defaultProfile = profileService.GetProfileByName(defaultProfileName);
+
                         // Install with default settings (backup always enabled)
                         // Always install Fakenvapi and NukemFG by default
                         SetQuickInstallLoading(button);
@@ -4256,7 +4422,8 @@ namespace OptiscalerClient.Views
                                 fakenvapiCachePath: fakeCacheDir,
                                 installNukemFG: true,  // Always install NukemFG
                                 nukemFGCachePath: nukemCacheDir,
-                                optiscalerVersion: versionToInstall
+                                optiscalerVersion: versionToInstall,
+                                profile: defaultProfile
                             );
                         });
 

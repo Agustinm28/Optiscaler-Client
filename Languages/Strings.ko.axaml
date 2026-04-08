@@ -132,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">나중에</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">정보</x:String>
+    <x:String x:Key="TxtAboutTitle">도움말</x:String>
     <x:String x:Key="TxtFeedbackTitle">피드백</x:String>
     <x:String x:Key="TxtFeedbackDesc">기능을 요청하거나 버그를 보고하려면 GitHub 저장소에서 issue를 열어주세요.</x:String>
     <x:String x:Key="TxtBuildDateLbl">마지막 빌드 날짜</x:String>

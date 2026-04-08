@@ -132,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">Sonra</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">Hakkında</x:String>
+    <x:String x:Key="TxtAboutTitle">Yardım</x:String>
     <x:String x:Key="TxtFeedbackTitle">Geri Bildirim</x:String>
     <x:String x:Key="TxtFeedbackDesc">Özellik istemek veya hata bildirmek isterseniz, lütfen GitHub deposunda bir issue açın.</x:String>
     <x:String x:Key="TxtBuildDateLbl">Son Derleme Tarihi</x:String>

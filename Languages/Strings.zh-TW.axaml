@@ -132,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">稍後</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">關於</x:String>
+    <x:String x:Key="TxtAboutTitle">說明</x:String>
     <x:String x:Key="TxtFeedbackTitle">回饋</x:String>
     <x:String x:Key="TxtFeedbackDesc">如果您想請求功能或回報錯誤，請在GitHub儲存庫中開啟issue。</x:String>
     <x:String x:Key="TxtBuildDateLbl">最後建置日期</x:String>

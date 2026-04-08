@@ -174,6 +174,10 @@ namespace OptiscalerClient.Views
                 btnSave.Click += BtnSave_Click;
             }
 
+            // Populate easy-mode virtual sections from canonical sections before building the UI
+            if (_isEasyMode)
+                SyncSchemaValues(fromEasyToAdvanced: false);
+
             BuildSettingsUI();
             UpdateModeButtons();
         }
@@ -197,7 +201,7 @@ namespace OptiscalerClient.Views
             _sectionBorders.Clear();
 
             string schemaFileName = _isEasyMode ? "easy_profile_editor_schema.json" : "profile_editor_schema.json";
-            string schemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", schemaFileName);
+            string schemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", schemaFileName);
             if (!File.Exists(schemaPath))
             {
                 sectionsWrap.Children.Add(new TextBlock { Text = $"Error: Settings schema file not found: {schemaFileName}" });
@@ -743,7 +747,9 @@ namespace OptiscalerClient.Views
         private void BtnEasyMode_Click(object? sender, RoutedEventArgs e)
         {
             if (_isEasyMode) return; // Already in Easy mode
-            
+            FlushControlValues();
+            SyncSchemaValues(fromEasyToAdvanced: false);
+
             _isEasyMode = true;
             UpdateModeButtons();
             BuildSettingsUI();
@@ -752,10 +758,133 @@ namespace OptiscalerClient.Views
         private void BtnAdvancedMode_Click(object? sender, RoutedEventArgs e)
         {
             if (!_isEasyMode) return; // Already in Advanced mode
-            
+            FlushControlValues();
+            SyncSchemaValues(fromEasyToAdvanced: true);
+
             _isEasyMode = false;
             UpdateModeButtons();
             BuildSettingsUI();
+        }
+
+        private void FlushControlValues()
+        {
+            foreach (var section in _settingControls)
+            {
+                if (!_profile.IniSettings.ContainsKey(section.Key))
+                    _profile.IniSettings[section.Key] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var setting in section.Value)
+                {
+                    var value = setting.Value.ValueGetter?.Invoke() ?? "auto";
+                    _profile.IniSettings[section.Key][setting.Key] = value;
+                }
+            }
+        }
+
+        private void SyncSchemaValues(bool fromEasyToAdvanced)
+        {
+            try
+            {
+                var easySchemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", "easy_profile_editor_schema.json");
+                var masterSchemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", "profile_editor_schema.json");
+                if (!File.Exists(easySchemaPath) || !File.Exists(masterSchemaPath)) return;
+
+                var easyJson = File.ReadAllText(easySchemaPath);
+                var masterJson = File.ReadAllText(masterSchemaPath);
+                var easySchema = JsonSerializer.Deserialize<SettingsSchema>(easyJson);
+                var masterSchema = JsonSerializer.Deserialize<SettingsSchema>(masterJson);
+                if (easySchema?.Sections == null || masterSchema?.Sections == null) return;
+
+                // Build map targetKey -> canonical section name
+                var keyToSection = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var sec in masterSchema.Sections)
+                {
+                    if (sec?.Settings == null || string.IsNullOrWhiteSpace(sec.Name)) continue;
+                    foreach (var s in sec.Settings)
+                    {
+                        if (string.IsNullOrWhiteSpace(s.Key)) continue;
+                        if (!keyToSection.ContainsKey(s.Key))
+                            keyToSection[s.Key] = sec.Name!;
+                    }
+                }
+
+                foreach (var easySection in easySchema.Sections)
+                {
+                    if (easySection?.Settings == null || string.IsNullOrWhiteSpace(easySection.Name)) continue;
+                    foreach (var s in easySection.Settings)
+                    {
+                        if (s == null || string.IsNullOrWhiteSpace(s.Key)) continue;
+
+                        // Ensure easy section dict exists
+                        if (!_profile.IniSettings.ContainsKey(easySection.Name))
+                            _profile.IniSettings[easySection.Name] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                        if (s.AppliesTo == null || s.AppliesTo.Count == 0)
+                        {
+                            // Passthrough key: sync directly with its canonical section
+                            if (keyToSection.TryGetValue(s.Key, out var passCanonSec))
+                            {
+                                if (fromEasyToAdvanced)
+                                {
+                                    if (_profile.IniSettings[easySection.Name].TryGetValue(s.Key, out var pEasyVal) && !string.IsNullOrWhiteSpace(pEasyVal))
+                                    {
+                                        if (!_profile.IniSettings.ContainsKey(passCanonSec))
+                                            _profile.IniSettings[passCanonSec] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                                        _profile.IniSettings[passCanonSec][s.Key] = pEasyVal;
+                                    }
+                                }
+                                else
+                                {
+                                    if (_profile.IniSettings.ContainsKey(passCanonSec) &&
+                                        _profile.IniSettings[passCanonSec].TryGetValue(s.Key, out var pCanVal) &&
+                                        !string.IsNullOrWhiteSpace(pCanVal))
+                                    {
+                                        _profile.IniSettings[easySection.Name][s.Key] = pCanVal;
+                                    }
+                                }
+                            }
+                            continue;
+                        }
+
+                        if (fromEasyToAdvanced)
+                        {
+                            // Copy easy value into each canonical target key/section
+                            if (_profile.IniSettings[easySection.Name].TryGetValue(s.Key, out var easyVal) && !string.IsNullOrWhiteSpace(easyVal))
+                            {
+                                foreach (var targetKey in s.AppliesTo)
+                                {
+                                    if (string.IsNullOrWhiteSpace(targetKey)) continue;
+                                    if (keyToSection.TryGetValue(targetKey, out var canonicalSection))
+                                    {
+                                        if (!_profile.IniSettings.ContainsKey(canonicalSection))
+                                            _profile.IniSettings[canonicalSection] = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                                        _profile.IniSettings[canonicalSection][targetKey] = easyVal;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Copy from first available canonical target into the easy setting
+                            foreach (var targetKey in s.AppliesTo)
+                            {
+                                if (string.IsNullOrWhiteSpace(targetKey)) continue;
+                                if (keyToSection.TryGetValue(targetKey, out var canonicalSection) &&
+                                    _profile.IniSettings.ContainsKey(canonicalSection) &&
+                                    _profile.IniSettings[canonicalSection].TryGetValue(targetKey, out var canVal) &&
+                                    !string.IsNullOrWhiteSpace(canVal))
+                                {
+                                    _profile.IniSettings[easySection.Name][s.Key] = canVal;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // ignore sync failures
+            }
         }
 
         private void UpdateModeButtons()
@@ -805,6 +934,35 @@ namespace OptiscalerClient.Views
             _profile.Description = txtDescription?.Text?.Trim() ?? "";
 
             // Update settings from controls
+            // Build a map of canonical key -> section from the advanced schema (if available)
+            var keyToSection = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            try
+            {
+                var masterSchemaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "configs", "profile_editor_schema.json");
+                if (File.Exists(masterSchemaPath))
+                {
+                    var masterJson = File.ReadAllText(masterSchemaPath);
+                    var masterSchema = JsonSerializer.Deserialize<SettingsSchema>(masterJson);
+                    if (masterSchema?.Sections != null)
+                    {
+                        foreach (var sec in masterSchema.Sections)
+                        {
+                            if (sec?.Settings == null || string.IsNullOrWhiteSpace(sec.Name)) continue;
+                            foreach (var s in sec.Settings)
+                            {
+                                if (string.IsNullOrWhiteSpace(s.Key)) continue;
+                                if (!keyToSection.ContainsKey(s.Key))
+                                    keyToSection[s.Key] = sec.Name!;
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // If anything fails, fall back to previous behavior (no mapping)
+            }
+
             foreach (var section in _settingControls)
             {
                 if (!_profile.IniSettings.ContainsKey(section.Key))
@@ -816,13 +974,34 @@ namespace OptiscalerClient.Views
                 {
                     var value = setting.Value.ValueGetter?.Invoke() ?? "auto";
                     _profile.IniSettings[section.Key][setting.Key] = value;
-                    
+
+                    // In Easy mode, also write this key to its own canonical section if it's a canonical key
+                    if (_isEasyMode && !string.IsNullOrWhiteSpace(setting.Key) && keyToSection.TryGetValue(setting.Key, out var selfCanonicalSection))
+                    {
+                        if (!_profile.IniSettings.ContainsKey(selfCanonicalSection))
+                            _profile.IniSettings[selfCanonicalSection] = new Dictionary<string, string>();
+                        _profile.IniSettings[selfCanonicalSection][setting.Key] = value;
+                    }
+
                     // In Easy mode, if this setting has AppliesTo, apply value to all target keys
                     if (_isEasyMode && setting.Value.AppliesTo != null && setting.Value.AppliesTo.Count > 0)
                     {
                         foreach (var targetKey in setting.Value.AppliesTo)
                         {
-                            _profile.IniSettings[section.Key][targetKey] = value;
+                            // If we know the canonical section for this key from the master schema, write there
+                            if (!string.IsNullOrWhiteSpace(targetKey) && keyToSection.TryGetValue(targetKey, out var canonicalSection))
+                            {
+                                if (!_profile.IniSettings.ContainsKey(canonicalSection))
+                                {
+                                    _profile.IniSettings[canonicalSection] = new Dictionary<string, string>();
+                                }
+                                _profile.IniSettings[canonicalSection][targetKey] = value;
+                            }
+                            else
+                            {
+                                // Fallback: write into the current section (legacy behavior)
+                                _profile.IniSettings[section.Key][targetKey] = value;
+                            }
                         }
                     }
                 }

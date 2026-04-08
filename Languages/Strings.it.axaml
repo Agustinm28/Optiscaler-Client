@@ -132,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">Più tardi</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">Informazioni</x:String>
+    <x:String x:Key="TxtAboutTitle">Aiuto</x:String>
     <x:String x:Key="TxtFeedbackTitle">Feedback</x:String>
     <x:String x:Key="TxtFeedbackDesc">Se vuoi richiedere funzionalità o segnalare bug, apri una issue nel repository GitHub.</x:String>
     <x:String x:Key="TxtBuildDateLbl">Data ultima compilazione</x:String>

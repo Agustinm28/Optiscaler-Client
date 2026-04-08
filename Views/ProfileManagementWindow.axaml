@@ -127,6 +127,16 @@
                                             Padding="12,8"
                                             Click="BtnDeleteProfile_Click"
                                             IsEnabled="False"/>
+                                    <Separator Height="1"
+                                               Background="{StaticResource BrBorderSubtle}"
+                                               Margin="0,4"/>
+                                    <Button Name="BtnExport"
+                                            Content="Export .ini"
+                                            Classes="BtnSecondary"
+                                            HorizontalAlignment="Stretch"
+                                            Padding="12,8"
+                                            Click="BtnExportProfile_Click"
+                                            IsEnabled="False"/>
                                 </StackPanel>
                             </Border>
                         </Grid>

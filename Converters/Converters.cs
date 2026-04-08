@@ -67,25 +67,66 @@ public class BitmapValueConverter : IValueConverter
     }
 }
 
-public class MultiplyConverter : IValueConverter
+public class WidthToColumnSpanConverter : IValueConverter
 {
+    public double Threshold { get; set; } = 760.0;
+
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is double d)
+        if (value == null) return 1;
+
+        double width;
+        try
         {
-            if (parameter != null &&
-                double.TryParse(parameter.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var m))
-            {
-                return d * m;
-            }
+            width = System.Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return 1;
         }
 
-        return 0d;
+        return width < Threshold ? 2 : 1;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotSupportedException();
+        throw new NotImplementedException();
+    }
+}
+
+public class WidthToCardWidthConverter : IValueConverter
+{
+    public double Threshold { get; set; } = 760.0;
+    // total horizontal padding between cards (approx): window padding + margins
+    public double HorizontalGutter { get; set; } = 48.0;
+
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value == null) return double.NaN;
+
+        double width;
+        try
+        {
+            width = System.Convert.ToDouble(value, CultureInfo.InvariantCulture);
+        }
+        catch
+        {
+            return double.NaN;
+        }
+
+        if (width < Threshold)
+        {
+            // single column: full available width minus margins
+            return width - HorizontalGutter;
+        }
+
+        // two columns: half available width minus gutter/2
+        return Math.Max(320.0, (width - HorizontalGutter) / 2.0);
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
     }
 }
 

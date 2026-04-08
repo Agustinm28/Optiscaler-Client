@@ -25,18 +25,16 @@
     <None Update="config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="assets\profile_editor_schema.json">
+    <None Update="assets\configs\profile_editor_schema.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="assets\easy_profile_editor_schema.json">
+    <None Update="assets\configs\easy_profile_editor_schema.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="assets\help-pages.json">
+    <None Update="assets\configs\help-pages.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="OptiScaler.example.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <EmbeddedResource Include="OptiScaler_example.ini" />
     <AvaloniaResource Include="assets\**" />
     <AvaloniaResource Include="Languages\**" />
   </ItemGroup>

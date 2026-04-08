@@ -159,6 +159,10 @@
             {
               "label": "Grid & List mode buttons 📊",
               "text": "Switch between grid and list view modes to organize your game library as you prefer."
+            },
+            {
+              "label": "Organize games ✏️",
+              "text": "In this mode you can reorder and hide/show the games in the game list to your liking."
             }
           ]
         }
@@ -246,7 +250,7 @@
           "items": [
             {
               "label": "Profile Management Window 📎",
-              "text": "Accessible from the settings menu, this section allows you to manage current profiles, as well as search, create, duplicate, edit, or delete them.",
+              "text": "Accessible from the sidebar, this section allows you to manage current profiles, as well as search, create, duplicate, edit, or delete them.",
               "items": [
                 {
                   "title": "Default profile",

@@ -132,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">Позже</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">О программе</x:String>
+    <x:String x:Key="TxtAboutTitle">Помощь</x:String>
     <x:String x:Key="TxtFeedbackTitle">Обратная связь</x:String>
     <x:String x:Key="TxtFeedbackDesc">Если вы хотите запросить функции или сообщить об ошибках, пожалуйста, откройте issue в репозитории GitHub.</x:String>
     <x:String x:Key="TxtBuildDateLbl">Дата последней сборки</x:String>
