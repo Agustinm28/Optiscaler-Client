@@ -1631,120 +1631,20 @@
                     </Grid>
                 </Border>
 
-                 <!-- Component rows -->
-                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                     <StackPanel Margin="24,20" MaxWidth="600" HorizontalAlignment="Left" Width="600">
+                 <!-- Sidebar + content -->
+                 <Grid Grid.Row="1" ColumnDefinitions="270,*">
 
-                         <!-- GUIDE SECTION -->
-                         <TextBlock Text="{DynamicResource TxtGuideTitle}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource BrTextPrimary}" Margin="0,0,0,12"/>
-                         <Button Content="{DynamicResource TxtBtnGuide}"
-                                 Name="BtnGuide2"
-                                 Click="BtnGuide_Click2"
-                                 Classes="BtnBase"
-                                 Padding="16,12"
-                                 HorizontalAlignment="Left"
-                                 Width="150"
-                                 Margin="0,0,0,32"/>
+                     <!-- SIDEBAR -->
+                     <Border Grid.Column="0"
+                             Background="{StaticResource BrBgDeep}"
+                             BorderBrush="{StaticResource BrBorderSubtle}"
+                             BorderThickness="0,0,1,0">
+                         <ScrollViewer VerticalScrollBarVisibility="Auto">
+                             <StackPanel Name="HelpPagesSidebar" Margin="8,12,8,12" Spacing="2"/>
+                         </ScrollViewer>
+                     </Border>
 
-                         <!-- ABOUT SECTION -->
-                         <TextBlock Text="{DynamicResource TxtAboutTitle}" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource BrTextPrimary}" Margin="0,0,0,12"/>
-                         <Border Background="{StaticResource BrBgSurface}" BorderBrush="{StaticResource BrBorderSubtle}" BorderThickness="1" CornerRadius="{StaticResource RadiusMedium}" Padding="16,12">
-                             <StackPanel>
-                                 <!-- Optiscaler Client -->
-                                 <Grid Margin="0,0,0,12">
-                                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                     <TextBlock Grid.Column="0" Text="Optiscaler Client" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
-                                     <TextBlock Grid.Column="1" Name="TxtAppVersion" Text="" FontWeight="Bold" Foreground="{StaticResource BrAccent}" VerticalAlignment="Center"/>
-                                 </Grid>
-
-                                 <!-- OptiScaler -->
-                                 <Grid Margin="0,0,0,12">
-                                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                     <TextBlock Grid.Column="0" Text="OptiScaler" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
-                                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                         <Border Name="BdOptiUpdate" Background="#2A1F4A" BorderBrush="{StaticResource BrAccent}" BorderThickness="1" CornerRadius="6" Padding="8,4" Margin="0,0,12,0" VerticalAlignment="Center" IsVisible="False">
-                                             <TextBlock Text="{DynamicResource TxtUpdateAvail}" FontSize="11" Foreground="{StaticResource BrAccent}"/>
-                                         </Border>
-                                         <TextBlock Name="TxtOptiVersion" FontWeight="Bold" Foreground="{StaticResource BrAccent}" VerticalAlignment="Center"/>
-                                     </StackPanel>
-                                 </Grid>
-
-                                 <!-- Fakenvapi -->
-                                 <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Fakenvapi" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Button Name="BtnUpdateFakenvapi" Content="{DynamicResource TxtCheckUpdatesBtn}" Classes="BtnBase" Padding="10,4" Margin="0,0,12,0" VerticalAlignment="Center" Click="BtnUpdateFakenvapi_Click"/>
-                                        <TextBlock Name="TxtFakeVersion" FontWeight="Bold" Foreground="{StaticResource BrAccent}" VerticalAlignment="Center" MinWidth="80" TextAlignment="Right"/>
-                                    </StackPanel>
-                                 </Grid>
-
-                                 <!-- NukemFG -->
-                                 <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="NukemFG" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Button Name="BtnUpdateNukemFG" Content="{DynamicResource TxtBtnUpdate}" Classes="BtnBase" Padding="10,4" Margin="0,0,12,0" VerticalAlignment="Center" Click="BtnUpdateNukemFG_Click"/>
-                                        <TextBlock Name="TxtNukemVersion" FontWeight="Bold" Foreground="{StaticResource BrAccent}" VerticalAlignment="Center" MinWidth="80" TextAlignment="Right"/>
-                                    </StackPanel>
-                                 </Grid>
-
-                                 <!-- Build Date -->
-                                 <Grid Margin="0,0,0,16">
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{DynamicResource TxtBuildDateLbl}" FontWeight="SemiBold" FontSize="15" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Name="TxtBuildDate" Text="--/--/----" FontWeight="Bold" Foreground="{StaticResource BrTextSecondary}" VerticalAlignment="Center"/>
-                                 </Grid>
-            
-                                <Separator Background="{StaticResource BrBorderSubtle}" Margin="0,0,0,16"/>
-                                 
-                                <!-- License Information -->
-                                <Border Background="{StaticResource BrBgSurface}" 
-                                        BorderBrush="{StaticResource BrBorderSubtle}" 
-                                        BorderThickness="1" 
-                                        CornerRadius="{StaticResource RadiusMedium}" 
-                                        Padding="12,10" 
-                                        Margin="0,0,0,16">
-                                    <StackPanel>
-                                        <TextBlock Text="License &amp; Copyright" 
-                                                   FontWeight="SemiBold" 
-                                                   FontSize="13" 
-                                                   Foreground="{StaticResource BrTextPrimary}" 
-                                                   Margin="0,0,0,8"/>
-                                        <TextBlock TextWrapping="Wrap" 
-                                                   FontSize="12" 
-                                                   Foreground="{StaticResource BrTextSecondary}" 
-                                                   LineHeight="18">
-                                            <Run Text="Copyright 2026 Agustín Montaña (Agustinm28)"/><LineBreak/>
-                                            <LineBreak/>
-                                            <Run Text="Licensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details."/><LineBreak/>
-                                            <LineBreak/>
-                                            <Run Text="Third-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses."/>
-                                        </TextBlock>
-                                    </StackPanel>
-                                </Border>
-                                 
-                                <Separator Background="{StaticResource BrBorderSubtle}" Margin="0,0,0,16"/>
-             
-
-                                 <StackPanel Orientation="Horizontal">
-                                     <Button Content="{DynamicResource TxtCheckUpdatesBtn}"
-                                             Name="BtnCheckUpdates"
-                                             Click="BtnCheckUpdates_Click"
-                                             Classes="BtnPrimary"
-                                             Padding="16,8"
-                                             Margin="0,0,12,0"/>
-                                     <Button Content="{DynamicResource TxtGithubBtn}"
-                                             Name="BtnGithub"
-                                             Click="BtnGithub_Click"
-                                             Classes="BtnBase"
-                                             Padding="16,8"/>
-                                 </StackPanel>
-
-                             </StackPanel>
-                         </Border>
-
-                     <!-- Content Area -->
+                     <!-- CONTENT AREA -->
                      <ScrollViewer Grid.Column="1"
                                    Name="HelpContentScrollViewer"
                                    VerticalScrollBarVisibility="Auto">

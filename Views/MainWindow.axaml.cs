@@ -1207,6 +1207,14 @@ namespace OptiscalerClient.Views
             LoadProfilesView();
         }
 
+        public void NavigateToProfiles()
+        {
+            var nav = this.FindControl<RadioButton>("NavProfiles");
+            if (nav != null) nav.IsChecked = true;
+            SwitchToView("ViewProfiles");
+            LoadProfilesView();
+        }
+
         private void NavHelp_Click(object sender, RoutedEventArgs e)
         {
             SwitchToView("ViewHelp");

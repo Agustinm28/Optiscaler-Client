@@ -25,6 +25,11 @@
           "title": "System"
         },
         {
+          "type": "disclaimer",
+          "title": "License & Copyright",
+          "content": "Copyright 2026 Agustín Montaña (Agustinm28)\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses."
+        },
+        {
           "type": "feedback",
           "title": "Feedback"
         }

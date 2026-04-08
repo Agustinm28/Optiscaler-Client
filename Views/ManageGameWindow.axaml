@@ -82,7 +82,7 @@
                             MaxHeight="460"
                             ClipToBounds="True">
                             <Grid>
-                                <Image Name="ImgGameCover" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Image Name="ImgGameCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Border Classes="ImageOverlay">
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
                                         <TextBlock Text="&#xE70F;"
@@ -162,7 +162,7 @@
                             BorderBrush="{StaticResource BrBorderSubtle}"
                             BorderThickness="1"
                             CornerRadius="{StaticResource RadiusLarge}"
-                            Margin="0,0,0,10"
+                            Margin="0,6,0,10"
                             Padding="16,10">
                         <StackPanel>
                             <Grid ColumnDefinitions="*,Auto">
@@ -294,6 +294,7 @@
                                                        Foreground="{StaticResource BrTextSecondary}"
                                                        FontSize="{StaticResource FontSizeCaption}"/>
                                             <ComboBox Name="CmbOptiVersion"
+                                                      Margin="0,4,0,0"
                                                       Width="220"
                                                       Classes="BtnSelector"
                                                       SelectedIndex="0"
@@ -306,6 +307,7 @@
                                                        Foreground="{StaticResource BrTextSecondary}"
                                                        FontSize="{StaticResource FontSizeCaption}"/>
                                             <ComboBox Name="CmbInjectionMethod"
+                                                      Margin="0,4,0,0"
                                                       Width="220"
                                                       Classes="BtnSelector"
                                                       SelectedIndex="0"
@@ -321,10 +323,23 @@
                                         </StackPanel>
 
                                         <StackPanel>
+                                            <TextBlock Text="Profile"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="{StaticResource FontSizeCaption}"/>
+                                            <ComboBox Name="CmbProfile"
+                                                      Margin="0,4,0,0"
+                                                      Width="220"
+                                                      Classes="BtnSelector"
+                                                      HorizontalContentAlignment="Left"
+                                                      VerticalContentAlignment="Center" />
+                                        </StackPanel>
+
+                                        <StackPanel>
                                             <TextBlock Text="FSR4 INT8"
                                                        Foreground="{StaticResource BrTextSecondary}"
                                                        FontSize="{StaticResource FontSizeCaption}"/>
                                             <ComboBox Name="CmbExtrasVersion"
+                                                      Margin="0,4,0,0"
                                                       Width="220"
                                                       Classes="BtnSelector"
                                                       Padding="8,0,24,0"
@@ -335,11 +350,11 @@
 
                                     <StackPanel Grid.Column="1" Spacing="12">
                                         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                            <ToggleSwitch Name="ChkInstallFakenvapi" VerticalAlignment="Center"/>
+                                            <ToggleSwitch Name="ChkInstallFakenvapi" VerticalAlignment="Center" OnContent="" OffContent=""/>
                                             <TextBlock Text="Fakenvapi" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                            <ToggleSwitch Name="ChkInstallNukemFG" VerticalAlignment="Center"/>
+                                            <ToggleSwitch Name="ChkInstallNukemFG" VerticalAlignment="Center" OnContent="" OffContent=""/>
                                             <TextBlock Text="NukemFG" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </StackPanel>
@@ -469,16 +484,8 @@
                                     <Image Name="ImgCoverPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Grid>
                             </Border>
-                        </StackPanel>
-
-                        <!-- Vertical divider spanning rows 1, 2 and 3 -->
-                        <Border Grid.Row="1" Grid.RowSpan="3" Grid.Column="1"
-                                Width="1"
-                                Background="{StaticResource BrBorderSubtle}"
-                                Margin="20,0"/>
-
-                        <!-- Row 2, Col 0: Injector selector -->
-                        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Injector selector row -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
                             <TextBlock Text="{DynamicResource TxtInjectionLbl}"
                                        Foreground="{StaticResource BrTextSecondary}"
                                        VerticalAlignment="Center"
@@ -499,7 +506,7 @@
                                 <ComboBoxItem Content="wininet.dll"  Tag="wininet.dll"/>
                                 <ComboBoxItem Content="winhttp.dll"  Tag="winhttp.dll"/>
                             </ComboBox>
-                                <Border Background="{StaticResource BrBgElevated}"
+                            <Border Background="{StaticResource BrBgElevated}"
                                     BorderBrush="{StaticResource BrBorderSubtle}"
                                     BorderThickness="1" CornerRadius="8"
                                     Width="16" Height="16"
@@ -511,21 +518,22 @@
                                             HorizontalAlignment="Center" VerticalAlignment="Center"
                                             Margin="0,-1,0,0"/>
                             </Border>
-
-                            <!-- Botones -->
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="0,8,0,0">
-                                <Button Name="BtnCoverReset" Grid.Column="0" Classes="BtnBase" Padding="14,8" Click="BtnCoverReset_Click" ToolTip.Tip="Restaurar a la imagen que traía el juego por defecto">
-                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                        <TextBlock Text="&#xE777;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" VerticalAlignment="Center" FontSize="12"/>
-                                        <TextBlock Text="Restaurar" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <Button Name="BtnCoverSelect" Grid.Column="2" Content="Examinar..." Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverSelect_Click"/>
-                                <Button Name="BtnCoverCancel" Grid.Column="3" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverCancel_Click"/>
-                                <Button Name="BtnCoverApply" Grid.Column="4" Content="Aplicar" Classes="BtnSuccess" Padding="20,8" Click="BtnCoverApply_Click"/>
-                            </Grid>
                         </StackPanel>
+
+                        <!-- Action buttons -->
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                            <Button Name="BtnCoverReset" Grid.Column="0" Classes="BtnBase" Padding="14,8" Click="BtnCoverReset_Click" ToolTip.Tip="Restaurar a la imagen que traía el juego por defecto">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE777;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" VerticalAlignment="Center" FontSize="12"/>
+                                    <TextBlock Text="Restaurar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Name="BtnCoverSelect" Grid.Column="2" Content="Examinar..." Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverSelect_Click"/>
+                            <Button Name="BtnCoverCancel" Grid.Column="3" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverCancel_Click"/>
+                            <Button Name="BtnCoverApply" Grid.Column="4" Content="Aplicar" Classes="BtnSuccess" Padding="20,8" Click="BtnCoverApply_Click"/>
+                        </Grid>
+                    </StackPanel>
                     </Border>
                 </Grid>
             </Grid>

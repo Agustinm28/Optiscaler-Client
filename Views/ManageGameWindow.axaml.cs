@@ -43,6 +43,7 @@ namespace OptiscalerClient.Views
     {
         private readonly Game _game;
         private readonly IGpuDetectionService _gpuService;
+        private Window? _ownerWindow;
         private HashSet<string> _betaVersions = new();
         private string? _pendingCoverPath;
         private readonly string? _originalCoverPath;
@@ -111,7 +112,7 @@ namespace OptiscalerClient.Views
             _isUpdatingProfiles = false;
         }
 
-        private async void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        private void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             if (_isUpdatingProfiles) return;
             if (sender is not ComboBox cmbProfile) return;
@@ -136,13 +137,9 @@ namespace OptiscalerClient.Views
                 cmbProfile.SelectedIndex = fallbackIndex >= 0 ? fallbackIndex : 0;
                 _isUpdatingProfiles = false;
 
-                var manager = new ProfileManagementWindow();
-                await manager.ShowDialog(this);
-
-                var refreshedProfiles = profileService.GetAllProfiles(forceRefresh: true);
-                var refreshedConfig = new ComponentManagementService();
-                _defaultProfileName = refreshedConfig.Config.DefaultProfileName;
-                PopulateProfileSelector(profileService, refreshedProfiles, _defaultProfileName);
+                this.Close();
+                if (_ownerWindow is MainWindow mainWindow)
+                    mainWindow.NavigateToProfiles();
             }
         }
 
@@ -158,6 +155,7 @@ namespace OptiscalerClient.Views
         {
             InitializeComponent();
             _game = game;
+            _ownerWindow = owner;
             _originalCoverPath = game.CoverImageUrl;
 
             // Frameless centering logic
@@ -523,11 +521,11 @@ namespace OptiscalerClient.Views
         {
             if (string.IsNullOrEmpty(ver)) return false;
 
-            // Extract numeric prefix (e.g. "0.9.1" from "0.9.1-beta")
-            var m = Regex.Match(ver, "^\\d+(\\.\\d+)*");
+            // Extract numeric prefix (e.g. "0.9.1" from "v0.9.1-beta" or "0.9.1-beta")
+            var m = Regex.Match(ver, "^v?(\\d+(?:\\.\\d+)*)");
             if (!m.Success) return false;
 
-            if (!Version.TryParse(m.Value, out var parsed)) return false;
+            if (!Version.TryParse(m.Groups[1].Value, out var parsed)) return false;
 
             if (parsed.Major > targetMajor) return true;
             if (parsed.Major < targetMajor) return false;
