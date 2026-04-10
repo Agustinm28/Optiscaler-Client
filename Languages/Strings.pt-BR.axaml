@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
@@ -167,6 +167,16 @@
     <x:String x:Key="TxtBetaVersions">Preferir último beta como padrão</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">Quando ativado, seleciona automaticamente a última versão beta em vez da versão estável.</x:String>
     <x:String x:Key="TxtBetaIncludesComponents">Versões beta já incluem Fakenvapi e NukemFG</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultTitle">Padrão FSR4 INT8</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultDesc">Versão padrão do mod FSR4 INT8 pré-selecionada ao abrir um jogo. GPUs RDNA 4 (série RX 9000) usam Nenhum automaticamente.</x:String>
+    <x:String x:Key="TxtDefaultGpuTitle">GPU padrão</x:String>
+    <x:String x:Key="TxtDefaultGpuDesc">Usada para valores padrão e orientações específicas da GPU.</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionTitle">Versão padrão do OptiScaler</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionDesc">Versão pré-selecionada ao abrir Gerenciar ou usar Instalação Rápida. 'Auto' escolhe a versão mais recente recomendada.</x:String>
+    <x:String x:Key="TxtClearAppCacheTitle">Limpar cache da aplicação</x:String>
+    <x:String x:Key="TxtClearAppCacheDesc">Remove jogos escaneados, capas e dados de versão em cache. O app irá reanalisar e baixar novamente no próximo início.</x:String>
+    <x:String x:Key="TxtClearCacheBtn">Limpar cache</x:String>
+    <x:String x:Key="TxtClearAppCacheDialogMsg">Atenção: Isso irá excluir permanentemente todos os jogos escaneados, capas e dados de versão do OptiScaler em cache.&#x0a;&#x0a;O aplicativo será fechado após a limpeza. No próximo início ele irá reanalisar sua biblioteca e baixar novamente as informações de versão.</x:String>
 
     <!-- Scan Sources -->
     <x:String x:Key="TxtManageScanSources">Gerenciar fontes de verificação</x:String>
@@ -208,29 +218,270 @@
 
     <!-- SteamGridDB -->
     <x:String x:Key="TxtSteamGridGuideStep1Title">1. Open the SteamGridDB API page</x:String>
-    <x:String x:Key="TxtSteamGridApiKeyDesc">Used to improve cover-art matching accuracy. Optional, but recommended.</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep2Title">2. Generate your API key</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep1Desc">Go to https://www.steamgriddb.com/profile/preferences/api and sign in.</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep4Desc">After saving the key, run a new scan so covers can be refreshed with better accuracy.</x:String>
-    <x:String x:Key="TxtSteamGridGetApiKey">Get API Key</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep2Desc">Create a new API key on that page and copy it.</x:String>
-    <x:String x:Key="TxtSteamGridGuideOpenPage">Open page</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep4Title">4. Re-scan your games</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">Usado para melhorar a precisão na correspondência das capas. Opcional, mas recomendado.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. Gere sua chave de API</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">Acesse https://www.steamgriddb.com/profile/preferences/api e faça login.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">Depois de salvar a chave, execute uma nova varredura para que as capas possam ser atualizadas com maior precisão.</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">Obter chave API</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">Crie uma nova chave API nessa página e copie-a.</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">Abrir página</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. Re-escanear seus jogos</x:String>
     <x:String x:Key="TxtSteamGridGuideHeader">Get your SteamGridDB API Key</x:String>
     <x:String x:Key="TxtSteamGridGuideTitle">SteamGridDB API Key</x:String>
-    <x:String x:Key="TxtSteamGridGuideHeaderDesc">Quick guide to improve game cover detection.</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">Guia rápido para melhorar a detecção de capas de jogos.</x:String>
     <x:String x:Key="TxtSteamGridApiKey">SteamGridDB API Key</x:String>
     <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Paste your SteamGridDB API key here</x:String>
-    <x:String x:Key="TxtSteamGridGuideStep3Title">3. Paste it in Settings</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. Cole nas configurações</x:String>
     <x:String x:Key="TxtSteamGridGuideStep3Desc">Return to the app and paste the key into the SteamGridDB API Key field.</x:String>
 
-    <x:String x:Key="TxtSteamGridGuideStep1Prefix">Go to </x:String>
-    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> and sign in.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">Acesse </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> e faça login.</x:String>
 
-    <x:String x:Key="TxtViewGrid">Grid view</x:String>
-    <x:String x:Key="TxtViewList">List view</x:String>
-    <x:String x:Key="TxtLoadingResources">Loading resources...</x:String>
+    <x:String x:Key="TxtViewGrid">Exibição em grade</x:String>
+    <x:String x:Key="TxtViewList">Exibição em lista</x:String>
+    <x:String x:Key="TxtLoadingResources">Carregando recursos...</x:String>
     <x:String x:Key="TxtLoadingResourcesDesc">Fetching version data from GitHub</x:String>
+    <x:String x:Key="TxtEditImage">Editar imagem</x:String>
+    <x:String x:Key="TxtCoverUpdateTitle">Atualizar capa</x:String>
+    <x:String x:Key="TxtCoverUpdateDesc">Selecione uma imagem personalizada para o jogo.</x:String>
+    <x:String x:Key="TxtPreviewUnavailable">Visualização indisponível</x:String>
+    <x:String x:Key="TxtCoverRestoreTooltip">Restaurar para a imagem de capa padrão do jogo</x:String>
+    <x:String x:Key="TxtRestore">Restaurar</x:String>
+    <x:String x:Key="TxtApply">Aplicar</x:String>
+    <x:String x:Key="TxtNoImageSelected">Nenhuma imagem selecionada</x:String>
+    <x:String x:Key="TxtDownloadInProgressFormat">Já há um download em andamento para v{0}.</x:String>
+    <x:String x:Key="TxtExtractingFormat">Extraindo e instalando v{0}...</x:String>
+    <x:String x:Key="TxtDownloadingExtrasFormat">Baixando FSR4 INT8 v{0}... {1}%</x:String>
+    <x:String x:Key="TxtVersionUnavailable">Não é possível instalar o OptiScaler v{0} agora.
+
+Esta versão não está disponível para download. Verifique sua conexão com a internet e tente novamente mais tarde.</x:String>
+    <x:String x:Key="TxtInstallSuccessTitle">Instalação Bem-Sucedida</x:String>
+    <x:String x:Key="TxtAppInfoTitle">Aplicativo</x:String>
+    <x:String x:Key="TxtExternalResourcesTitle">Recursos externos</x:String>
+    <x:String x:Key="TxtFeedbackBugs">🐛 Relato de bugs: use o modelo "Bug or Error report" com passos para reproduzir</x:String>
+    <x:String x:Key="TxtFeedbackFeatures">✨ Solicitações de recurso: use o modelo "Feature request" para sugerir novas funcionalidades</x:String>
+    <x:String x:Key="TxtFeedbackImprovements">🔧 Melhorias: use o modelo "Improvement request" para recursos existentes</x:String>
+    <x:String x:Key="TxtFeedbackSystem">Inclua seu SO, GPU e versão do aplicativo para resolução mais rápida</x:String>
+    <x:String x:Key="TxtWarning">Aviso</x:String>
+    <x:String x:Key="TxtNoVersionsFound">Nenhuma versão do OptiScaler está disponível para instalação.</x:String>
+    <!-- Help Window -->
+    <x:String x:Key="TxtHelpTitle">Ajuda</x:String>
+    <x:String x:Key="TxtHelpCategoryGuides">Guias</x:String>
+    <x:String x:Key="TxtHelpPageAbout">Sobre &amp; Feedback</x:String>
+    <x:String x:Key="TxtHelpPageGettingStarted">Primeiros passos</x:String>
+    <x:String x:Key="TxtHelpPageFeatures">Funcionalidades</x:String>
+    <x:String x:Key="TxtHelpPageMainWindow">Janela principal</x:String>
+    <x:String x:Key="TxtHelpPageGameManagement">Gerenciamento de jogos</x:String>
+    <x:String x:Key="TxtHelpPageProfiles">Sistema de perfis</x:String>
+    <x:String x:Key="TxtHelpPageSettings">Configurações</x:String>
+    <x:String x:Key="TxtHelpPageBulkOperations">Operações em massa</x:String>
+    <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; Solução de problemas</x:String>
+    <x:String x:Key="TxtHelpDisclaimerTitle">Aviso ⚠️</x:String>
+    <x:String x:Key="TxtHelpDisclaimerContent">Este não é um projeto oficial do OptiScaler. Não tenho nenhuma afiliação com a equipe do OptiScaler. Este é um projeto pessoal desenvolvido sem qualquer propósito comercial. Qualquer pessoa pode tentar usar este software por sua própria conta e risco.&#x0a;&#x0a;Créditos: Um agradecimento especial à equipe do OptiScaler; esta ferramenta só é possível graças ao incrível trabalho deles no mod original.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;Licenciado sob GPL-3.0-or-later. Este é um software livre: você pode modificá-lo e redistribuí-lo sob certas condições. Consulte o arquivo LICENSE para detalhes.&#x0a;&#x0a;Componentes de terceiros (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) estão sujeitos às suas respectivas licenças.</x:String>
+    <x:String x:Key="TxtHelpSystemTitle">Sistema</x:String>
+    <x:String x:Key="TxtHelpLicenseTitle">Licença &amp; Direitos autorais</x:String>
+
+
+    <!-- Help - Getting Started -->
+    <x:String x:Key="TxtHelpGSWelcomeTitle">Bem-vindo ao OptiScaler Client</x:String>
+    <x:String x:Key="TxtHelpGSWelcomeContent">O OptiScaler Client é um utilitário desktop moderno e de alto desempenho projetado para simplificar a instalação, gerenciamento e atualização do mod OptiScaler em toda a sua biblioteca de jogos.</x:String>
+    <x:String x:Key="TxtHelpGSIntroContent">Este guia foi desenvolvido para ajudá-lo a navegar e entender os recursos principais do programa. Serve como um centro de ajuda completo e inclui tutoriais passo a passo.</x:String>
+    <x:String x:Key="TxtHelpGSQuickStart">Início rápido</x:String>
+    <x:String x:Key="TxtHelpGSStep1Label">Passo 1: Escanear jogos</x:String>
+    <x:String x:Key="TxtHelpGSStep1Text">Clique em 'Escanear' na janela principal para detectar automaticamente os jogos do Steam, Epic Games e outras plataformas.</x:String>
+    <x:String x:Key="TxtHelpGSStep2Label">Passo 2: Selecionar um jogo</x:String>
+    <x:String x:Key="TxtHelpGSStep2Text">Navegue pela biblioteca e clique em 'Gerenciar' no jogo que deseja aprimorar com tecnologia de upscaling.</x:String>
+    <x:String x:Key="TxtHelpGSStep3Label">Passo 3: Configurar &amp; Instalar</x:String>
+    <x:String x:Key="TxtHelpGSStep3Text">Ajuste as opções conforme sua preferência. Quando estiver pronto, clique em 'Instalação automática' na janela de gerenciamento.</x:String>
+    <x:String x:Key="TxtHelpGSStep4Label">Passo 4: Aproveite!</x:String>
+    <x:String x:Key="TxtHelpGSStep4Text">Tudo está pronto! Agora você pode iniciar o jogo diretamente e aproveitar.</x:String>
+
+
+    <!-- Help - Features -->
+    <x:String x:Key="TxtHelpFeatOffersTitle">O que o OptiScaler Client oferece</x:String>
+    <x:String x:Key="TxtHelpFeatOffersContent">O OptiScaler Client fornece gerenciamento abrangente para o OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionLabel">Detecção automática de jogos</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionText">Verifica Steam, Epic Games, GOG e outras plataformas para encontrar seus jogos instalados.</x:String>
+    <x:String x:Key="TxtHelpFeatInstallLabel">Instalação com um clique</x:String>
+    <x:String x:Key="TxtHelpFeatInstallText">A instalação rápida implanta o OptiScaler com configurações otimizadas em segundos.</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesLabel">Gerenciamento de perfis</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesText">Crie e gerencie perfis personalizados para diferentes jogos e cenários.</x:String>
+    <x:String x:Key="TxtHelpFeatBulkLabel">Operações em massa</x:String>
+    <x:String x:Key="TxtHelpFeatBulkText">Instale ou atualize o OptiScaler em vários jogos simultaneamente.</x:String>
+    <x:String x:Key="TxtHelpFeatVersionLabel">Controle de versão</x:String>
+    <x:String x:Key="TxtHelpFeatVersionText">Alterne facilmente entre diferentes versões do OptiScaler, Fakenvapi e NukemFG.</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataLabel">Integração de metadados</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataText">Capas e informações de jogos automáticas do SteamGridDB.</x:String>
+
+
+    <!-- Help - Main Window + Game Management -->
+    <x:String x:Key="TxtHelpMWTitle">Visão geral da biblioteca</x:String>
+    <x:String x:Key="TxtHelpMWContent">A janela principal é o centro de gerenciamento de todos os seus jogos. Aqui você pode visualizar sua biblioteca, escanear novos jogos e acessar as funções de gerenciamento.</x:String>
+    <x:String x:Key="TxtHelpMWGameListLabel">Lista de jogos 🎮</x:String>
+    <x:String x:Key="TxtHelpMWGameListText">Exibe todos os jogos detectados com arte de capa, título e status de instalação.</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnLabel">Botão Gerenciar ⚙️</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnText">Abre a janela de gerenciamento do jogo selecionado para instalar, configurar e gerenciar o OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallLabel">Botão Instalação Rápida ✦</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallText">Instala rapidamente o OptiScaler com configurações otimizadas para o jogo selecionado.</x:String>
+    <x:String x:Key="TxtHelpMWScanLabel">Botão Escanear 🔍</x:String>
+    <x:String x:Key="TxtHelpMWScanText">Detecta automaticamente jogos do Steam, Epic Games, GOG, EA, Ubisoft, Xbox e Battle.net. Selecione as fontes e discos a escanear.</x:String>
+    <x:String x:Key="TxtHelpMWAddManualLabel">Botão Adicionar Manualmente ➕</x:String>
+    <x:String x:Key="TxtHelpMWAddManualText">Permite adicionar manualmente jogos não detectados automaticamente. Útil para jogos autônomos ou instalações personalizadas.</x:String>
+    <x:String x:Key="TxtHelpMWBulkLabel">Instalação em massa ⚡</x:String>
+    <x:String x:Key="TxtHelpMWBulkText">Abre a janela de instalação em massa para instalar o OptiScaler em vários jogos simultaneamente.</x:String>
+    <x:String x:Key="TxtHelpMWSearchLabel">Pesquisar &amp; Filtrar 🔍</x:String>
+    <x:String x:Key="TxtHelpMWSearchText">Encontre jogos rapidamente usando a barra de pesquisa.</x:String>
+    <x:String x:Key="TxtHelpMWViewLabel">Botões de grade &amp; lista 📊</x:String>
+    <x:String x:Key="TxtHelpMWViewText">Alterne entre os modos de visualização em grade e lista para organizar sua biblioteca como preferir.</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeLabel">Organizar jogos ✏️</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeText">Neste modo você pode reordenar e mostrar/ocultar os jogos na lista a seu gosto.</x:String>
+    <x:String x:Key="TxtHelpGMTitle">Gerenciamento de jogos individuais</x:String>
+    <x:String x:Key="TxtHelpGMContent">A janela de gerenciamento oferece controle completo sobre a instalação e configuração do OptiScaler para um jogo específico.</x:String>
+    <x:String x:Key="TxtHelpGMInfoLabel">Informações do jogo 🎮</x:String>
+    <x:String x:Key="TxtHelpGMInfoText">Veja detalhes do jogo incluindo título, caminho do executável, plataforma e status atual de instalação do OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpGMFolderLabel">Abrir pasta 📁</x:String>
+    <x:String x:Key="TxtHelpGMFolderText">Abre a pasta de instalação do jogo no Explorador de Arquivos.</x:String>
+    <x:String x:Key="TxtHelpGMCoverLabel">Editar capa e nome 🎨</x:String>
+    <x:String x:Key="TxtHelpGMCoverText">Edite a imagem de capa e o nome do jogo.</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallLabel">Instalação Automática ✦</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallText">Tenta encontrar automaticamente o executável do jogo para instalar o OptiScaler. Robusto mas não perfeito.</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallLabel">Instalação Manual ✦</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallText">Permite selecionar manualmente o executável do jogo. Recomendado se a instalação automática falhar.</x:String>
+    <x:String x:Key="TxtHelpGMUninstallLabel">Desinstalar 🗑️</x:String>
+    <x:String x:Key="TxtHelpGMUninstallText">Remove completamente o OptiScaler do jogo, restaurando os arquivos e configurações originais do backup.</x:String>
+    <x:String x:Key="TxtHelpGMProfileLabel">Seleção de perfil 🎯</x:String>
+    <x:String x:Key="TxtHelpGMProfileText">Escolha entre perfis pré-configurados ou crie perfis personalizados para jogos ou necessidades de desempenho específicas.</x:String>
+    <x:String x:Key="TxtHelpGMVersionLabel">Versão do OptiScaler 📦</x:String>
+    <x:String x:Key="TxtHelpGMVersionText">Selecione qual versão do OptiScaler instalar. Alterne entre versões estáveis e builds beta.</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiLabel">Fakenvapi &amp; NukemFG 📦</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiText">Componentes opcionais que melhoram a compatibilidade. Não necessários para versões beta do OptiScaler que já incluem esses arquivos.</x:String>
+    <x:String x:Key="TxtHelpGMInjectionLabel">Método de injeção 🚀</x:String>
+    <x:String x:Key="TxtHelpGMInjectionText">Escolha como o OptiScaler injeta no processo do jogo. Na maioria dos casos, a opção padrão (dxgi.dll) é suficiente.</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Label">FSR 4 INT8 ⚡</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Text">Seletor que permite injetar a versão INT 8 do FSR 4 para GPUs não RDNA 4.</x:String>
+
+
+    <!-- Help - Profiles / Settings / Bulk / FAQ -->
+    <x:String x:Key="TxtHelpProfTitle">Criando e gerenciando perfis</x:String>
+    <x:String x:Key="TxtHelpProfContent">Os perfis permitem salvar e gerenciar suas configurações do OptiScaler (arquivos .ini) para implantá-las facilmente em novas instalações. Esta é a forma mais eficiente de manter configurações consistentes ou aplicar ajustes especializados em toda a sua biblioteca de jogos.</x:String>
+    <x:String x:Key="TxtHelpProfMgmtLabel">Janela de Gerenciamento de Perfis 📎</x:String>
+    <x:String x:Key="TxtHelpProfMgmtText">Acessível pela barra lateral, esta seção permite gerenciar perfis atuais, bem como pesquisar, criar, duplicar, editar ou excluir.</x:String>
+    <x:String x:Key="TxtHelpProfEditorLabel">Editor de Perfis 📝</x:String>
+    <x:String x:Key="TxtHelpProfEditorText">Configure todas as configurações do OptiScaler (.ini): método de upscaling, predefinições de qualidade, opções de DLL e parâmetros avançados. As seções visíveis nessa janela são:</x:String>
+    <x:String x:Key="TxtHelpSetTitle">Configurações do Aplicativo</x:String>
+    <x:String x:Key="TxtHelpSetContent">Configure o comportamento do cliente OptiScaler, fontes de varredura, serviços de metadados e opções avançadas.</x:String>
+    <x:String x:Key="TxtHelpSetCacheLabel">Gerenciamento de Cache Local</x:String>
+    <x:String x:Key="TxtHelpSetCacheText">Permite visualizar e excluir versões em cache do OptiScaler e FSR INT8.</x:String>
+    <x:String x:Key="TxtHelpSetProfileLabel">Gerenciamento de Perfis</x:String>
+    <x:String x:Key="TxtHelpSetProfileText">Permite gerenciar diferentes perfis. Consulte a página 'Sistema de Perfis' para mais informações.</x:String>
+    <x:String x:Key="TxtHelpSetScanLabel">Fontes de Varredura</x:String>
+    <x:String x:Key="TxtHelpSetScanText">Gerencie quais fontes são varridas ao clicar em 'Varrer', incluindo plataformas como Steam e Epic, bem como pastas personalizadas.</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Label">FSR INT8 Padrão</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Text">Selecione a versão padrão do FSR INT8 para a seção de injeção. Recomenda-se 'Nenhum' para usuários com placas de vídeo AMD série 9000.</x:String>
+    <x:String x:Key="TxtHelpSetGpuLabel">Seleção de GPU Padrão</x:String>
+    <x:String x:Key="TxtHelpSetGpuText">Escolha qual GPU usar quando várias GPUs forem detectadas no sistema.</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanLabel">Varredura automática na inicialização</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanText">Procura jogos automaticamente quando o aplicativo inicia.</x:String>
+    <x:String x:Key="TxtHelpSetBetaLabel">Preferir última versão beta como padrão</x:String>
+    <x:String x:Key="TxtHelpSetBetaText">Quando ativado, o cliente OptiScaler preferirá baixar e usar as versões beta mais recentes dos componentes disponíveis.</x:String>
+    <x:String x:Key="TxtHelpSetAnimLabel">Ativar animações</x:String>
+    <x:String x:Key="TxtHelpSetAnimText">Quando ativado, o cliente OptiScaler exibirá animações e transições para uma experiência mais polida.</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridLabel">Chave de API do SteamGridDB</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridText">Usada para melhorar a busca de capas quando não podem ser recuperadas por padrão. Este parâmetro é totalmente opcional.</x:String>
+    <x:String x:Key="TxtHelpBulkTitle">Gerenciando vários jogos</x:String>
+    <x:String x:Key="TxtHelpBulkContent">A janela de instalação em massa permite instalar ou atualizar o OptiScaler em vários jogos simultaneamente, economizando tempo e garantindo consistência.</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelLabel">Seleção de jogos</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelText">Escolha quais jogos incluir na operação em massa. Selecione todos ou escolha manualmente jogos individuais.</x:String>
+    <x:String x:Key="TxtHelpBulkConfigLabel">Configuração unificada</x:String>
+    <x:String x:Key="TxtHelpBulkConfigText">Aplique o mesmo perfil, versão do OptiScaler e configurações a todos os jogos selecionados de uma vez.</x:String>
+    <x:String x:Key="TxtHelpBulkProgressLabel">Acompanhamento de progresso</x:String>
+    <x:String x:Key="TxtHelpBulkProgressText">Monitore o progresso de instalação de cada jogo. Visualize status de sucesso/falha e logs detalhados.</x:String>
+    <x:String x:Key="TxtHelpBulkErrorLabel">Tratamento de erros</x:String>
+    <x:String x:Key="TxtHelpBulkErrorText">Continue processando os jogos restantes mesmo que algumas instalações falhem. Revise os erros após a conclusão.</x:String>
+    <x:String x:Key="TxtHelpFaqTitle">Problemas comuns</x:String>
+    <x:String x:Key="TxtHelpFaqContent">Se encontrar problemas, verifique primeiro estas soluções comuns.</x:String>
+    <x:String x:Key="TxtHelpFaqWhatLabel">O que é o OptiScaler?</x:String>
+    <x:String x:Key="TxtHelpFaqWhatText">OptiScaler é um mod que permite usar diferentes tecnologias de upscaling (DLSS, FSR, XeSS) em jogos, mesmo que não as suportem nativamente.</x:String>
+    <x:String x:Key="TxtHelpFaqSafeLabel">Este aplicativo é seguro?</x:String>
+    <x:String x:Key="TxtHelpFaqSafeText">Sim, o aplicativo é completamente seguro. Você pode escaneá-lo no VirusTotal e, como é open-source, o código está disponível para qualquer um revisar.</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetLabel">Jogo não detectado</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetText">Certifique-se de que o jogo está instalado e tente adicioná-lo manualmente usando o botão 'Adicionar Manualmente'. Você também pode verificar as fontes de varredura nas Configurações.</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailLabel">Instalação falhou</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailText">Certifique-se de ter permissões de escrita no diretório do jogo. Tente executar o aplicativo como administrador se necessário.</x:String>
+    <x:String x:Key="TxtHelpFaqCrashLabel">Jogo trava após instalação</x:String>
+    <x:String x:Key="TxtHelpFaqCrashText">Tente uma versão ou perfil diferente do OptiScaler. Alguns jogos podem exigir configurações específicas.</x:String>
+    <x:String x:Key="TxtHelpFaqUpscLabel">Upscaling não funciona no jogo</x:String>
+    <x:String x:Key="TxtHelpFaqUpscText">Verifique se o jogo suporta DLSS/FSR/XeSS nativamente. O OptiScaler substitui implementações de upscaling existentes.</x:String>
+    <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll ou nvngx.dll não encontrados e outros erros.</x:String>
+    <x:String x:Key="TxtHelpFaqDllText">Use o botão para limpar o cache nas configurações; isso deve resolver a maioria dos problemas.</x:String>
+
+    <!-- Help - Profile Bullets -->
+    <x:String x:Key="TxtHelpProfDefaultTitle">Perfil padrão</x:String>
+    <x:String x:Key="TxtHelpProfDefaultText">Define qual perfil será selecionado por padrão ao gerenciar um jogo ou usar a Instalação rápida.</x:String>
+    <x:String x:Key="TxtHelpProfNameTitle">Nome do perfil</x:String>
+    <x:String x:Key="TxtHelpProfNameText">Define o nome de exibição do seu perfil.</x:String>
+    <x:String x:Key="TxtHelpProfDescTitle">Descrição</x:String>
+    <x:String x:Key="TxtHelpProfDescText">Define uma descrição para o seu perfil.</x:String>
+    <x:String x:Key="TxtHelpProfModeTitle">Modo</x:String>
+    <x:String x:Key="TxtHelpProfModeText">Escolha entre os modos Fácil e Avançado. O modo Fácil limita as configurações ao essencial para uma configuração rápida e simples, ideal para iniciantes. O modo Avançado permite a edição completa do arquivo .ini, oferecendo controle total e personalização máxima para usuários avançados.</x:String>
+    <x:String x:Key="TxtHelpProfNavTitle">Seção de navegação</x:String>
+    <x:String x:Key="TxtHelpProfNavText">Permite navegar pelas diferentes seções do editor de perfis.</x:String>
+    <x:String x:Key="TxtHelpProfSearchTitle">Barra de pesquisa</x:String>
+    <x:String x:Key="TxtHelpProfSearchText">Permite pesquisar configurações específicas no editor de perfis.</x:String>
+
+    <!-- Profile Management View -->
+    <x:String x:Key="TxtProfViewTitle">Perfis</x:String>
+    <x:String x:Key="TxtProfViewDesc">Criar e gerenciar perfis de configuracao do OptiScaler</x:String>
+    <x:String x:Key="TxtBtnNewProfile">Novo perfil</x:String>
+    <x:String x:Key="TxtBtnImportIni">Importar .ini...</x:String>
+    <x:String x:Key="TxtBtnSetDefault">Definir como padrao</x:String>
+    <x:String x:Key="TxtBtnEdit">Editar</x:String>
+    <x:String x:Key="TxtBtnDuplicate">Duplicar</x:String>
+    <x:String x:Key="TxtBtnExportIni">Exportar .ini</x:String>
+    <x:String x:Key="TxtSearchProfiles">Pesquisar perfis...</x:String>
+    <x:String x:Key="TxtProfInfoFormat">{0} perfil(is) ({1} personalizado(s)).</x:String>
+    <x:String x:Key="TxtProfSearchResultFormat">{0} resultado(s) de {1}.</x:String>
+    <x:String x:Key="TxtProfNotFound">Nenhum perfil encontrado.</x:String>
+    <x:String x:Key="TxtProfSearchNotFound">Nenhum perfil correspondente encontrado.</x:String>
+    <x:String x:Key="TxtDefaultBadge">Padrao</x:String>
+
+    <!-- Profile Editor View -->
+    <x:String x:Key="TxtEditorBackBtn">← Perfis</x:String>
+    <x:String x:Key="TxtEditorTitle">Editor de perfis</x:String>
+    <x:String x:Key="TxtEditorDesc">Configure os ajustes do OptiScaler para este perfil</x:String>
+    <x:String x:Key="TxtEditorNewTitle">Novo perfil</x:String>
+    <x:String x:Key="TxtEditorEditTitleFmt">Editar: {0}</x:String>
+    <x:String x:Key="TxtEditorNameLabel">Nome do perfil</x:String>
+    <x:String x:Key="TxtEditorNameWatermark">Digite o nome do perfil</x:String>
+    <x:String x:Key="TxtEditorDescLabel">Descricao</x:String>
+    <x:String x:Key="TxtEditorDescWatermark">Digite uma descricao (opcional)</x:String>
+    <x:String x:Key="TxtEditorModeLabel">Modo</x:String>
+    <x:String x:Key="TxtEditorModeEasy">Facil</x:String>
+    <x:String x:Key="TxtEditorModeAdvanced">Avancado</x:String>
+    <x:String x:Key="TxtEditorNavLabel">Navegacao</x:String>
+    <x:String x:Key="TxtEditorSearchWm">Pesquisar ajustes...</x:String>
+    <x:String x:Key="TxtEditorFooterNote">Apenas os ajustes configurados substituirao os padroes do OptiScaler</x:String>
+    <x:String x:Key="TxtEditorCancel">Cancelar</x:String>
+    <x:String x:Key="TxtEditorSave">Salvar perfil</x:String>
+
+    <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtRefreshCoversTitle">Atualizar apenas capas faltantes</x:String>
+    <x:String x:Key="TxtRefreshCoversDesc">Ignora o scan completo e tenta novamente apenas as capas dos jogos que nao puderam ser baixadas antes. Util apos configurar uma chave de API do SteamGridDB.</x:String>
+    <x:String x:Key="TxtOrganizeGamesTooltip">Organizar jogos</x:String>
+    <x:String x:Key="TxtOrganizeModeBanner">Modo organizacao</x:String>
+    <x:String x:Key="TxtOrganizeModeReorder">▲▼ reordenar</x:String>
+    <x:String x:Key="TxtOrganizeModeHideShow">mostrar/ocultar</x:String>
+    <x:String x:Key="TxtOrganizeModeDone">Concluido</x:String>
+    <x:String x:Key="TxtDragToReorder">Arraste para reordenar</x:String>
+    <x:String x:Key="TxtMoveUp">Mover para cima</x:String>
+    <x:String x:Key="TxtMoveDown">Mover para baixo</x:String>
+    <x:String x:Key="TxtHideShowGame">Mostrar/ocultar jogo</x:String>
+    <x:String x:Key="TxtHideGame">Ocultar</x:String>
+    <x:String x:Key="TxtShowGame">Mostrar</x:String>
+    <x:String x:Key="TxtRefreshingCovers">Atualizando capas faltantes...</x:String>
+    <x:String x:Key="TxtCoverRefreshDoneFmt">Atualizacao de capas concluida. {0}/{1} capas faltantes encontradas.</x:String>
+    <x:String x:Key="TxtCoverRefreshToastFmt">Atualizacao de capas concluida — {0}/{1} capas encontradas.</x:String>
 </ResourceDictionary>
 
 

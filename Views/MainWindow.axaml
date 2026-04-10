@@ -321,7 +321,7 @@
                                              Height="28"
                                              Background="Transparent"
                                              BorderThickness="0"
-                                             ToolTip.Tip="Organize games"
+                                             ToolTip.Tip="{DynamicResource TxtOrganizeGamesTooltip}"
                                              Click="BtnEditMode_Click">
                                             <Grid Width="18" Height="18">
                                                 <TextBlock Text="&#xE70F;"
@@ -368,28 +368,28 @@
                                         FontSize="14"
                                         Foreground="{StaticResource BrAccent}"
                                         VerticalAlignment="Center"/>
-                             <TextBlock Text="Organize Mode"
+                             <TextBlock Text="{DynamicResource TxtOrganizeModeBanner}"
                                         Foreground="{StaticResource BrAccent}"
                                         FontWeight="SemiBold"
                                         VerticalAlignment="Center"/>
                              <TextBlock Text="·"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         VerticalAlignment="Center"/>
-                             <TextBlock Text="&#x25B2;&#x25BC; reorder"
+                             <TextBlock Text="{DynamicResource TxtOrganizeModeReorder}"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         FontSize="11"
                                         VerticalAlignment="Center"/>
                              <TextBlock Text="·"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         VerticalAlignment="Center"/>
-                             <TextBlock Text="&#xE7B3; hide/show"
+                             <TextBlock Text="{DynamicResource TxtOrganizeModeHideShow}"
                                         FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         FontSize="11"
                                         VerticalAlignment="Center"/>
                          </StackPanel>
                          <Button Grid.Column="1"
-                                 Content="Done"
+                                 Content="{DynamicResource TxtOrganizeModeDone}"
                                  Classes="BtnBase"
                                  Padding="18,5"
                                  Click="BtnEditModeDone_Click"/>
@@ -631,7 +631,7 @@
                                                         Width="24" Height="36"
                                                         Background="Transparent"
                                                         Cursor="SizeAll"
-                                                        ToolTip.Tip="Drag to reorder"
+                                                        ToolTip.Tip="{DynamicResource TxtDragToReorder}"
                                                         PointerPressed="DragHandle_PointerPressed"
                                                         Margin="0,0,4,0">
                                                     <TextBlock Text="&#x283F;"
@@ -645,7 +645,7 @@
                                                         Padding="0"
                                                         Background="Transparent"
                                                         BorderThickness="0"
-                                                        ToolTip.Tip="Move up"
+                                                        ToolTip.Tip="{DynamicResource TxtMoveUp}"
                                                         Click="BtnMoveUp_Click">
                                                     <Button.Styles>
                                                         <Style Selector="Button:pointerover">
@@ -663,7 +663,7 @@
                                                         Padding="0"
                                                         Background="Transparent"
                                                         BorderThickness="0"
-                                                        ToolTip.Tip="Move down"
+                                                        ToolTip.Tip="{DynamicResource TxtMoveDown}"
                                                         Click="BtnMoveDown_Click">
                                                     <Button.Styles>
                                                         <Style Selector="Button:pointerover">
@@ -681,7 +681,7 @@
                                                         Padding="0"
                                                         Background="Transparent"
                                                         BorderThickness="0"
-                                                        ToolTip.Tip="Hide/show game"
+                                                        ToolTip.Tip="{DynamicResource TxtHideShowGame}"
                                                         Click="BtnToggleHide_Click">
                                                     <Button.Styles>
                                                         <Style Selector="Button:pointerover">
@@ -961,7 +961,7 @@
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    HorizontalAlignment="Center"
                                                                    VerticalAlignment="Center"/>
-                                                        <TextBlock Text="Drag to reorder"
+                                                        <TextBlock Text="{DynamicResource TxtDragToReorder}"
                                                                    FontSize="11"
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    HorizontalAlignment="Center"/>
@@ -979,7 +979,7 @@
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    VerticalAlignment="Center"/>
                                                         <TextBlock Name="TxtHideLabel"
-                                                                   Text="Hide"
+                                                                   Text="{DynamicResource TxtHideGame}"
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    VerticalAlignment="Center"/>
                                                     </StackPanel>
@@ -1034,11 +1034,11 @@
                          BorderThickness="0,0,0,1"
                          Padding="24,18">
                      <StackPanel VerticalAlignment="Center">
-                         <TextBlock Text="Profiles"
+                         <TextBlock Text="{DynamicResource TxtProfViewTitle}"
                                     FontSize="20"
                                     FontWeight="SemiBold"
                                     Foreground="{StaticResource BrTextPrimary}"/>
-                         <TextBlock Text="Create and manage OptiScaler configuration profiles"
+                         <TextBlock Text="{DynamicResource TxtProfViewDesc}"
                                     FontSize="12"
                                     Foreground="{StaticResource BrTextSecondary}"
                                     Margin="0,2,0,0"/>
@@ -1057,13 +1057,13 @@
                              Width="230">
                          <StackPanel Spacing="8" VerticalAlignment="Top">
                              <Button Name="BtnNewProfileView"
-                                     Content="New Profile"
+                                     Content="{DynamicResource TxtBtnNewProfile}"
                                      Classes="BtnPrimary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
                                      Click="BtnNewProfileView_Click"/>
                              <Button Name="BtnImportProfileView"
-                                     Content="Import .ini…"
+                                     Content="{DynamicResource TxtBtnImportIni}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
@@ -1072,35 +1072,35 @@
                                      Background="{StaticResource BrBorderSubtle}"
                                      Margin="0,4"/>
                              <Button Name="BtnSetDefaultView"
-                                     Content="Set as Default"
+                                     Content="{DynamicResource TxtBtnSetDefault}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
                                      IsEnabled="False"
                                      Click="BtnSetDefaultView_Click"/>
                              <Button Name="BtnEditProfileView"
-                                     Content="Edit"
+                                     Content="{DynamicResource TxtBtnEdit}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
                                      IsEnabled="False"
                                      Click="BtnEditProfileView_Click"/>
                              <Button Name="BtnDuplicateProfileView"
-                                     Content="Duplicate"
+                                     Content="{DynamicResource TxtBtnDuplicate}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
                                      IsEnabled="False"
                                      Click="BtnDuplicateProfileView_Click"/>
                              <Button Name="BtnExportProfileView"
-                                     Content="Export .ini"
+                                     Content="{DynamicResource TxtBtnExportIni}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
                                      IsEnabled="False"
                                      Click="BtnExportProfileView_Click"/>
                              <Button Name="BtnDeleteProfileView"
-                                     Content="Delete"
+                                     Content="{DynamicResource TxtDeletePlain}"
                                      Classes="BtnSecondary"
                                      HorizontalAlignment="Stretch"
                                      Padding="12,8"
@@ -1120,7 +1120,7 @@
                      <Grid Grid.Column="1" RowDefinitions="Auto, *">
                          <Border Grid.Row="0" Padding="24,16,24,0">
                              <TextBox Name="TxtProfileSearchView"
-                                      Watermark="Search profiles…"
+                                      Watermark="{DynamicResource TxtSearchProfiles}"
                                       Classes="Input"
                                       Background="{StaticResource BrBgDeep}"
                                       BorderBrush="{StaticResource BrBorderSubtle}"
@@ -1156,18 +1156,18 @@
                      <Grid ColumnDefinitions="Auto, *">
                          <Button Grid.Column="0"
                                  Name="BtnEditorBack"
-                                 Content="← Profiles"
+                                 Content="{DynamicResource TxtEditorBackBtn}"
                                  Classes="BtnSecondary"
                                  Padding="12,8"
                                  VerticalAlignment="Center"
                                  Click="BtnEditorBack_Click"/>
                          <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0">
                              <TextBlock Name="TxtEditorTitle"
-                                        Text="Profile Editor"
+                                        Text="{DynamicResource TxtEditorTitle}"
                                         FontSize="18"
                                         FontWeight="Bold"
                                         Foreground="{StaticResource BrTextPrimary}"/>
-                             <TextBlock Text="Configure OptiScaler settings for this profile"
+                             <TextBlock Text="{DynamicResource TxtEditorDesc}"
                                         FontSize="11"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         Margin="0,2,0,0"/>
@@ -1188,28 +1188,28 @@
                              MaxWidth="360">
                          <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
                              <StackPanel Grid.Row="0">
-                                 <TextBlock Text="Profile Name"
+                                 <TextBlock Text="{DynamicResource TxtEditorNameLabel}"
                                             Foreground="{StaticResource BrTextSecondary}"
                                             FontSize="12"
                                             Margin="0,0,0,4"/>
                                  <TextBox Name="TxtProfileNameEd"
-                                          Watermark="Enter profile name"
+                                          Watermark="{DynamicResource TxtEditorNameWatermark}"
                                           Height="32"/>
                              </StackPanel>
 
                              <StackPanel Grid.Row="1" Spacing="8">
                                  <StackPanel>
-                                     <TextBlock Text="Description"
+                                     <TextBlock Text="{DynamicResource TxtEditorDescLabel}"
                                                 Foreground="{StaticResource BrTextSecondary}"
                                                 FontSize="12"
                                                 Margin="0,0,0,4"/>
                                      <TextBox Name="TxtDescriptionEd"
-                                              Watermark="Enter profile description (optional)"
+                                              Watermark="{DynamicResource TxtEditorDescWatermark}"
                                               Height="32"/>
                                  </StackPanel>
 
                                  <StackPanel Spacing="4">
-                                     <TextBlock Text="Mode"
+                                     <TextBlock Text="{DynamicResource TxtEditorModeLabel}"
                                                 Foreground="{StaticResource BrTextSecondary}"
                                                 FontSize="12"
                                                 FontWeight="Bold"
@@ -1222,10 +1222,9 @@
                                                  Padding="12,8"
                                                  FontSize="12"
                                                  Classes="BtnPrimary"
+                                                 Content="{DynamicResource TxtEditorModeEasy}"
                                                  Click="BtnEasyModeEd_Click"
-                                                 Margin="0,0,2,0">
-                                             Easy
-                                         </Button>
+                                                 Margin="0,0,2,0"/>
                                          <Button Name="BtnAdvancedModeEd"
                                                  Grid.Column="1"
                                                  HorizontalAlignment="Stretch"
@@ -1233,10 +1232,9 @@
                                                  Padding="12,8"
                                                  FontSize="12"
                                                  Classes="BtnSecondary"
+                                                 Content="{DynamicResource TxtEditorModeAdvanced}"
                                                  Click="BtnAdvancedModeEd_Click"
-                                                 Margin="2,0,0,0">
-                                             Advanced
-                                         </Button>
+                                                 Margin="2,0,0,0"/>
                                      </Grid>
                                  </StackPanel>
                              </StackPanel>
@@ -1250,7 +1248,7 @@
                                            VerticalScrollBarVisibility="Auto"
                                            HorizontalScrollBarVisibility="Disabled">
                                  <StackPanel Name="SidebarNavEd" Spacing="8">
-                                     <TextBlock Text="Navigation"
+                                     <TextBlock Text="{DynamicResource TxtEditorNavLabel}"
                                                 FontSize="12"
                                                 FontWeight="Bold"
                                                 Foreground="{StaticResource BrTextSecondary}"
@@ -1264,7 +1262,7 @@
                      <Grid Grid.Column="1" RowDefinitions="Auto, *">
                          <StackPanel Grid.Row="0" Margin="24,12,24,0">
                              <TextBox Name="TxtSettingsSearchEd"
-                                      Watermark="Search settings..."
+                                      Watermark="{DynamicResource TxtEditorSearchWm}"
                                       Classes="Input"
                                       Background="{StaticResource BrBgDeep}"
                                       BorderBrush="{StaticResource BrBorderSubtle}"
@@ -1294,14 +1292,14 @@
                                     VerticalAlignment="Center"
                                     FontSize="11"
                                     Foreground="{StaticResource BrTextSecondary}"
-                                    Text="Only configured settings will override OptiScaler defaults"/>
+                                    Text="{DynamicResource TxtEditorFooterNote}"/>
                          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                             <Button Content="Cancel"
+                             <Button Content="{DynamicResource TxtEditorCancel}"
                                      Classes="BtnSecondary"
                                      Padding="16,8"
                                      Click="BtnEditorBack_Click"/>
                              <Button Name="BtnEditorSave"
-                                     Content="Save Profile"
+                                     Content="{DynamicResource TxtEditorSave}"
                                      Classes="BtnPrimary"
                                      Padding="20,8"
                                      Click="BtnEditorSave_Click"/>
@@ -1469,10 +1467,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="FSR4 INT8 Default"
+                                        <TextBlock Text="{DynamicResource TxtFsr4Int8DefaultTitle}"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="Default FSR4 INT8 mod version pre-selected when opening a game. RDNA 4 GPUs (RX 9000 series) default to None automatically."
+                                        <TextBlock Text="{DynamicResource TxtFsr4Int8DefaultDesc}"
                                                    Foreground="{StaticResource BrTextSecondary}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,16,0"
@@ -1500,10 +1498,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="Default GPU"
+                                        <TextBlock Text="{DynamicResource TxtDefaultGpuTitle}"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="Used for defaults and GPU-specific guidance."
+                                        <TextBlock Text="{DynamicResource TxtDefaultGpuDesc}"
                                                    Foreground="{StaticResource BrTextSecondary}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,16,0"
@@ -1559,10 +1557,10 @@
                                     HorizontalAlignment="Left">
                                 <Grid ColumnDefinitions="*, Auto">
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="Default OptiScaler Version"
+                                        <TextBlock Text="{DynamicResource TxtDefaultOptiVersionTitle}"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="Pre-selected version when opening Manage or using Quick Install. 'Auto' picks the latest recommended release."
+                                        <TextBlock Text="{DynamicResource TxtDefaultOptiVersionDesc}"
                                                    Foreground="{StaticResource BrTextSecondary}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,16,0"
@@ -1644,10 +1642,10 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="Clear Application Cache"
+                                        <TextBlock Text="{DynamicResource TxtClearAppCacheTitle}"
                                                    FontWeight="SemiBold"
                                                    Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="Remove scanned games, cover art and cached version data. The app will re-scan and re-download on next launch."
+                                        <TextBlock Text="{DynamicResource TxtClearAppCacheDesc}"
                                                    Foreground="{StaticResource BrTextSecondary}"
                                                    TextWrapping="Wrap"
                                                    Margin="0,4,16,0"
@@ -1655,7 +1653,7 @@
                                     </StackPanel>
                                     <Button Name="BtnClearAppCache"
                                             Grid.Column="1"
-                                            Content="Clear Cache"
+                                            Content="{DynamicResource TxtClearCacheBtn}"
                                             Classes="BtnBase"
                                             Padding="16,8"
                                             VerticalAlignment="Center"
@@ -1723,7 +1721,7 @@
                 <Border Grid.Row="0" Background="{StaticResource BrBgDeep}" BorderBrush="{StaticResource BrBorderSubtle}" BorderThickness="0,0,0,1" Padding="24,18">
                     <Grid>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Help"
+                            <TextBlock Text="{DynamicResource TxtHelpTitle}"
                                        FontSize="20"
                                        FontWeight="SemiBold"
                                        Foreground="{StaticResource BrTextPrimary}"/>

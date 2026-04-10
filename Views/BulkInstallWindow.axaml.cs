@@ -26,6 +26,11 @@ public partial class BulkInstallWindow : Window
     private readonly ObservableCollection<BulkGameItem> _filteredGameItems;
     private List<BulkGameItem> _allGames = new List<BulkGameItem>();
     private bool _isInstalling = false;
+    private readonly ProfileManagementService _profileService;
+    private Window? _ownerWindow;
+    private string? _lastSelectedProfileName;
+    private bool _isUpdatingProfiles = false;
+    private const string NewProfileTag = "__new_profile__";
 
     public BulkInstallWindow()
     {
@@ -33,6 +38,7 @@ public partial class BulkInstallWindow : Window
 
         // Initialize fields to avoid nullable warnings
         _componentService = null!;
+        _profileService = null!;
         _installService = null!;
         _gpuService = null!;
         _gameItems = new ObservableCollection<BulkGameItem>();
@@ -42,12 +48,15 @@ public partial class BulkInstallWindow : Window
     public BulkInstallWindow(
         ComponentManagementService componentService,
         GameInstallationService installService,
-        List<Game> games)
+        List<Game> games,
+        Window? owner = null)
     {
         InitializeComponent();
 
         _componentService = componentService;
         _installService = installService;
+        _profileService = new ProfileManagementService();
+        _ownerWindow = owner;
         _gameItems = new ObservableCollection<BulkGameItem>();
         _filteredGameItems = new ObservableCollection<BulkGameItem>();
 
@@ -116,6 +125,9 @@ public partial class BulkInstallWindow : Window
 
         // Populate FSR4 INT8 versions
         PopulateExtrasComboBox();
+
+        // Populate profile selector
+        PopulateProfileSelector();
 
         // Fade in animation
         var rootPanel = this.FindControl<Panel>("RootPanel");
@@ -350,6 +362,7 @@ public partial class BulkInstallWindow : Window
         var cmbExtrasVersion = this.FindControl<ComboBox>("CmbExtrasVersion");
         var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
         var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+        var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
 
         if (cmbOptiVersion?.SelectedItem is not ComboBoxItem selectedItem) return;
 
@@ -366,6 +379,11 @@ public partial class BulkInstallWindow : Window
         var selectedExtrasVersion = selectedExtrasItem?.Tag?.ToString();
         bool injectExtras = !string.IsNullOrEmpty(selectedExtrasVersion) &&
                             !selectedExtrasVersion.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+        // Get selected profile
+        OptiScalerProfile? selectedProfile = null;
+        if (cmbProfile?.SelectedItem is ComboBoxItem profileItem && profileItem.Tag is OptiScalerProfile prof)
+            selectedProfile = prof;
 
         _isInstalling = true;
 
@@ -413,7 +431,8 @@ public partial class BulkInstallWindow : Window
                         fakeCacheDir,
                         installNukemFG,
                         nukemCacheDir,
-                        optiscalerVersion: version
+                        optiscalerVersion: version,
+                        profile: selectedProfile
                     );
                 });
 
@@ -563,6 +582,68 @@ public partial class BulkInstallWindow : Window
         if (parsed.Major > targetMajor) return true;
         if (parsed.Major < targetMajor) return false;
         return parsed.Minor >= targetMinor;
+    }
+
+    private void PopulateProfileSelector()
+    {
+        var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
+        if (cmbProfile == null) return;
+
+        _isUpdatingProfiles = true;
+        cmbProfile.SelectionChanged -= CmbProfile_SelectionChanged;
+        cmbProfile.Items.Clear();
+
+        var profiles = _profileService.GetAllProfiles();
+        foreach (var profile in profiles)
+        {
+            var item = new ComboBoxItem { Content = profile.Name, Tag = profile };
+            ToolTip.SetTip(item, profile.Description);
+            cmbProfile.Items.Add(item);
+        }
+
+        cmbProfile.Items.Add(new ComboBoxItem
+        {
+            Content = "+ New Profile",
+            Tag = NewProfileTag
+        });
+
+        var defaultName = _profileService.GetDefaultProfile()?.Name;
+        var selectedIndex = profiles.FindIndex(p => p.Name == defaultName);
+        cmbProfile.SelectedIndex = selectedIndex >= 0 ? selectedIndex : Math.Max(0, profiles.Count - 1);
+
+        if (profiles.Count > 0 && cmbProfile.SelectedIndex >= 0 && cmbProfile.SelectedIndex < profiles.Count)
+            _lastSelectedProfileName = profiles[cmbProfile.SelectedIndex].Name;
+
+        cmbProfile.SelectionChanged += CmbProfile_SelectionChanged;
+        _isUpdatingProfiles = false;
+    }
+
+    private void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingProfiles) return;
+        if (sender is not ComboBox cmbProfile) return;
+        if (cmbProfile.SelectedItem is not ComboBoxItem item) return;
+
+        if (item.Tag is OptiScalerProfile profile)
+        {
+            _lastSelectedProfileName = profile.Name;
+            return;
+        }
+
+        if (item.Tag is string tag && tag == NewProfileTag)
+        {
+            var profiles = _profileService.GetAllProfiles();
+            var fallbackName = _lastSelectedProfileName ?? _profileService.GetDefaultProfile()?.Name;
+            var fallbackIndex = profiles.FindIndex(p => p.Name == fallbackName);
+
+            _isUpdatingProfiles = true;
+            cmbProfile.SelectedIndex = fallbackIndex >= 0 ? fallbackIndex : 0;
+            _isUpdatingProfiles = false;
+
+            this.Close();
+            if (_ownerWindow is MainWindow mainWindow)
+                mainWindow.NavigateToProfiles();
+        }
     }
 
     /// <summary>

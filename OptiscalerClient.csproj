@@ -34,7 +34,7 @@
     <None Update="assets\configs\help-pages.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="OptiScaler_example.ini" />
+    <EmbeddedResource Include="assets\OptiScaler_example.ini" />
     <AvaloniaResource Include="assets\**" />
     <AvaloniaResource Include="Languages\**" />
   </ItemGroup>

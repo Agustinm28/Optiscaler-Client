@@ -629,7 +629,7 @@ namespace OptiscalerClient.Views
                         .OfType<TextBlock>().FirstOrDefault(x => x.Name == "TxtHideLabel");
                     if (hideLabel != null)
                     {
-                        hideLabel.Text = game.IsHidden ? "Show" : "Hide";
+                        hideLabel.Text = game.IsHidden ? GetResourceString("TxtShowGame", "Show") : GetResourceString("TxtHideGame", "Hide");
                         hideLabel.Foreground = game.IsHidden ? warmBrush : secondaryBrush;
                     }
 
@@ -1343,8 +1343,8 @@ namespace OptiscalerClient.Views
         {
             var dialog = new ConfirmDialog(
                 this,
-                "Clear Application Cache",
-                "Warning: This will permanently delete all scanned games, cover art and cached OptiScaler version data.\n\nThe application will close after clearing. On the next launch it will re-scan your library and re-download version information.");
+                GetResourceString("TxtClearAppCacheTitle", "Clear Application Cache"),
+                GetResourceString("TxtClearAppCacheDialogMsg", "Warning: This will permanently delete all scanned games, cover art and cached OptiScaler version data.\n\nThe application will close after clearing. On the next launch it will re-scan your library and re-download version information."));
 
             var confirmed = await dialog.ShowDialog<bool>(this);
             if (!confirmed) return;
@@ -1425,15 +1425,15 @@ namespace OptiscalerClient.Views
             if (txtInfo != null)
             {
                 txtInfo.Text = string.IsNullOrWhiteSpace(_profileSearchTextView)
-                    ? $"{allProfiles.Count} profile(s) ({customCount} custom)."
-                    : $"{filtered.Count} result(s) of {allProfiles.Count}.";
+                    ? string.Format(GetResourceString("TxtProfInfoFormat", "{0} profile(s) ({1} custom)."), allProfiles.Count, customCount)
+                    : string.Format(GetResourceString("TxtProfSearchResultFormat", "{0} result(s) of {1}."), filtered.Count, allProfiles.Count);
             }
 
             if (!filtered.Any())
             {
                 pnl.Children.Add(new TextBlock
                 {
-                    Text = string.IsNullOrWhiteSpace(_profileSearchTextView) ? "No profiles found." : "No matching profiles found.",
+                    Text = string.IsNullOrWhiteSpace(_profileSearchTextView) ? GetResourceString("TxtProfNotFound", "No profiles found.") : GetResourceString("TxtProfSearchNotFound", "No matching profiles found."),
                     Foreground = Brushes.Gray,
                     FontSize = 11,
                     HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
@@ -1476,7 +1476,7 @@ namespace OptiscalerClient.Views
                     Padding = new Thickness(6, 2),
                     Child = new TextBlock
                     {
-                        Text = "Default",
+                        Text = GetResourceString("TxtDefaultBadge", "Default"),
                         FontSize = 9,
                         Foreground = Application.Current?.FindResource("BrTextSecondary") as IBrush ?? Brushes.Gray
                     }
@@ -1574,7 +1574,7 @@ namespace OptiscalerClient.Views
             if (file == null) return;
             try
             {
-                var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OptiScaler_example.ini");
+                var templatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "OptiScaler_example.ini");
                 var iniContent = _profileService.GenerateOptiScalerIni(_selectedProfileView, templatePath);
                 await using var stream = await file.OpenWriteAsync();
                 await using var writer = new System.IO.StreamWriter(stream);
@@ -1771,7 +1771,9 @@ namespace OptiscalerClient.Views
 
             var titleBlock = this.FindControl<TextBlock>("TxtEditorTitle");
             if (titleBlock != null)
-                titleBlock.Text = isNewProfile ? "New Profile" : $"Edit: {profile.Name}";
+                titleBlock.Text = isNewProfile
+                    ? GetResourceString("TxtEditorNewTitle", "New Profile")
+                    : string.Format(GetResourceString("TxtEditorEditTitleFmt", "Edit: {0}"), profile.Name);
 
             var txtName = this.FindControl<TextBox>("TxtProfileNameEd");
             if (txtName != null)
@@ -2787,7 +2789,7 @@ namespace OptiscalerClient.Views
 
                     var title = new TextBlock
                     {
-                        Text = currentPage.Title,
+                        Text = string.IsNullOrEmpty(currentPage.TitleKey) ? currentPage.Title : GetResourceString(currentPage.TitleKey, currentPage.Title),
                         FontSize = 14,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
                     };
@@ -2863,7 +2865,9 @@ namespace OptiscalerClient.Views
 
                     var categoryTitle = new TextBlock
                     {
-                        Text = category,
+                        Text = (categoryPages.Count > 0 && !string.IsNullOrEmpty(categoryPages[0].CategoryKey))
+                            ? GetResourceString(categoryPages[0].CategoryKey, category)
+                            : category,
                         FontSize = 14,
                         FontWeight = FontWeight.SemiBold,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
@@ -2913,7 +2917,7 @@ namespace OptiscalerClient.Views
 
                         var pageTitle = new TextBlock
                         {
-                            Text = page.Title,
+                            Text = string.IsNullOrEmpty(page.TitleKey) ? page.Title : GetResourceString(page.TitleKey, page.Title),
                             FontSize = 14,
                             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                             Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -3110,7 +3114,7 @@ namespace OptiscalerClient.Views
             {
                 var title = new TextBlock
                 {
-                    Text = section.Title,
+                    Text = string.IsNullOrEmpty(section.TitleKey) ? section.Title : GetResourceString(section.TitleKey, section.Title),
                     FontSize = GetFontSize(16, section.FontSize),
                     FontWeight = FontWeight.Bold,
                     Margin = new Thickness(0, 0, 0, 8),
@@ -3123,9 +3127,10 @@ namespace OptiscalerClient.Views
 
             if (!string.IsNullOrEmpty(section.Content))
             {
+                var translatedContent = string.IsNullOrEmpty(section.ContentKey) ? section.Content : GetResourceString(section.ContentKey, section.Content);
                 var content = new TextBlock
                 {
-                    Text = section.Content.Replace("\\n", "\n"),
+                    Text = translatedContent!.Replace("\\n", "\n"),
                     FontSize = GetFontSize(14, section.FontSize),
                     TextWrapping = TextWrapping.Wrap,
                     LineHeight = 20,
@@ -3313,7 +3318,9 @@ namespace OptiscalerClient.Views
 
                 var title = new TextBlock
                 {
-                    Text = string.IsNullOrWhiteSpace(section.Title) ? "System" : section.Title,
+                    Text = string.IsNullOrEmpty(section.TitleKey)
+                        ? (string.IsNullOrWhiteSpace(section.Title) ? "System" : section.Title)
+                        : GetResourceString(section.TitleKey, string.IsNullOrWhiteSpace(section.Title) ? "System" : section.Title),
                     FontSize = 18,
                     FontWeight = FontWeight.SemiBold,
                     Margin = new Thickness(0, 0, 0, 12),
@@ -3656,7 +3663,7 @@ namespace OptiscalerClient.Views
             {
                 var title = new TextBlock
                 {
-                    Text = section.Title,
+                    Text = string.IsNullOrEmpty(section.TitleKey) ? section.Title : GetResourceString(section.TitleKey, section.Title),
                     FontSize = GetFontSize(18, section.FontSize),
                     FontWeight = FontWeight.SemiBold,
                     Margin = new Thickness(0, 0, 0, 12),
@@ -3669,7 +3676,7 @@ namespace OptiscalerClient.Views
             {
                 var content = new TextBlock
                 {
-                    Text = section.Content,
+                    Text = string.IsNullOrEmpty(section.ContentKey) ? section.Content : GetResourceString(section.ContentKey, section.Content),
                     TextWrapping = TextWrapping.Wrap,
                     Margin = new Thickness(0, 0, 0, 24),
                     Foreground = this.FindResource("BrTextSecondary") as IBrush,
@@ -3685,7 +3692,7 @@ namespace OptiscalerClient.Views
             {
                 var title = new TextBlock
                 {
-                    Text = section.Title,
+                    Text = string.IsNullOrEmpty(section.TitleKey) ? section.Title : GetResourceString(section.TitleKey, section.Title),
                     FontSize = GetFontSize(16, section.FontSize),
                     FontWeight = FontWeight.SemiBold,
                     Margin = new Thickness(0, 0, 0, 12),
@@ -3727,7 +3734,7 @@ namespace OptiscalerClient.Views
                         if (!string.IsNullOrEmpty(item.Title))
                         {
                             // Add bold title
-                            var titleRun = new Avalonia.Controls.Documents.Run($"{item.Title}: ")
+                            var titleRun = new Avalonia.Controls.Documents.Run($"{(string.IsNullOrEmpty(item.TitleKey) ? item.Title : GetResourceString(item.TitleKey, item.Title))}: ")
                             {
                                 FontWeight = FontWeight.Bold,
                                 Foreground = this.FindResource("BrTextPrimary") as IBrush
@@ -3736,13 +3743,13 @@ namespace OptiscalerClient.Views
                                 bulletText.Inlines.Add(titleRun);
 
                             // Add regular text
-                            var textRun = new Avalonia.Controls.Documents.Run(item.Text);
+                            var textRun = new Avalonia.Controls.Documents.Run(string.IsNullOrEmpty(item.TextKey) ? item.Text : GetResourceString(item.TextKey, item.Text));
                             if (bulletText.Inlines != null)
                                 bulletText.Inlines.Add(textRun);
                         }
                         else
                         {
-                            bulletText.Text = item.Text;
+                            bulletText.Text = string.IsNullOrEmpty(item.TextKey) ? item.Text : GetResourceString(item.TextKey, item.Text);
                         }
 
                         Grid.SetColumn(bullet, 0);
@@ -3769,7 +3776,7 @@ namespace OptiscalerClient.Views
 
                         var label = new TextBlock
                         {
-                            Text = item.Label,
+                            Text = string.IsNullOrEmpty(item.LabelKey) ? item.Label : GetResourceString(item.LabelKey, item.Label),
                             FontWeight = FontWeight.SemiBold,
                             FontSize = GetFontSize(14, item.FontSize),
                             Margin = new Thickness(0, 0, 0, 6),
@@ -3778,7 +3785,7 @@ namespace OptiscalerClient.Views
 
                         var text = new TextBlock
                         {
-                            Text = item.Text,
+                            Text = string.IsNullOrEmpty(item.TextKey) ? item.Text : GetResourceString(item.TextKey, item.Text),
                             TextWrapping = TextWrapping.Wrap,
                             Foreground = this.FindResource("BrTextSecondary") as IBrush,
                             FontSize = GetFontSize((double)(this.FindResource("FontSizeBody") ?? 14.0), item.FontSize)
@@ -3820,7 +3827,7 @@ namespace OptiscalerClient.Views
                                 if (!string.IsNullOrEmpty(subItem.Title))
                                 {
                                     // Add bold title
-                                    var titleRun = new Avalonia.Controls.Documents.Run($"{subItem.Title}: ")
+                                    var titleRun = new Avalonia.Controls.Documents.Run($"{(string.IsNullOrEmpty(subItem.TitleKey) ? subItem.Title : GetResourceString(subItem.TitleKey, subItem.Title))}: ")
                                     {
                                         FontWeight = FontWeight.Bold,
                                         Foreground = this.FindResource("BrTextPrimary") as IBrush
@@ -3829,13 +3836,13 @@ namespace OptiscalerClient.Views
                                         bulletText.Inlines.Add(titleRun);
 
                                     // Add regular text
-                                    var textRun = new Avalonia.Controls.Documents.Run(subItem.Text);
+                                    var textRun = new Avalonia.Controls.Documents.Run(string.IsNullOrEmpty(subItem.TextKey) ? subItem.Text : GetResourceString(subItem.TextKey, subItem.Text));
                                     if (bulletText.Inlines != null)
                                         bulletText.Inlines.Add(textRun);
                                 }
                                 else
                                 {
-                                    bulletText.Text = subItem.Text;
+                                    bulletText.Text = string.IsNullOrEmpty(subItem.TextKey) ? subItem.Text : GetResourceString(subItem.TextKey, subItem.Text);
                                 }
 
                                 Grid.SetColumn(bullet, 0);
@@ -4117,7 +4124,7 @@ namespace OptiscalerClient.Views
         private async Task RunRefreshCoversAsync()
         {
             if (_btnScan != null) _btnScan.IsEnabled = false;
-            if (_txtStatus != null) _txtStatus.Text = "Refreshing missing covers...";
+            if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtRefreshingCovers", "Refreshing missing covers...");
 
             try
             {
@@ -4157,8 +4164,8 @@ namespace OptiscalerClient.Views
 
                 var found = missing.Count(g => !string.IsNullOrEmpty(g.CoverImageUrl));
                 if (_txtStatus != null)
-                    _txtStatus.Text = $"Cover refresh complete. Found {found}/{missing.Count} missing covers.";
-                ShowToast($"Cover refresh complete — {found}/{missing.Count} covers found.");
+                    _txtStatus.Text = string.Format(GetResourceString("TxtCoverRefreshDoneFmt", "Cover refresh complete. Found {0}/{1} missing covers."), found, missing.Count);
+                ShowToast(string.Format(GetResourceString("TxtCoverRefreshToastFmt", "Cover refresh complete — {0}/{1} covers found."), found, missing.Count));
             }
             catch (Exception ex)
             {
@@ -4310,7 +4317,7 @@ namespace OptiscalerClient.Views
             }
 
             var installService = new GameInstallationService();
-            var bulkWindow = new BulkInstallWindow(_componentService, installService, _games.ToList());
+            var bulkWindow = new BulkInstallWindow(_componentService, installService, _games.ToList(), owner: this);
             await bulkWindow.ShowDialog<object>(this);
 
             // Refresh game list after bulk install
@@ -4537,7 +4544,8 @@ namespace OptiscalerClient.Views
 
                         if (ComponentManagementService.IsOptiScalerDownloadActive(versionToInstall))
                         {
-                            ShowSecondaryToast($"Ya hay una descarga en curso para v{versionToInstall}.");
+                            var inProgressFmtMain = GetResourceString("TxtDownloadInProgressFormat", "A download is already in progress for v{0}.");
+                            ShowSecondaryToast(string.Format(inProgressFmtMain, versionToInstall));
                             return;
                         }
 
@@ -4548,24 +4556,25 @@ namespace OptiscalerClient.Views
                         if (!Directory.Exists(optiCacheDir) || Directory.GetFiles(optiCacheDir, "*.*", SearchOption.AllDirectories).Length == 0)
                         {
                             SetQuickInstallLoading(button);
-                            ShowToast($"Descargando OptiScaler {versionToInstall}... 0%", showProgress: true, progressPercent: 0);
+                            ShowToast(string.Format(GetResourceString("TxtInstallingFormat", "Downloading OptiScaler v{0}... {1}%"), versionToInstall, 0), showProgress: true, progressPercent: 0);
 
                             try
                             {
                                 var progress = new Progress<double>(p =>
                                 {
-                                    UpdateToastProgress($"Descargando OptiScaler {versionToInstall}... {(int)p}%", p);
+                                    UpdateToastProgress(string.Format(GetResourceString("TxtInstallingFormat", "Downloading OptiScaler v{0}... {1}%"), versionToInstall, (int)p), p);
                                 });
 
                                 await _componentService.DownloadOptiScalerAsync(versionToInstall, progress);
-                                ShowToast($"Instalando OptiScaler {versionToInstall}...", showProgress: true, progressPercent: null);
+                                ShowToast(string.Format(GetResourceString("TxtExtractingFormat", "Extracting and installing v{0}..."), versionToInstall), showProgress: true, progressPercent: null);
                             }
                             catch (Exception downloadEx)
                             {
                                 if (downloadEx is VersionUnavailableException vex &&
                                     vex.Message.Contains("Download already in progress", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    ShowSecondaryToast($"Ya hay una descarga en curso para v{vex.Version}.");
+                                    var inProgressFmtVex = GetResourceString("TxtDownloadInProgressFormat", "A download is already in progress for v{0}.");
+                                    ShowSecondaryToast(string.Format(inProgressFmtVex, vex.Version));
                                     return;
                                 }
 
@@ -4616,9 +4625,9 @@ namespace OptiscalerClient.Views
                         {
                             try
                             {
-                                ShowToast($"Descargando FSR4 INT8 v{configuredExtras}... 0%", showProgress: true, progressPercent: 0);
+                                ShowToast(string.Format(GetResourceString("TxtDownloadingExtrasFormat", "Downloading FSR4 INT8 v{0}... {1}%"), configuredExtras, 0), showProgress: true, progressPercent: 0);
                                 string extrasDllPath;
-                                var extrasProgress = new Progress<double>(p => UpdateToastProgress($"Descargando FSR4 INT8 v{configuredExtras}... {(int)p}%", p));
+                                var extrasProgress = new Progress<double>(p => UpdateToastProgress(string.Format(GetResourceString("TxtDownloadingExtrasFormat", "Downloading FSR4 INT8 v{0}... {1}%"), configuredExtras, (int)p), p));
                                 extrasDllPath = await _componentService.DownloadExtrasDllAsync(configuredExtras, extrasProgress);
 
                                 // Copy into game directory

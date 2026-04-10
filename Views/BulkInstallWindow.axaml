@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         x:Class="OptiscalerClient.Views.BulkInstallWindow"
         Title="{DynamicResource TxtBulkInstallWindow}"
-        Height="700" Width="900"
+        Height="820" Width="900"
         SystemDecorations="None"
         TransparencyLevelHint="Transparent"
         Background="Transparent"
@@ -28,15 +28,12 @@
                 BoxShadow="0 8 32 0 #80000000"
                 BorderBrush="{StaticResource BrBorderSubtle}"
                 BorderThickness="1">
-            
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>   <!-- Header -->
-                    <RowDefinition Height="Auto"/>   <!-- Select All -->
-                    <RowDefinition Height="*"/>      <!-- Games List -->
-                    <RowDefinition Height="Auto"/>   <!-- Settings -->
-                    <RowDefinition Height="Auto"/>   <!-- Progress -->
-                    <RowDefinition Height="Auto"/>   <!-- Action bar -->
+                    <RowDefinition Height="Auto"/>   <!-- Select All + Search -->
+                    <RowDefinition Height="*"/>      <!-- Main Content -->
                 </Grid.RowDefinitions>
 
                 <!-- ════════════════════════════════════════════════════════
@@ -72,7 +69,7 @@
                 </Border>
 
                 <!-- ════════════════════════════════════════════════════════
-                     SELECT ALL SECTION
+                     SELECT ALL + SEARCH BAR
                      ════════════════════════════════════════════════════════ -->
                 <Border Grid.Row="1"
                         Background="{StaticResource BrBgSurface}"
@@ -95,17 +92,17 @@
                                   Click="ChkSelectAll_Click"/>
 
                         <TextBox Grid.Column="1"
-                          Name="TxtSearch"
-                          Width="200"
-                          Height="28"
-                          Classes="BtnBase"
-                          Padding="8,4"
-                          FontSize="12"
-                          Watermark="{DynamicResource TxtSearchGames}"
-                          TextChanged="TxtSearch_TextChanged"
-                          LostFocus="TxtSearch_LostFocus"
-                          Margin="16,0,0,0"
-                          VerticalAlignment="Center"/>
+                                 Name="TxtSearch"
+                                 Width="340"
+                                 Height="28"
+                                 Classes="BtnBase"
+                                 Padding="8,4"
+                                 FontSize="12"
+                                 Watermark="{DynamicResource TxtSearchGames}"
+                                 TextChanged="TxtSearch_TextChanged"
+                                 LostFocus="TxtSearch_LostFocus"
+                                 Margin="16,0,0,0"
+                                 VerticalAlignment="Center"/>
 
                         <TextBlock Grid.Column="2"
                                    Name="TxtSelectionCount"
@@ -118,288 +115,305 @@
                 </Border>
 
                 <!-- ════════════════════════════════════════════════════════
-                     GAMES LIST (Scrollable)
+                     MAIN CONTENT: SIDEBAR + GAMES LIST
                      ════════════════════════════════════════════════════════ -->
-                <ScrollViewer Grid.Row="2"
-                              VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled"
-                              Padding="0">
-                    <ItemsControl Name="GamesList" Padding="12">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="{StaticResource BrBgSurface}"
-                                        BorderBrush="{StaticResource BrBorderSubtle}"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="10,6"
-                                        Margin="12,3">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="270"/>  <!-- Left Sidebar -->
+                        <ColumnDefinition Width="*"/>    <!-- Games List -->
+                    </Grid.ColumnDefinitions>
 
-                                        <CheckBox Grid.Column="0"
-                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                  IsEnabled="{Binding CanInstall}"
-                                                  Margin="0,0,10,0"
-                                                  VerticalAlignment="Center"/>
-
-                                        <Image Grid.Column="1"
-                                               Source="{Binding CoverPath}"
-                                               Width="28"
-                                               Height="42"
-                                               Stretch="UniformToFill"
-                                               Margin="0,0,10,0"
-                                               VerticalAlignment="Center">
-                                            <Image.Clip>
-                                                <RectangleGeometry Rect="0,0,28,42" RadiusX="3" RadiusY="3"/>
-                                            </Image.Clip>
-                                        </Image>
-
-                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}"
-                                                       FontWeight="Medium"
-                                                       Foreground="{StaticResource BrTextPrimary}"
-                                                       FontSize="12"/>
-                                            <TextBlock Text="{Binding Platform}"
-                                                       Foreground="{StaticResource BrTextSecondary}"
-                                                       FontSize="10"
-                                                       Margin="0,1,0,0"/>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
-                                            <!-- OptiScaler badge (violet) -->
-                                            <Border Background="#1E1530"
-                                                    BorderBrush="{StaticResource BrAccent}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="3"
-                                                    Padding="6,2"
-                                                    IsVisible="{Binding IsOptiscalerInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="✦ OptiScaler"
-                                                               Foreground="{StaticResource BrAccent}"
-                                                               FontSize="8"
-                                                               FontWeight="Bold"/>
-                                                    <TextBlock Text="{Binding OptiscalerVersion, StringFormat=' {0}'}"
-                                                               Foreground="{StaticResource BrAccent}"
-                                                               FontSize="8"
-                                                               FontWeight="SemiBold"
-                                                               IsVisible="{Binding OptiscalerVersion, Converter={StaticResource NullToVisibilityConverter}}"/>
-                                                </StackPanel>
-                                            </Border>
-
-                                            <!-- Installed badge -->
-                                            <Border Background="{StaticResource BrBgDeep}"
-                                                    CornerRadius="3"
-                                                    Padding="6,2"
-                                                    IsVisible="{Binding IsInstalled}">
-                                                <TextBlock Text="{DynamicResource TxtInstalled}"
-                                                           FontSize="9"
-                                                           FontWeight="Medium"
-                                                           Foreground="{StaticResource BrTextSecondary}"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-
-                <!-- ════════════════════════════════════════════════════════
-                     INSTALLATION SETTINGS
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="3"
-                        Background="{StaticResource BrBgSurface}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="0,1,0,1"
-                        Padding="24,20">
-                    <StackPanel Spacing="16">
-                        <TextBlock Text="{DynamicResource TxtInstallationSettings}"
-                                   FontSize="14"
-                                   FontWeight="SemiBold"
-                                   Foreground="{StaticResource BrTextPrimary}"/>
-
-                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,*" Margin="0,8,0,0">
-
-                        <!-- Row 1, Col 0: Version selector -->
-                        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Center">
-                            <TextBlock Text="{DynamicResource TxtVersion}"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       VerticalAlignment="Center"
-                                       FontSize="13"
-                                       Width="65"/>
-                            <ComboBox Name="CmbOptiVersion"
-                                      Width="210"
-                                      Classes="BtnSelector"
-                                      HorizontalAlignment="Stretch"
-                                      Background="{StaticResource BrBgBase}"
-                                      Foreground="{StaticResource BrTextPrimary}"
-                                      BorderBrush="{StaticResource BrBorderSubtle}"/>
-                            <Border Background="{StaticResource BrBgElevated}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1" CornerRadius="8"
-                                    Width="16" Height="16"
-                                    Margin="10,0,0,0"
-                                    ToolTip.ShowDelay="100" Cursor="Help"
-                                    ToolTip.Tip="{DynamicResource TxtTooltipOptiScalerVersion}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
-                                            FontSize="10" FontWeight="Bold"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            Margin="0,-1,0,0"/>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- Row 1, Col 2: Injector selector -->
-                        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8">
-                            <TextBlock Text="{DynamicResource TxtInjectionLbl}"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       VerticalAlignment="Center"
-                                       FontSize="13"
-                                       Width="65"/>
-                            <ComboBox Name="CmbInjectionMethod"
-                                      Width="210"
-                                      Classes="BtnSelector"
-                                      SelectedIndex="0"
-                                      Background="{StaticResource BrBgBase}"
-                                      VerticalContentAlignment="Center">
-                                <ComboBoxItem Content="dxgi.dll"     Tag="dxgi.dll"/>
-                                <ComboBoxItem Content="winmm.dll"    Tag="winmm.dll"/>
-                                <ComboBoxItem Content="d3d12.dll"    Tag="d3d12.dll"/>
-                                <ComboBoxItem Content="dbghelp.dll"  Tag="dbghelp.dll"/>
-                                <ComboBoxItem Content="version.dll"  Tag="version.dll"/>
-                                <ComboBoxItem Content="wininet.dll"  Tag="wininet.dll"/>
-                                <ComboBoxItem Content="winhttp.dll"  Tag="winhttp.dll"/>
-                            </ComboBox>
-                            <Border Background="{StaticResource BrBgElevated}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1" CornerRadius="8"
-                                    Width="16" Height="16"
-                                    Margin="10,0,0,0"
-                                    ToolTip.ShowDelay="100" Cursor="Help"
-                                    ToolTip.Tip="{DynamicResource TxtTooltipInjectionMethod}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
-                                            FontSize="10" FontWeight="Bold"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            Margin="0,-1,0,0"/>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- Vertical divider spanning all rows -->
-                        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                                Width="1"
-                                Background="{StaticResource BrBorderSubtle}"
-                                Margin="20,0"/>
-
-                        <!-- Row 2, Col 0: FSR4 INT8 selector -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="FSR4 INT8:"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       VerticalAlignment="Center"
-                                       FontSize="13"
-                                       Margin="0,0,8,0"
-                                       Width="65"/>
-                            <ComboBox Name="CmbExtrasVersion"
-                                      Width="200"
-                                      Classes="BtnSelector"
-                                      Padding="8,0,24,0"
-                                      HorizontalContentAlignment="Left"
-                                      Background="{StaticResource BrBgBase}"
-                                      VerticalContentAlignment="Center" />
-                            <Border Background="{StaticResource BrBgElevated}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1" CornerRadius="8"
-                                    Width="16" Height="16"
-                                    Margin="10,0,0,0"
-                                    ToolTip.ShowDelay="100" Cursor="Help"
-                                    ToolTip.Tip="{DynamicResource TxtTooltipFsr4Int8}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
-                                           FontSize="10" FontWeight="Bold"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Margin="0,-1,0,0"/>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- Row 2, Col 2: Fakenvapi + NukemFG -->
-                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                            <CheckBox Name="ChkFakenvapi"
-                                      Content="{DynamicResource TxtInstallFakenvapi}"
-                                      Foreground="{StaticResource BrTextPrimary}"
-                                      VerticalAlignment="Center"
-                                      Margin="0,0,12,0"/>
-                            <CheckBox Name="ChkNukemFG"
-                                      Content="{DynamicResource TxtInstallNukemFG}"
-                                      Foreground="{StaticResource BrTextPrimary}"
-                                      VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Grid>
-                    </StackPanel>
-                </Border>
-
-                <!-- ════════════════════════════════════════════════════════
-                     PROGRESS BAR
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="4"
-                        Name="ProgressSection"
-                        Background="{StaticResource BrBgDeep}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="0,0,0,1"
-                        Padding="24,16"
-                        IsVisible="False">
-                    <StackPanel Spacing="8">
+                    <!-- ────────────────────────────────────────────────────
+                         LEFT SIDEBAR (Settings + Progress + Actions)
+                         ──────────────────────────────────────────────────── -->
+                    <Border Grid.Column="0"
+                            Background="{StaticResource BrBgSurface}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="0,0,1,0"
+                            CornerRadius="0,0,0,12">
                         <Grid>
-                            <TextBlock Name="TxtProgressStatus"
-                                       Text="Installing..."
-                                       FontSize="13"
-                                       Foreground="{StaticResource BrTextPrimary}"/>
-                            <TextBlock Name="TxtProgressCount"
-                                       Text="1 / 5"
-                                       FontSize="13"
-                                       HorizontalAlignment="Right"
-                                       Foreground="{StaticResource BrTextSecondary}"/>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>   <!-- Settings -->
+                                <RowDefinition Height="*"/>      <!-- Spacer -->
+                                <RowDefinition Height="Auto"/>   <!-- Progress -->
+                                <RowDefinition Height="Auto"/>   <!-- Action buttons -->
+                            </Grid.RowDefinitions>
+
+                            <!-- Installation Settings -->
+                            <StackPanel Grid.Row="0" Margin="16,20,16,4" Spacing="14">
+                                <TextBlock Text="{DynamicResource TxtInstallationSettings}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource BrTextPrimary}"/>
+
+                                <!-- Version -->
+                                <StackPanel Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtVersion}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="14" Height="14"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtTooltipOptiScalerVersion}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="9" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbOptiVersion"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Background="{StaticResource BrBgBase}"
+                                              Foreground="{StaticResource BrTextPrimary}"
+                                              BorderBrush="{StaticResource BrBorderSubtle}"/>
+                                </StackPanel>
+
+                                <!-- Injection Method -->
+                                <StackPanel Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtInjectionLbl}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="14" Height="14"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtTooltipInjectionMethod}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="9" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbInjectionMethod"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              SelectedIndex="0"
+                                              Background="{StaticResource BrBgBase}"
+                                              VerticalContentAlignment="Center">
+                                        <ComboBoxItem Content="dxgi.dll"     Tag="dxgi.dll"/>
+                                        <ComboBoxItem Content="winmm.dll"    Tag="winmm.dll"/>
+                                        <ComboBoxItem Content="d3d12.dll"    Tag="d3d12.dll"/>
+                                        <ComboBoxItem Content="dbghelp.dll"  Tag="dbghelp.dll"/>
+                                        <ComboBoxItem Content="version.dll"  Tag="version.dll"/>
+                                        <ComboBoxItem Content="wininet.dll"  Tag="wininet.dll"/>
+                                        <ComboBoxItem Content="winhttp.dll"  Tag="winhttp.dll"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- FSR4 INT8 -->
+                                <StackPanel Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="FSR4 INT8:"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="14" Height="14"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtTooltipFsr4Int8}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="9" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbExtrasVersion"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              Background="{StaticResource BrBgBase}"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Profile -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Profile"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="12"/>
+                                    <ComboBox Name="CmbProfile"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              HorizontalContentAlignment="Left"
+                                              Background="{StaticResource BrBgBase}"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Divider -->
+                                <Border Height="1" Background="{StaticResource BrBorderSubtle}" Margin="0,2"/>
+
+                                <!-- Fakenvapi -->
+                                <CheckBox Name="ChkFakenvapi"
+                                          Content="{DynamicResource TxtInstallFakenvapi}"
+                                          Foreground="{StaticResource BrTextPrimary}"
+                                          FontSize="12"/>
+
+                                <!-- NukemFG -->
+                                <CheckBox Name="ChkNukemFG"
+                                          Content="{DynamicResource TxtInstallNukemFG}"
+                                          Foreground="{StaticResource BrTextPrimary}"
+                                          FontSize="12"/>
+                            </StackPanel>
+
+                            <!-- Progress Bar -->
+                            <Border Grid.Row="2"
+                                    Name="ProgressSection"
+                                    Background="{StaticResource BrBgDeep}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="0,1,0,0"
+                                    Padding="16,12"
+                                    IsVisible="False">
+                                <StackPanel Spacing="8">
+                                    <Grid>
+                                        <TextBlock Name="TxtProgressStatus"
+                                                   Text="Installing..."
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Name="TxtProgressCount"
+                                                   Text="1 / 5"
+                                                   FontSize="12"
+                                                   HorizontalAlignment="Right"
+                                                   Foreground="{StaticResource BrTextSecondary}"/>
+                                    </Grid>
+                                    <ProgressBar Name="ProgressBar"
+                                                 Height="6"
+                                                 Minimum="0"
+                                                 Maximum="100"
+                                                 Value="0"
+                                                 Background="{StaticResource BrBgBase}"
+                                                 Foreground="{StaticResource BrAccent}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Action Buttons -->
+                            <Border Grid.Row="3"
+                                    Background="{StaticResource BrBgDeep}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="0,1,0,0"
+                                    CornerRadius="0,0,0,12"
+                                    Padding="16,12">
+                                <StackPanel Spacing="8">
+                                    <Button Name="BtnInstall"
+                                            Content="{DynamicResource TxtInstallSelected}"
+                                            Classes="BtnBase BtnPrimary"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            Padding="16,8"
+                                            Click="BtnInstall_Click"/>
+                                    <Button Name="BtnCancel"
+                                            Content="{DynamicResource TxtCancel}"
+                                            Classes="BtnBase"
+                                            HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"
+                                            Padding="12,8"
+                                            Click="BtnCancel_Click"/>
+                                </StackPanel>
+                            </Border>
                         </Grid>
-                        <ProgressBar Name="ProgressBar"
-                                     Height="6"
-                                     Minimum="0"
-                                     Maximum="100"
-                                     Value="0"
-                                     Background="{StaticResource BrBgBase}"
-                                     Foreground="{StaticResource BrAccent}"/>
-                    </StackPanel>
-                </Border>
+                    </Border>
 
-                <!-- ════════════════════════════════════════════════════════
-                     ACTION BAR
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="5"
-                        Background="{StaticResource BrBgDeep}"
-                        CornerRadius="0,0,12,12"
-                        Padding="16,12">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- ────────────────────────────────────────────────────
+                         GAMES LIST (Scrollable)
+                         ──────────────────────────────────────────────────── -->
+                    <ScrollViewer Grid.Column="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="0">
+                        <ItemsControl Name="GamesList" Padding="12">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource BrBgSurface}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="6"
+                                            Padding="10,6"
+                                            Margin="12,3">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
 
-                        <Button Grid.Column="0"
-                                Name="BtnCancel"
-                                Content="{DynamicResource TxtCancel}"
-                                Classes="BtnBase"
-                                Padding="12,6"
-                                HorizontalAlignment="Left"
-                                Click="BtnCancel_Click"/>
+                                            <CheckBox Grid.Column="0"
+                                                      IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      IsEnabled="{Binding CanInstall}"
+                                                      Margin="0,0,10,0"
+                                                      VerticalAlignment="Center"/>
 
-                        <Button Grid.Column="1"
-                                Name="BtnInstall"
-                                Content="{DynamicResource TxtInstallSelected}"
-                                Classes="BtnBase BtnPrimary"
-                                Padding="16,6"
-                                Click="BtnInstall_Click"/>
-                    </Grid>
-                </Border>
+                                            <Image Grid.Column="1"
+                                                   Source="{Binding CoverPath}"
+                                                   Width="28"
+                                                   Height="42"
+                                                   Stretch="UniformToFill"
+                                                   Margin="0,0,10,0"
+                                                   VerticalAlignment="Center">
+                                                <Image.Clip>
+                                                    <RectangleGeometry Rect="0,0,28,42" RadiusX="3" RadiusY="3"/>
+                                                </Image.Clip>
+                                            </Image>
+
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontWeight="Medium"
+                                                           Foreground="{StaticResource BrTextPrimary}"
+                                                           FontSize="12"/>
+                                                <TextBlock Text="{Binding Platform}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           FontSize="10"
+                                                           Margin="0,1,0,0"/>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+                                                <!-- OptiScaler badge (violet) -->
+                                                <Border Background="#1E1530"
+                                                        BorderBrush="{StaticResource BrAccent}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="3"
+                                                        Padding="6,2"
+                                                        IsVisible="{Binding IsOptiscalerInstalled, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="✦ OptiScaler"
+                                                                   Foreground="{StaticResource BrAccent}"
+                                                                   FontSize="8"
+                                                                   FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding OptiscalerVersion, StringFormat=' {0}'}"
+                                                                   Foreground="{StaticResource BrAccent}"
+                                                                   FontSize="8"
+                                                                   FontWeight="SemiBold"
+                                                                   IsVisible="{Binding OptiscalerVersion, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <!-- Installed badge -->
+                                                <Border Background="{StaticResource BrBgDeep}"
+                                                        CornerRadius="3"
+                                                        Padding="6,2"
+                                                        IsVisible="{Binding IsInstalled}">
+                                                    <TextBlock Text="{DynamicResource TxtInstalled}"
+                                                               FontSize="9"
+                                                               FontWeight="Medium"
+                                                               Foreground="{StaticResource BrTextSecondary}"/>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </Grid>
         </Border>
     </Panel>

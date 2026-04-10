@@ -590,7 +590,8 @@ namespace OptiscalerClient.Views
 
             _pendingCoverPath = null;
             if (imgPreview != null) imgPreview.Source = null;
-            if (txtCoverPath != null) txtCoverPath.Text = "Sin imagen seleccionada";
+            var noImage = GetResourceString("TxtNoImageSelected", "No image selected");
+            if (txtCoverPath != null) txtCoverPath.Text = noImage;
 
             if (bdCoverModal != null) bdCoverModal.IsVisible = true;
         }
@@ -689,7 +690,8 @@ namespace OptiscalerClient.Views
             }
 
             var txtCoverPath = this.FindControl<TextBlock>("TxtCoverPath");
-            if (txtCoverPath != null) txtCoverPath.Text = string.IsNullOrWhiteSpace(_game.CoverImageUrl) ? "Sin imagen seleccionada" : _game.CoverImageUrl;
+            var noImage2 = GetResourceString("TxtNoImageSelected", "No image selected");
+            if (txtCoverPath != null) txtCoverPath.Text = string.IsNullOrWhiteSpace(_game.CoverImageUrl) ? noImage2 : _game.CoverImageUrl;
 
             HideCoverModal();
         }
@@ -854,7 +856,8 @@ namespace OptiscalerClient.Views
 
                 if (ComponentManagementService.IsOptiScalerDownloadActive(optiscalerVersion))
                 {
-                    await ShowToastAsync($"Ya hay una descarga en curso para v{optiscalerVersion}.");
+                    var inProgressFmt = GetResourceString("TxtDownloadInProgressFormat", "A download is already in progress for v{0}.");
+                    await ShowToastAsync(string.Format(inProgressFmt, optiscalerVersion));
                     return;
                 }
 
@@ -924,7 +927,8 @@ namespace OptiscalerClient.Views
                     Dispatcher.UIThread.Post(() => { if (bdProgress != null) bdProgress.IsVisible = false; });
                     if (vex.Message.Contains("Download already in progress", StringComparison.OrdinalIgnoreCase))
                     {
-                        await ShowToastAsync($"Ya hay una descarga en curso para v{vex.Version}.");
+                        var inProgressFmt2 = GetResourceString("TxtDownloadInProgressFormat", "A download is already in progress for v{0}.");
+                        await ShowToastAsync(string.Format(inProgressFmt2, vex.Version));
                     }
                     else
                     {

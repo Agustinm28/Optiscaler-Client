@@ -304,7 +304,7 @@ namespace OptiscalerClient.Views
 
             try
             {
-                var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "OptiScaler_example.ini");
+                var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "OptiScaler_example.ini");
                 var iniContent = _profileService.GenerateOptiScalerIni(_selectedProfile, templatePath);
                 await using var stream = await file.OpenWriteAsync();
                 await using var writer = new StreamWriter(stream);
@@ -380,7 +380,7 @@ namespace OptiscalerClient.Views
         {
             if (_selectedProfile == null) return;
 
-            var dialog = new ConfirmDialog(this, "Delete Profile", 
+            var dialog = new ConfirmDialog(this, "Delete Profile",
                 $"Are you sure you want to delete the profile '{_selectedProfile.Name}'?", false);
             var result = await dialog.ShowDialog<bool>(this);
 

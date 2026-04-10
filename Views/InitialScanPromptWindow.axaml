@@ -62,10 +62,10 @@
                                         Margin="0,0,0,20">
                                     <Grid ColumnDefinitions="*,Auto">
                                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                            <TextBlock Text="Refresh missing covers only"
+                                            <TextBlock Text="{DynamicResource TxtRefreshCoversTitle}"
                                                        FontWeight="SemiBold"
                                                        Foreground="{StaticResource BrTextPrimary}"/>
-                                            <TextBlock Text="Skip the full scan and only retry cover art for games that couldn't be fetched before. Useful after setting up a SteamGridDB API key."
+                                            <TextBlock Text="{DynamicResource TxtRefreshCoversDesc}"
                                                        Foreground="{StaticResource BrTextSecondary}"
                                                        TextWrapping="Wrap"
                                                        Margin="0,4,16,0"

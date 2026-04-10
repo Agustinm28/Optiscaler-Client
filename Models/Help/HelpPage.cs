@@ -17,11 +17,17 @@ namespace OptiscalerClient.Models.Help
         [JsonPropertyName("title")]
         public string Title { get; set; } = string.Empty;
 
+        [JsonPropertyName("titleKey")]
+        public string? TitleKey { get; set; }
+
         [JsonPropertyName("icon")]
         public string Icon { get; set; } = "&#xE8A5;";
 
         [JsonPropertyName("category")]
         public string Category { get; set; } = string.Empty;
+
+        [JsonPropertyName("categoryKey")]
+        public string? CategoryKey { get; set; }
 
         [JsonPropertyName("fontSize")]
         public double? FontSize { get; set; }
@@ -38,8 +44,14 @@ namespace OptiscalerClient.Models.Help
         [JsonPropertyName("title")]
         public string? Title { get; set; }
 
+        [JsonPropertyName("titleKey")]
+        public string? TitleKey { get; set; }
+
         [JsonPropertyName("content")]
         public string? Content { get; set; }
+
+        [JsonPropertyName("contentKey")]
+        public string? ContentKey { get; set; }
 
         [JsonPropertyName("fontSize")]
         public double? FontSize { get; set; }
@@ -59,11 +71,20 @@ namespace OptiscalerClient.Models.Help
         [JsonPropertyName("label")]
         public string Label { get; set; } = string.Empty;
 
+        [JsonPropertyName("labelKey")]
+        public string? LabelKey { get; set; }
+
         [JsonPropertyName("text")]
         public string Text { get; set; } = string.Empty;
 
+        [JsonPropertyName("textKey")]
+        public string? TextKey { get; set; }
+
         [JsonPropertyName("title")]
         public string? Title { get; set; }
+
+        [JsonPropertyName("titleKey")]
+        public string? TitleKey { get; set; }
 
         [JsonPropertyName("fontSize")]
         public double? FontSize { get; set; }
