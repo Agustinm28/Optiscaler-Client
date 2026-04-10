@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
@@ -37,6 +37,17 @@
     <x:String x:Key="TxtTipUpdateNukem">新的NukemFG版本可用。点击提供更新的DLL。</x:String>
     <x:String x:Key="TxtDefaultGpu">检测GPU中…</x:String>
     <x:String x:Key="TxtManageGame">管理</x:String>
+    <x:String x:Key="TxtQuickInstall">✦ 快速安装</x:String>
+    <x:String x:Key="TxtQuickUninstall">🗑️ 快速卸载</x:String>
+    <x:String x:Key="TxtInitialScanTitle">首次扫描</x:String>
+    <x:String x:Key="TxtInitialScanDesc">在扫描磁盘寻找游戏之前，请选择要扫描的驱动器和来源。你可以关闭此窗口，稍后再扫描。</x:String>
+    <x:String x:Key="TxtScanSetupTitle">扫描设置</x:String>
+    <x:String x:Key="TxtScanSetupDesc">选择要扫描的驱动器和来源。你可以关闭此窗口，稍后再扫描。</x:String>
+    <x:String x:Key="TxtInitialScanDrives">要扫描的驱动器</x:String>
+    <x:String x:Key="TxtInitialScanSources">要扫描的来源</x:String>
+    <x:String x:Key="TxtInitialScanStart">开始扫描</x:String>
+    <x:String x:Key="TxtInitialScanClose">关闭</x:String>
+    <x:String x:Key="TxtInitialScanNoDrives">未检测到驱动器。</x:String>
     <x:String x:Key="TxtStatusReady">就绪</x:String>
     <x:String x:Key="TxtScanningTitle">扫描游戏中...</x:String>
     <x:String x:Key="TxtScanningDesc">在所有平台上查找游戏...</x:String>
@@ -121,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">稍后</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">关于</x:String>
+    <x:String x:Key="TxtAboutTitle">帮助</x:String>
     <x:String x:Key="TxtFeedbackTitle">反馈</x:String>
     <x:String x:Key="TxtFeedbackDesc">如果您想请求功能或报告错误，请在GitHub仓库中打开issue。</x:String>
     <x:String x:Key="TxtBuildDateLbl">最后构建日期</x:String>
@@ -142,6 +153,8 @@
     <x:String x:Key="TxtLoadedGamesFormat">已加载{0}个游戏。</x:String>
     <x:String x:Key="TxtScanningShort">扫描游戏中...</x:String>
     <x:String x:Key="TxtScanCompleteFormat">扫描完成。游戏总数：{0}</x:String>
+    <x:String x:Key="TxtFetchingCoversFormat">正在获取封面: {0}/{1}...</x:String>
+    <x:String x:Key="TxtCoversCompleteFmt">封面加载完成。游戏总数: {0}</x:String>
     <x:String x:Key="TxtErrorFormat">错误：{0}</x:String>
     <x:String x:Key="TxtSelectExe">选择游戏可执行文件</x:String>
     <x:String x:Key="TxtGameDuplicate">此游戏已在列表中。</x:String>
@@ -195,4 +208,295 @@
     <x:String x:Key="TxtNoGames">无游戏</x:String>
     <x:String x:Key="TxtNoGamesFound">未找到游戏。请先扫描游戏。</x:String>
 
-</ResourceDictionary>
+
+    <!-- SteamGridDB -->
+    <x:String x:Key="TxtSteamGridGuideStep1Title">1. Open the SteamGridDB API page</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">用于提高封面匹配准确性。可选，但建议填写。</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. 生成您的 API 密钥</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">访问 https://www.steamgriddb.com/profile/preferences/api 并登录。</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">保存密钥后运行新的扫描，以便更准确地刷新封面。</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">获取 API 密钥</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">在该页面创建新的 API 密钥并复制它。</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">打开页面</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. 重新扫描您的游戏</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeader">Get your SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideTitle">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">快速指南以提高游戏封面检测的准确性。</x:String>
+    <x:String x:Key="TxtSteamGridApiKey">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Paste your SteamGridDB API key here</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. 将其粘贴到设置中</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Desc">Return to the app and paste the key into the SteamGridDB API Key field.</x:String>
+
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">访问 </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> 并登录。</x:String>
+
+    <x:String x:Key="TxtViewGrid">网格视图</x:String>
+    <x:String x:Key="TxtViewList">列表视图</x:String>
+    <x:String x:Key="TxtLoadingResources">正在加载资源...</x:String>
+    <x:String x:Key="TxtLoadingResourcesDesc">Fetching version data from GitHub</x:String>
+    <x:String x:Key="TxtEditImage">编辑图片</x:String>
+    <x:String x:Key="TxtCoverUpdateTitle">更新封面</x:String>
+    <x:String x:Key="TxtCoverUpdateDesc">为游戏选择自定义图片。</x:String>
+    <x:String x:Key="TxtPreviewUnavailable">预览不可用</x:String>
+    <x:String x:Key="TxtCoverRestoreTooltip">恢复为游戏的默认封面图片</x:String>
+    <x:String x:Key="TxtRestore">恢复</x:String>
+    <x:String x:Key="TxtApply">应用</x:String>
+    <x:String x:Key="TxtNoImageSelected">未选择图片</x:String>
+    <x:String x:Key="TxtDownloadInProgressFormat">v{0} 的下载已在进行中。</x:String>
+    <x:String x:Key="TxtDownloadingExtrasFormat">正在下载 FSR4 INT8 v{0}... {1}%</x:String>
+    <x:String x:Key="TxtVersionUnavailable">当前无法安装 OptiScaler v{0}。
+
+此版本不可下载。请检查网络连接并稍后重试。</x:String>
+    <x:String x:Key="TxtAppInfoTitle">应用</x:String>
+    <x:String x:Key="TxtExternalResourcesTitle">外部资源</x:String>
+    <x:String x:Key="TxtFeedbackBugs">🐛 错误报告：请使用包含重现步骤的 "Bug or Error report" 模板</x:String>
+    <x:String x:Key="TxtFeedbackFeatures">✨ 功能请求：使用 "Feature request" 模板建议新功能</x:String>
+    <x:String x:Key="TxtFeedbackImprovements">🔧 改进：对现有功能的改进请使用 "Improvement request" 模板</x:String>
+    <x:String x:Key="TxtFeedbackSystem">为加快处理，请提供操作系统、GPU 以及应用版本</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Beta 版本已包含 Fakenvapi 和 NukemFG</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultTitle">默认 FSR4 INT8</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultDesc">打开游戏时预选的默认 FSR4 INT8 模组版本。RDNA 4 GPU（RX 9000 系列）会自动使用"无"选项。</x:String>
+    <x:String x:Key="TxtDefaultGpuTitle">默认 GPU</x:String>
+    <x:String x:Key="TxtDefaultGpuDesc">用于默认值和 GPU 特定建议。</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionTitle">默认 OptiScaler 版本</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionDesc">打开"管理"窗口或使用快速安装时预选的版本。"自动"将选择最新推荐版本。</x:String>
+    <x:String x:Key="TxtDefaultVersionsTitle">默认版本</x:String>
+    <x:String x:Key="TxtDefaultVersionsDesc">管理游戏管理和快速安装的默认组件版本</x:String>
+    <x:String x:Key="TxtManageDefaultVersions">管理默认版本</x:String>
+    <x:String x:Key="TxtManageDefaultVersionsDesc">配置打开游戏管理窗口或使用快速安装时预选的组件版本。</x:String>
+    <x:String x:Key="TxtOptiPatcherDefaultTitle">默认 OptiPatcher 版本</x:String>
+    <x:String x:Key="TxtOptiPatcherDefaultDesc">打开"管理"窗口或使用快速安装时预选的 OptiPatcher 版本。选择"无"跳过安装。</x:String>
+    <x:String x:Key="TxtOptiPatcherSupportLinkText">查看兼容游戏列表</x:String>
+    <x:String x:Key="TxtClearAppCacheTitle">清除应用缓存</x:String>
+    <x:String x:Key="TxtClearAppCacheDesc">删除已扫描的游戏、封面图片和缓存的版本数据。应用将在下次启动时重新扫描。</x:String>
+    <x:String x:Key="TxtClearCacheBtn">清除缓存</x:String>
+    <x:String x:Key="TxtClearAppCacheDialogMsg">警告：此操作将永久删除所有已扫描的游戏、封面图片和缓存的 OptiScaler 版本数据。&#x0a;&#x0a;清除完成后应用将关闭。下次启动时将重新扫描游戏库并重新获取版本信息。</x:String>
+    <x:String x:Key="TxtWarning">警告</x:String>
+    <x:String x:Key="TxtNoVersionsFound">没有可安装的OptiScaler版本。</x:String>
+    <!-- Help Window -->
+    <x:String x:Key="TxtHelpTitle">帮助</x:String>
+    <x:String x:Key="TxtHelpCategoryGuides">指南</x:String>
+    <x:String x:Key="TxtHelpPageAbout">关于 &amp; 反馈</x:String>
+    <x:String x:Key="TxtHelpPageGettingStarted">入门</x:String>
+    <x:String x:Key="TxtHelpPageFeatures">功能</x:String>
+    <x:String x:Key="TxtHelpPageMainWindow">主窗口</x:String>
+    <x:String x:Key="TxtHelpPageGameManagement">游戏管理</x:String>
+    <x:String x:Key="TxtHelpPageProfiles">配置文件系统</x:String>
+    <x:String x:Key="TxtHelpPageSettings">设置 &amp; 配置</x:String>
+    <x:String x:Key="TxtHelpPageBulkOperations">批量操作</x:String>
+    <x:String x:Key="TxtHelpPageTroubleshooting">常见问题 &amp; 故障排除</x:String>
+    <x:String x:Key="TxtHelpDisclaimerTitle">免责声明 ⚠️</x:String>
+    <x:String x:Key="TxtHelpDisclaimerContent">这不是 OptiScaler 的官方项目。我与 OptiScaler 团队没有任何关联。这是一个没有任何商业目的的个人项目。任何人都可以自行承担风险使用此软件。&#x0a;&#x0a;致谢：特别感谢 OptiScaler 团队；本工具的实现完全得益于他们在原版模组上的卓越工作。</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;根据 GPL-3.0-or-later 授权。这是自由软件：您可以在特定条件下修改和重新分发。详情请参阅 LICENSE 文件。&#x0a;&#x0a;第三方组件（OptiScaler、Fakenvapi、NukemFG、FSR4 INT8）受其各自许可证的约束。</x:String>
+    <x:String x:Key="TxtHelpSystemTitle">系统</x:String>
+    <x:String x:Key="TxtHelpLicenseTitle">许可证 &amp; 版权</x:String>
+
+
+    <!-- Help - Getting Started -->
+    <x:String x:Key="TxtHelpGSWelcomeTitle">欢迎使用 OptiScaler Client</x:String>
+    <x:String x:Key="TxtHelpGSWelcomeContent">OptiScaler Client 是一款现代化的高性能桌面工具，旨在简化整个游戏库中 OptiScaler 模组的安装、管理和更新。</x:String>
+    <x:String x:Key="TxtHelpGSIntroContent">本指南旨在帮助您了解和使用程序的核心功能。它是一个全面的帮助中心，包含分步教程，让您快速上手。</x:String>
+    <x:String x:Key="TxtHelpGSQuickStart">快速开始</x:String>
+    <x:String x:Key="TxtHelpGSStep1Label">第 1 步：扫描游戏</x:String>
+    <x:String x:Key="TxtHelpGSStep1Text">点击主窗口中的扫描按钮，自动检测 Steam、Epic Games 等平台上的游戏。</x:String>
+    <x:String x:Key="TxtHelpGSStep2Label">第 2 步：选择游戏</x:String>
+    <x:String x:Key="TxtHelpGSStep2Text">浏览游戏库，点击要使用超分辨率技术增强的游戏上的管理。</x:String>
+    <x:String x:Key="TxtHelpGSStep3Label">第 3 步：配置 &amp; 安装</x:String>
+    <x:String x:Key="TxtHelpGSStep3Text">安装前，根据喜好调整选项。准备好后，点击游戏管理窗口中的自动安装以自动应用设置。</x:String>
+    <x:String x:Key="TxtHelpGSStep4Label">第 4 步：尽情享受！</x:String>
+    <x:String x:Key="TxtHelpGSStep4Text">一切准备就绪！您现在可以直接启动游戏并享受。</x:String>
+
+
+    <!-- Help - Features -->
+    <x:String x:Key="TxtHelpFeatOffersTitle">OptiScaler Client 提供的功能</x:String>
+    <x:String x:Key="TxtHelpFeatOffersContent">OptiScaler Client 为 OptiScaler 提供全面的管理功能。</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionLabel">自动游戏检测</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionText">扫描 Steam、Epic Games、GOG 和其他平台，查找已安装的游戏。</x:String>
+    <x:String x:Key="TxtHelpFeatInstallLabel">一键安装</x:String>
+    <x:String x:Key="TxtHelpFeatInstallText">快速安装功能可在数秒内以最优设置部署 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesLabel">配置文件管理</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesText">为不同游戏和场景创建并管理自定义配置文件。</x:String>
+    <x:String x:Key="TxtHelpFeatBulkLabel">批量操作</x:String>
+    <x:String x:Key="TxtHelpFeatBulkText">同时为多个游戏安装或更新 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpFeatVersionLabel">版本控制</x:String>
+    <x:String x:Key="TxtHelpFeatVersionText">轻松在 OptiScaler、Fakenvapi 和 NukemFG 的不同版本之间切换。</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataLabel">元数据集成</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataText">自动从 SteamGridDB 获取封面图片和游戏信息。</x:String>
+
+
+    <!-- Help - Main Window + Game Management -->
+    <x:String x:Key="TxtHelpMWTitle">游戏库概览</x:String>
+    <x:String x:Key="TxtHelpMWContent">主窗口是管理所有游戏的中心枢纽。您可以查看游戏库、扫描新游戏并访问游戏管理功能。</x:String>
+    <x:String x:Key="TxtHelpMWGameListLabel">游戏列表 🎮</x:String>
+    <x:String x:Key="TxtHelpMWGameListText">显示所有检测到的游戏，包含封面图片、标题和安装状态。</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnLabel">管理按钮 ⚙️</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnText">打开选定游戏的管理窗口，可在其中安装、配置和管理 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallLabel">快速安装按钮 ✦</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallText">以最优设置为选定游戏快速安装 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpMWScanLabel">扫描按钮 🔍</x:String>
+    <x:String x:Key="TxtHelpMWScanText">自动检测 Steam、Epic Games、GOG、EA、Ubisoft、Xbox 和 Battle.net 中的游戏。可选择扫描的来源和磁盘。</x:String>
+    <x:String x:Key="TxtHelpMWAddManualLabel">手动添加按钮 ➕</x:String>
+    <x:String x:Key="TxtHelpMWAddManualText">允许手动添加未被自动检测到的游戏，适用于独立游戏或自定义安装。</x:String>
+    <x:String x:Key="TxtHelpMWBulkLabel">批量安装 ⚡</x:String>
+    <x:String x:Key="TxtHelpMWBulkText">打开批量安装窗口，可同时为多个游戏安装 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpMWSearchLabel">搜索 &amp; 筛选 🔍</x:String>
+    <x:String x:Key="TxtHelpMWSearchText">使用搜索栏快速查找游戏。</x:String>
+    <x:String x:Key="TxtHelpMWViewLabel">网格 &amp; 列表模式按钮 📊</x:String>
+    <x:String x:Key="TxtHelpMWViewText">在网格和列表视图模式之间切换，按喜好整理游戏库。</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeLabel">整理游戏 ✏️</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeText">在此模式下可以重新排序并显示/隐藏游戏列表中的游戏。</x:String>
+    <x:String x:Key="TxtHelpGMTitle">管理单个游戏</x:String>
+    <x:String x:Key="TxtHelpGMContent">游戏管理窗口提供对特定游戏的 OptiScaler 安装和配置的完全控制。</x:String>
+    <x:String x:Key="TxtHelpGMInfoLabel">游戏信息 🎮</x:String>
+    <x:String x:Key="TxtHelpGMInfoText">查看游戏详情，包括标题、可执行文件路径、平台和当前 OptiScaler 安装状态。</x:String>
+    <x:String x:Key="TxtHelpGMFolderLabel">打开文件夹 📁</x:String>
+    <x:String x:Key="TxtHelpGMFolderText">在文件资源管理器中打开游戏的安装文件夹。</x:String>
+    <x:String x:Key="TxtHelpGMCoverLabel">编辑封面和游戏名称 🎨</x:String>
+    <x:String x:Key="TxtHelpGMCoverText">编辑游戏的封面图片和名称。</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallLabel">自动安装 ✦</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallText">尝试自动找到游戏的可执行文件以安装 OptiScaler，使用强大的算法，但并非完美。</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallLabel">手动安装 ✦</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallText">允许手动选择游戏的可执行文件。如果自动安装失败，建议使用此选项。</x:String>
+    <x:String x:Key="TxtHelpGMUninstallLabel">卸载 🗑️</x:String>
+    <x:String x:Key="TxtHelpGMUninstallText">从游戏中完全删除 OptiScaler，从备份恢复原始文件和配置。</x:String>
+    <x:String x:Key="TxtHelpGMProfileLabel">配置文件选择 🎯</x:String>
+    <x:String x:Key="TxtHelpGMProfileText">从预配置的配置文件中选择，或创建针对特定游戏或性能需求的自定义配置文件。</x:String>
+    <x:String x:Key="TxtHelpGMVersionLabel">OptiScaler 版本 📦</x:String>
+    <x:String x:Key="TxtHelpGMVersionText">选择要安装的 OptiScaler 版本，可在稳定版和测试版之间切换。</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiLabel">Fakenvapi &amp; NukemFG 📦</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiText">增强某些游戏兼容性的可选组件。已包含这些文件的 OptiScaler 测试版不需要此选项。</x:String>
+    <x:String x:Key="TxtHelpGMInjectionLabel">注入方法 🚀</x:String>
+    <x:String x:Key="TxtHelpGMInjectionText">选择 OptiScaler 注入游戏进程的方式。大多数情况下默认选项 (dxgi.dll) 即可。</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Label">FSR 4 INT8 ⚡</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Text">允许为非 RDNA 4 GPU 注入 FSR 4 INT 8 版本的选择器。</x:String>
+
+
+    <!-- Help - Profiles / Settings / Bulk / FAQ -->
+    <x:String x:Key="TxtHelpProfTitle">创建和管理配置文件</x:String>
+    <x:String x:Key="TxtHelpProfContent">配置文件允许您保存和管理 OptiScaler 配置（.ini 文件），以便轻松部署到新安装中。这是在整个游戏库中保持一致设置或应用专项调整的最有效方式。</x:String>
+    <x:String x:Key="TxtHelpProfMgmtLabel">配置文件管理窗口 📎</x:String>
+    <x:String x:Key="TxtHelpProfMgmtText">可从侧边栏访问。此部分允许管理当前配置文件，以及搜索、创建、复制、编辑或删除它们。</x:String>
+    <x:String x:Key="TxtHelpProfEditorLabel">配置文件编辑器 📝</x:String>
+    <x:String x:Key="TxtHelpProfEditorText">配置所有 OptiScaler（.ini）设置，包括超分辨率方法、质量预设、DLL 选项和高级参数。该窗口中可看到的部分有：</x:String>
+    <x:String x:Key="TxtHelpSetTitle">应用设置</x:String>
+    <x:String x:Key="TxtHelpSetContent">配置 OptiScaler 客户端行为、扫描来源、元数据服务和高级选项。</x:String>
+    <x:String x:Key="TxtHelpSetCacheLabel">本地缓存管理</x:String>
+    <x:String x:Key="TxtHelpSetCacheText">允许查看和删除 OptiScaler 和 FSR INT8 的缓存版本。</x:String>
+    <x:String x:Key="TxtHelpSetProfileLabel">配置文件管理</x:String>
+    <x:String x:Key="TxtHelpSetProfileText">允许管理不同的配置文件。更多信息请参阅「配置文件系统」页面。</x:String>
+    <x:String x:Key="TxtHelpSetScanLabel">扫描来源</x:String>
+    <x:String x:Key="TxtHelpSetScanText">管理点击「扫描」时扫描哪些来源，包括 Steam、Epic 等平台以及自定义文件夹和其他位置。</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Label">FSR INT8 默认</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Text">为注入部分选择默认 FSR INT8 版本。AMD 9000 系列显卡用户建议设置为「无」。</x:String>
+    <x:String x:Key="TxtHelpSetGpuLabel">默认 GPU 选择</x:String>
+    <x:String x:Key="TxtHelpSetGpuText">当系统中检测到多个 GPU 时，选择使用哪个 GPU。</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanLabel">启动时自动扫描</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanText">应用程序启动时自动扫描游戏。</x:String>
+    <x:String x:Key="TxtHelpSetBetaLabel">默认优先使用最新测试版</x:String>
+    <x:String x:Key="TxtHelpSetBetaText">启用后，OptiScaler 客户端将在可用时优先下载和使用组件的最新测试版。</x:String>
+    <x:String x:Key="TxtHelpSetAnimLabel">启用动画</x:String>
+    <x:String x:Key="TxtHelpSetAnimText">启用后，OptiScaler 客户端将显示动画和过渡效果，提供更精致的用户体验。</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridLabel">SteamGridDB API 密钥</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridText">用于在默认无法获取封面图片时改进封面获取。此参数完全可选。</x:String>
+    <x:String x:Key="TxtHelpBulkTitle">管理多个游戏</x:String>
+    <x:String x:Key="TxtHelpBulkContent">批量安装窗口允许同时在多个游戏上安装或更新 OptiScaler，节省时间并确保一致性。</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelLabel">游戏选择</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelText">选择要包含在批量操作中的游戏。全部选择或手动选择单个游戏。</x:String>
+    <x:String x:Key="TxtHelpBulkConfigLabel">统一配置</x:String>
+    <x:String x:Key="TxtHelpBulkConfigText">同时将相同的配置文件、OptiScaler 版本和设置应用于所有选定游戏。</x:String>
+    <x:String x:Key="TxtHelpBulkProgressLabel">进度跟踪</x:String>
+    <x:String x:Key="TxtHelpBulkProgressText">监控每个游戏的安装进度。查看成功/失败状态和详细日志以进行故障排除。</x:String>
+    <x:String x:Key="TxtHelpBulkErrorLabel">错误处理</x:String>
+    <x:String x:Key="TxtHelpBulkErrorText">即使某些安装失败，也继续处理剩余游戏。完成后查看错误。</x:String>
+    <x:String x:Key="TxtHelpFaqTitle">常见问题</x:String>
+    <x:String x:Key="TxtHelpFaqContent">遇到问题时，请首先检查这些常见解决方案。</x:String>
+    <x:String x:Key="TxtHelpFaqWhatLabel">什么是 OptiScaler？</x:String>
+    <x:String x:Key="TxtHelpFaqWhatText">OptiScaler 是一个 Mod，允许在游戏中使用不同的超分辨率技术（DLSS、FSR、XeSS），即使游戏不原生支持它们。</x:String>
+    <x:String x:Key="TxtHelpFaqSafeLabel">这个应用安全吗？</x:String>
+    <x:String x:Key="TxtHelpFaqSafeText">是的，该应用完全安全。您可以在 VirusTotal 上扫描确认无威胁，由于项目是开源的，代码对任何人开放审查。</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetLabel">未检测到游戏</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetText">确保游戏已安装，并尝试使用「手动添加」按钮手动添加。您也可以在设置中检查扫描来源。</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailLabel">安装失败</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailText">确保您对游戏目录有写入权限。如需要，请尝试以管理员身份运行应用程序。</x:String>
+    <x:String x:Key="TxtHelpFaqCrashLabel">安装后游戏崩溃</x:String>
+    <x:String x:Key="TxtHelpFaqCrashText">尝试不同的 OptiScaler 版本或配置文件。某些游戏可能需要特定配置。</x:String>
+    <x:String x:Key="TxtHelpFaqUpscLabel">游戏内超分辨率不工作</x:String>
+    <x:String x:Key="TxtHelpFaqUpscText">检查游戏是否原生支持 DLSS/FSR/XeSS。OptiScaler 替换现有的超分辨率实现。</x:String>
+    <x:String x:Key="TxtHelpFaqDllLabel">未找到 Optiscaler.dll 或 nvngx.dll 及其他错误。</x:String>
+    <x:String x:Key="TxtHelpFaqDllText">使用设置中的按钮清除缓存；这应该能解决大多数问题。</x:String>
+
+    <!-- Help - Profile Bullets -->
+    <x:String x:Key="TxtHelpProfDefaultTitle">默认配置文件</x:String>
+    <x:String x:Key="TxtHelpProfDefaultText">设置在管理游戏或使用快速安装时默认选择的配置文件。</x:String>
+    <x:String x:Key="TxtHelpProfNameTitle">配置文件名称</x:String>
+    <x:String x:Key="TxtHelpProfNameText">设置配置文件的显示名称。</x:String>
+    <x:String x:Key="TxtHelpProfDescTitle">描述</x:String>
+    <x:String x:Key="TxtHelpProfDescText">为配置文件设置描述。</x:String>
+    <x:String x:Key="TxtHelpProfModeTitle">模式</x:String>
+    <x:String x:Key="TxtHelpProfModeText">在简易模式和高级模式之间选择。简易模式将设置限制在基本内容，适合初学者快速简单地完成配置。高级模式允许完整编辑 .ini 文件，为高级用户提供完全控制和最大程度的自定义。</x:String>
+    <x:String x:Key="TxtHelpProfNavTitle">导航部分</x:String>
+    <x:String x:Key="TxtHelpProfNavText">允许您在配置文件编辑器的不同部分之间导航。</x:String>
+    <x:String x:Key="TxtHelpProfSearchTitle">搜索栏</x:String>
+    <x:String x:Key="TxtHelpProfSearchText">允许您在配置文件编辑器中搜索特定设置。</x:String>
+
+    <!-- Profile Management View -->
+    <x:String x:Key="TxtProfViewTitle">配置文件</x:String>
+    <x:String x:Key="TxtProfViewDesc">创建和管理 OptiScaler 配置文件</x:String>
+    <x:String x:Key="TxtBtnNewProfile">新建配置文件</x:String>
+    <x:String x:Key="TxtBtnImportIni">导入 .ini...</x:String>
+    <x:String x:Key="TxtBtnSetDefault">设为默认</x:String>
+    <x:String x:Key="TxtBtnEdit">编辑</x:String>
+    <x:String x:Key="TxtBtnDuplicate">复制</x:String>
+    <x:String x:Key="TxtBtnExportIni">导出 .ini</x:String>
+    <x:String x:Key="TxtSearchProfiles">搜索配置文件...</x:String>
+    <x:String x:Key="TxtProfInfoFormat">共 {0} 个配置文件（{1} 个自定义）。</x:String>
+    <x:String x:Key="TxtProfSearchResultFormat">共 {1} 个中找到 {0} 个结果。</x:String>
+    <x:String x:Key="TxtProfNotFound">未找到配置文件。</x:String>
+    <x:String x:Key="TxtProfSearchNotFound">未找到匹配的配置文件。</x:String>
+    <x:String x:Key="TxtDefaultBadge">默认</x:String>
+
+    <!-- Profile Editor View -->
+    <x:String x:Key="TxtEditorBackBtn">← 配置文件</x:String>
+    <x:String x:Key="TxtEditorTitle">配置文件编辑器</x:String>
+    <x:String x:Key="TxtEditorDesc">为此配置文件配置 OptiScaler 设置</x:String>
+    <x:String x:Key="TxtEditorNewTitle">新建配置文件</x:String>
+    <x:String x:Key="TxtEditorEditTitleFmt">编辑: {0}</x:String>
+    <x:String x:Key="TxtEditorNameLabel">配置文件名称</x:String>
+    <x:String x:Key="TxtEditorNameWatermark">输入配置文件名称</x:String>
+    <x:String x:Key="TxtEditorDescLabel">描述</x:String>
+    <x:String x:Key="TxtEditorDescWatermark">输入描述（可选）</x:String>
+    <x:String x:Key="TxtEditorModeLabel">模式</x:String>
+    <x:String x:Key="TxtEditorModeEasy">简易</x:String>
+    <x:String x:Key="TxtEditorModeAdvanced">高级</x:String>
+    <x:String x:Key="TxtEditorNavLabel">导航</x:String>
+    <x:String x:Key="TxtEditorSearchWm">搜索设置...</x:String>
+    <x:String x:Key="TxtEditorFooterNote">仅已配置的设置项会覆盖 OptiScaler 的默认值</x:String>
+    <x:String x:Key="TxtEditorCancel">取消</x:String>
+    <x:String x:Key="TxtEditorSave">保存配置文件</x:String>
+
+    <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtRefreshCoversTitle">仅刷新缺失封面</x:String>
+    <x:String x:Key="TxtRefreshCoversDesc">跳过完整扫描，仅重试之前无法获取封面的游戏。在设置 SteamGridDB API 密钥后很有用。</x:String>
+    <x:String x:Key="TxtOrganizeGamesTooltip">整理游戏</x:String>
+    <x:String x:Key="TxtOrganizeModeBanner">整理模式</x:String>
+    <x:String x:Key="TxtOrganizeModeReorder">▲▼ 重新排序</x:String>
+    <x:String x:Key="TxtOrganizeModeHideShow">显示/隐藏</x:String>
+    <x:String x:Key="TxtOrganizeModeDone">完成</x:String>
+    <x:String x:Key="TxtDragToReorder">拖动以重新排序</x:String>
+    <x:String x:Key="TxtMoveUp">上移</x:String>
+    <x:String x:Key="TxtMoveDown">下移</x:String>
+    <x:String x:Key="TxtHideShowGame">显示/隐藏游戏</x:String>
+    <x:String x:Key="TxtHideGame">隐藏</x:String>
+    <x:String x:Key="TxtShowGame">显示</x:String>
+    <x:String x:Key="TxtRefreshingCovers">正在刷新缺失封面...</x:String>
+    <x:String x:Key="TxtCoverRefreshDoneFmt">封面刷新完成。找到 {0}/{1} 张缺失封面。</x:String>
+    <x:String x:Key="TxtCoverRefreshToastFmt">封面刷新完成 — 找到 {0}/{1} 张封面。</x:String>
+
+    <!-- OptiPatcher -->
+    <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
+    <x:String x:Key="TxtOptiPatcherTooltip">OptiScaler 的 ASI 插件，在受支持的游戏中无需欺骗即可暴露 DLSS/DLSS-FG 输入。帮助 Intel Arc 用户避免 D3D12 错误，并防止 Dxgi 欺骗导致的性能开销或崩溃。</x:String>
+    <x:String x:Key="TxtDownloadingOptiPatcher">正在下载 OptiPatcher...</x:String>
+    <x:String x:Key="TxtInstallingOptiPatcher">正在安装 OptiPatcher...</x:String></ResourceDictionary>
+
+
+

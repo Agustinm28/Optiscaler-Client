@@ -12,6 +12,10 @@ namespace OptiscalerClient.Models
     [JsonSerializable(typeof(ScanSourcesConfig))]
     [JsonSerializable(typeof(ComponentVersions))]
     [JsonSerializable(typeof(InstallationManifest))]
+    [JsonSerializable(typeof(ManifestFileRecord))]
+    [JsonSerializable(typeof(KeyFileSnapshot))]
+    [JsonSerializable(typeof(List<ManifestFileRecord>))]
+    [JsonSerializable(typeof(List<KeyFileSnapshot>))]
     [JsonSerializable(typeof(List<Game>))]
     [JsonSerializable(typeof(Game))]
     [JsonSerializable(typeof(List<string>))]
@@ -21,6 +25,13 @@ namespace OptiscalerClient.Models
     [JsonSerializable(typeof(ExtrasReleaseEntry))]
     [JsonSerializable(typeof(ExtrasReleasesCache))]
     [JsonSerializable(typeof(List<ExtrasReleaseEntry>))]
+    [JsonSerializable(typeof(OptiPatcherReleaseEntry))]
+    [JsonSerializable(typeof(OptiPatcherReleasesCache))]
+    [JsonSerializable(typeof(List<OptiPatcherReleaseEntry>))]
+    [JsonSerializable(typeof(OptiScalerProfile))]
+    [JsonSerializable(typeof(List<OptiScalerProfile>))]
+    [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>))]
+    [JsonSerializable(typeof(Dictionary<string, string>))]
     internal partial class OptimizerContext : JsonSerializerContext
     {
     }

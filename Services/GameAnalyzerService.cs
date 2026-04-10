@@ -1,4 +1,4 @@
-﻿// OptiScaler Client - A frontend for managing OptiScaler installations
+// OptiScaler Client - A frontend for managing OptiScaler installations
 // Copyright (C) 2026 Agustín Montaña (Agustinm28)
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,8 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using OptiscalerClient.Models;
+using OptiscalerClient.Views;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -22,6 +24,9 @@ namespace OptiscalerClient.Services;
 
 public class GameAnalyzerService
 {
+    private static readonly object _cacheLock = new();
+    private static readonly Dictionary<string, AnalysisCacheEntry> _analysisCache = new(StringComparer.OrdinalIgnoreCase);
+
     private static readonly string[] _dlssNames = new[] { "nvngx_dlss.dll" };
     private static readonly string[] _dlssFrameGenNames = new[] { "nvngx_dlssg.dll" };
     private static readonly string[] _fsrNames = new[] {
@@ -37,9 +42,67 @@ public class GameAnalyzerService
     };
     private static readonly string[] _xessNames = new[] { "libxess.dll" };
 
-    public void AnalyzeGame(Game game)
+    private static readonly HashSet<string> _allTargetFileNames;
+    private static readonly string _diskCachePath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "OptiscalerClient", "analysis_cache.json");
+    private static volatile bool _diskCacheLoaded = false;
+
+    static GameAnalyzerService()
+    {
+        _allTargetFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "optiscaler_manifest.json",
+            "optiscaler.log",
+            "OptiScaler.ini"
+        };
+        foreach (var n in _dlssNames) _allTargetFileNames.Add(n);
+        foreach (var n in _dlssFrameGenNames) _allTargetFileNames.Add(n);
+        foreach (var n in _fsrNames) _allTargetFileNames.Add(n);
+        foreach (var n in _xessNames) _allTargetFileNames.Add(n);
+    }
+
+    public static void InvalidateCacheForPath(string? installPath)
+    {
+        if (string.IsNullOrWhiteSpace(installPath))
+            return;
+
+        string normalized;
+        try
+        {
+            normalized = Path.GetFullPath(installPath);
+        }
+        catch
+        {
+            normalized = installPath;
+        }
+
+        lock (_cacheLock)
+        {
+            _analysisCache.Remove(normalized);
+        }
+    }
+
+    public void AnalyzeGame(Game game, bool forceRefresh = false)
     {
         if (string.IsNullOrEmpty(game.InstallPath) || !Directory.Exists(game.InstallPath))
+            return;
+
+        string normalizedInstallPath;
+        DateTime directoryWriteStamp;
+
+        try
+        {
+            normalizedInstallPath = Path.GetFullPath(game.InstallPath);
+            directoryWriteStamp = Directory.GetLastWriteTimeUtc(normalizedInstallPath);
+        }
+        catch
+        {
+            normalizedInstallPath = game.InstallPath;
+            directoryWriteStamp = DateTime.MinValue;
+        }
+
+        if (!forceRefresh && TryApplyCachedAnalysis(game, normalizedInstallPath, directoryWriteStamp))
             return;
 
         // Reset current versions before analysis
@@ -53,22 +116,20 @@ public class GameAnalyzerService
         game.OptiscalerVersion = null; // Will be repopulated from manifest or log
 
         HashSet<string> ignoredFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var blockHeuristicFallbackDetection = false;
 
         try
         {
-            var options = new EnumerationOptions
-            {
-                RecurseSubdirectories = true,
-                IgnoreInaccessible = true,
-                MatchCasing = MatchCasing.CaseInsensitive
-            };
+            // ── Single-pass file collection ──────────────────────────────────────────
+            // Traverse the game directory once and classify all relevant files by name.
+            var collectedFiles = CollectRelevantFiles(game.InstallPath);
 
             // ── Detect OptiScaler ──────────────────────────────────────────────────
             // Do this first so we can ignore its installed files when looking for native DLLs
             try
             {
                 // ── Priority 1: manifest ────────────────────────────────────────────
-                var manifestFiles = Directory.GetFiles(game.InstallPath, "optiscaler_manifest.json", options);
+                var manifestFiles = collectedFiles.TryGetValue("optiscaler_manifest.json", out var mf) ? mf.ToArray() : Array.Empty<string>();
                 if (manifestFiles.Length > 0)
                 {
                     try
@@ -77,33 +138,81 @@ public class GameAnalyzerService
                         var manifest = System.Text.Json.JsonSerializer.Deserialize<Models.InstallationManifest>(manifestJson);
                         if (manifest != null)
                         {
-                            game.IsOptiscalerInstalled = true;
-                            if (!string.IsNullOrEmpty(manifest.OptiscalerVersion))
-                                game.OptiscalerVersion = manifest.OptiscalerVersion;
+                            // Only a committed manifest should be treated as a valid installation.
+                            var isCommitted = string.Equals(
+                                manifest.OperationStatus,
+                                "committed",
+                                StringComparison.OrdinalIgnoreCase);
 
-                            // Determine absolute game directory to construct absolute paths
+                            if (!isCommitted)
+                            {
+                                blockHeuristicFallbackDetection = true;
+                                try
+                                {
+                                    var installer = new GameInstallationService();
+                                    installer.RecoverIncompleteInstallIfNeeded(game.InstallPath);
+                                }
+                                catch
+                                {
+                                    // Ignore recovery errors here; we'll just avoid false positives
+                                    // from fallback detection for this analysis pass.
+                                }
+                            }
+
+                            // Determine absolute game directory to validate expected markers and ignored files.
                             string originDir = string.IsNullOrEmpty(manifest.InstalledGameDirectory)
                                 ? Path.GetDirectoryName(Path.GetDirectoryName(manifestFiles[0]))!
                                 : manifest.InstalledGameDirectory;
 
-                            if (!string.IsNullOrEmpty(originDir))
+                            var markersLookValid = true;
+                            if (isCommitted && !string.IsNullOrEmpty(originDir))
                             {
-                                foreach (var relFile in manifest.InstalledFiles)
+                                var markers = manifest.ExpectedFinalMarkers ?? new List<string>();
+                                if (markers.Count > 0)
                                 {
-                                    ignoredFiles.Add(Path.GetFullPath(Path.Combine(originDir, relFile)));
+                                    markersLookValid = markers.Any(rel =>
+                                    {
+                                        try
+                                        {
+                                            return File.Exists(Path.Combine(originDir, rel));
+                                        }
+                                        catch
+                                        {
+                                            return false;
+                                        }
+                                    });
+                                }
+                            }
+
+                            if (isCommitted && markersLookValid)
+                            {
+                                game.IsOptiscalerInstalled = true;
+                                if (!string.IsNullOrEmpty(manifest.OptiscalerVersion))
+                                    game.OptiscalerVersion = manifest.OptiscalerVersion;
+
+                                if (!string.IsNullOrEmpty(originDir))
+                                {
+                                    foreach (var relFile in manifest.InstalledFiles)
+                                    {
+                                        ignoredFiles.Add(Path.GetFullPath(Path.Combine(originDir, relFile)));
+                                    }
                                 }
                             }
                         }
                     }
-                    catch { /* Corrupt manifest — fall through to next priority */ }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Analyzer] Corrupt manifest in '{game.InstallPath}': {ex.Message}");
+                    }
                 }
 
                 // ── Priority 2: runtime log (overrides if it has richer version info) ──
-                if (!game.IsOptiscalerInstalled || string.IsNullOrEmpty(game.OptiscalerVersion))
+                if (!blockHeuristicFallbackDetection &&
+                    (!game.IsOptiscalerInstalled || string.IsNullOrEmpty(game.OptiscalerVersion)))
                 {
                     try
                     {
-                        var logs = Directory.GetFiles(game.InstallPath, "optiscaler.log", options);
+                        var logs = collectedFiles.TryGetValue("optiscaler.log", out var lf) ? lf.ToArray() : Array.Empty<string>();
                         if (logs.Length > 0)
                         {
                             // Example log line: "[2024-...] [Init] OptiScaler v0.7.0-rc1"
@@ -128,43 +237,75 @@ public class GameAnalyzerService
                             }
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Analyzer] Error reading OptiScaler log for '{game.Name}': {ex.Message}");
+                    }
                 }
 
                 // ── Priority 3: OptiScaler.ini presence (no version — last resort) ──
-                if (!game.IsOptiscalerInstalled)
+                if (!blockHeuristicFallbackDetection && !game.IsOptiscalerInstalled)
                 {
-                    var iniFiles = Directory.GetFiles(game.InstallPath, "OptiScaler.ini", options);
+                    var iniFiles = collectedFiles.TryGetValue("OptiScaler.ini", out var inf) ? inf.ToArray() : Array.Empty<string>();
                     if (iniFiles.Length > 0)
                         game.IsOptiscalerInstalled = true;
                 }
             }
-            catch { /* Ignore OptiScaler detection errors */ }
-
-            // Efficiently search ONLY for the specific files we care about
-            // This avoids listing thousands of DLLs
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Analyzer] OptiScaler detection error for '{game.Name}': {ex.Message}");
+            }
 
             // DLSS
-            FindBestVersion(game, game.InstallPath, _dlssNames, options, ignoredFiles, (g, path, ver) =>
+            FindBestVersionFromCollected(game, collectedFiles, _dlssNames, ignoredFiles, (g, path, ver) =>
             {
                 g.DlssPath = path;
                 g.DlssVersion = ver;
             });
 
             // DLSS Frame Gen
-            FindBestVersion(game, game.InstallPath, _dlssFrameGenNames, options, ignoredFiles, (g, path, ver) => { g.DlssFrameGenPath = path; g.DlssFrameGenVersion = ver; });
+            FindBestVersionFromCollected(game, collectedFiles, _dlssFrameGenNames, ignoredFiles, (g, path, ver) => { g.DlssFrameGenPath = path; g.DlssFrameGenVersion = ver; });
 
             // FSR
-            FindBestVersion(game, game.InstallPath, _fsrNames, options, ignoredFiles, (g, path, ver) => { g.FsrPath = path; g.FsrVersion = ver; });
+            FindBestVersionFromCollected(game, collectedFiles, _fsrNames, ignoredFiles, (g, path, ver) => { g.FsrPath = path; g.FsrVersion = ver; });
 
             // XeSS
-            FindBestVersion(game, game.InstallPath, _xessNames, options, ignoredFiles, (g, path, ver) => { g.XessPath = path; g.XessVersion = ver; });
+            FindBestVersionFromCollected(game, collectedFiles, _xessNames, ignoredFiles, (g, path, ver) => { g.XessPath = path; g.XessVersion = ver; });
 
         }
-        catch { /* General error */ }
+        catch (Exception ex)
+        {
+            DebugWindow.Log($"[Analyzer] General analysis error for '{game.Name}': {ex.Message}");
+        }
+
+        SaveAnalysisCache(game, normalizedInstallPath, directoryWriteStamp);
     }
 
-    private void FindBestVersion(Game game, string path, string[] filePatterns, EnumerationOptions options, HashSet<string> ignoredFiles, Action<Game, string, string> updateAction)
+    private static bool TryApplyCachedAnalysis(Game game, string installPath, DateTime directoryWriteStamp)
+    {
+        lock (_cacheLock)
+        {
+            if (!_analysisCache.TryGetValue(installPath, out var cached))
+                return false;
+
+            if (cached.DirectoryWriteStampUtc != directoryWriteStamp)
+                return false;
+
+            cached.ApplyTo(game);
+            return true;
+        }
+    }
+
+    private static void SaveAnalysisCache(Game game, string installPath, DateTime directoryWriteStamp)
+    {
+        var snapshot = AnalysisCacheEntry.FromGame(game, directoryWriteStamp);
+        lock (_cacheLock)
+        {
+            _analysisCache[installPath] = snapshot;
+        }
+    }
+
+    private static void FindBestVersionFromCollected(Game game, Dictionary<string, List<string>> collectedFiles, string[] filePatterns, HashSet<string> ignoredFiles, Action<Game, string, string> updateAction)
     {
         var highestVer = new Version(0, 0);
         string? bestPath = null;
@@ -172,46 +313,116 @@ public class GameAnalyzerService
 
         foreach (var pattern in filePatterns)
         {
-            try
+            if (!collectedFiles.TryGetValue(pattern, out var files)) continue;
+            foreach (var file in files)
             {
-                var files = Directory.GetFiles(path, pattern, options);
-                foreach (var file in files)
+                if (ignoredFiles.Contains(Path.GetFullPath(file))) continue;
+
+                var versionStr = GetFileVersion(file);
+
+                // Clean up version string if it contains "FSR ", e.g. "FSR 3.1.4"
+                string parseableVerStr = versionStr;
+                if (parseableVerStr.StartsWith("FSR ", StringComparison.OrdinalIgnoreCase))
+                    parseableVerStr = parseableVerStr.Substring(4).Trim();
+
+                // Also take only the first component if there are spaces, e.g. "3.1.0 (release)"
+                parseableVerStr = parseableVerStr.Split(' ')[0];
+
+                if (Version.TryParse(parseableVerStr, out var currentVer) && currentVer > highestVer)
                 {
-                    if (ignoredFiles.Contains(Path.GetFullPath(file))) continue;
-
-                    var versionStr = GetFileVersion(file);
-
-                    // Clean up version string if it contains "FSR ", e.g. "FSR 3.1.4"
-                    string parseableVerStr = versionStr;
-                    if (parseableVerStr.StartsWith("FSR ", StringComparison.OrdinalIgnoreCase))
-                    {
-                        parseableVerStr = parseableVerStr.Substring(4).Trim();
-                    }
-
-                    // Also take only the first component if there are spaces, e.g. "3.1.0 (release)"
-                    parseableVerStr = parseableVerStr.Split(' ')[0];
-
-                    if (Version.TryParse(parseableVerStr, out var currentVer))
-                    {
-                        if (currentVer > highestVer)
-                        {
-                            highestVer = currentVer;
-                            bestPath = file;
-                            bestVerStr = versionStr; // keep original string for display
-                        }
-                    }
+                    highestVer = currentVer;
+                    bestPath = file;
+                    bestVerStr = versionStr; // keep original string for display
                 }
             }
-            catch { /* Ignore individual search errors */ }
         }
 
         if (bestPath != null && bestVerStr != null)
-        {
             updateAction(game, bestPath, bestVerStr);
+    }
+
+    private static Dictionary<string, List<string>> CollectRelevantFiles(string path)
+    {
+        var result = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            MatchCasing = MatchCasing.CaseInsensitive
+        };
+
+        try
+        {
+            foreach (var file in Directory.EnumerateFiles(path, "*", options))
+            {
+                var name = Path.GetFileName(file);
+                if (_allTargetFileNames.Contains(name))
+                {
+                    if (!result.TryGetValue(name, out var list))
+                    {
+                        list = new List<string>();
+                        result[name] = list;
+                    }
+                    list.Add(file);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugWindow.Log($"[Analyzer] Error enumerating files in '{path}': {ex.Message}");
+        }
+
+        return result;
+    }
+
+    public static void LoadCacheFromDisk()
+    {
+        lock (_cacheLock)
+        {
+            if (_diskCacheLoaded) return;
+            _diskCacheLoaded = true;
+
+            try
+            {
+                if (!File.Exists(_diskCachePath)) return;
+                var json = File.ReadAllText(_diskCachePath);
+                var loaded = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, AnalysisCacheEntry>>(json);
+                if (loaded == null) return;
+
+                foreach (var kv in loaded)
+                    _analysisCache[kv.Key] = kv.Value;
+
+                DebugWindow.Log($"[Analyzer] Loaded {loaded.Count} cached entries from disk.");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Analyzer] Failed to load disk cache: {ex.Message}");
+            }
         }
     }
 
-    private string GetFileVersion(string filePath)
+    public static void FlushCacheToDisk()
+    {
+        try
+        {
+            Dictionary<string, AnalysisCacheEntry> snapshot;
+            lock (_cacheLock)
+            {
+                snapshot = new Dictionary<string, AnalysisCacheEntry>(_analysisCache, StringComparer.OrdinalIgnoreCase);
+            }
+            var dir = Path.GetDirectoryName(_diskCachePath)!;
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            var json = System.Text.Json.JsonSerializer.Serialize(snapshot);
+            File.WriteAllText(_diskCachePath, json);
+            DebugWindow.Log($"[Analyzer] Flushed {snapshot.Count} cache entries to disk.");
+        }
+        catch (Exception ex)
+        {
+            DebugWindow.Log($"[Analyzer] Failed to flush cache to disk: {ex.Message}");
+        }
+    }
+
+    private static string GetFileVersion(string filePath)
     {
         try
         {
@@ -234,6 +445,53 @@ public class GameAnalyzerService
         catch
         {
             return "0.0.0.0";
+        }
+    }
+
+    private sealed class AnalysisCacheEntry
+    {
+        public DateTime DirectoryWriteStampUtc { get; set; }
+        public string? DlssVersion { get; set; }
+        public string? DlssPath { get; set; }
+        public string? DlssFrameGenVersion { get; set; }
+        public string? DlssFrameGenPath { get; set; }
+        public string? FsrVersion { get; set; }
+        public string? FsrPath { get; set; }
+        public string? XessVersion { get; set; }
+        public string? XessPath { get; set; }
+        public bool IsOptiscalerInstalled { get; set; }
+        public string? OptiscalerVersion { get; set; }
+
+        public static AnalysisCacheEntry FromGame(Game game, DateTime directoryWriteStampUtc)
+        {
+            return new AnalysisCacheEntry
+            {
+                DirectoryWriteStampUtc = directoryWriteStampUtc,
+                DlssVersion = game.DlssVersion,
+                DlssPath = game.DlssPath,
+                DlssFrameGenVersion = game.DlssFrameGenVersion,
+                DlssFrameGenPath = game.DlssFrameGenPath,
+                FsrVersion = game.FsrVersion,
+                FsrPath = game.FsrPath,
+                XessVersion = game.XessVersion,
+                XessPath = game.XessPath,
+                IsOptiscalerInstalled = game.IsOptiscalerInstalled,
+                OptiscalerVersion = game.OptiscalerVersion
+            };
+        }
+
+        public void ApplyTo(Game game)
+        {
+            game.DlssVersion = DlssVersion;
+            game.DlssPath = DlssPath;
+            game.DlssFrameGenVersion = DlssFrameGenVersion;
+            game.DlssFrameGenPath = DlssFrameGenPath;
+            game.FsrVersion = FsrVersion;
+            game.FsrPath = FsrPath;
+            game.XessVersion = XessVersion;
+            game.XessPath = XessPath;
+            game.IsOptiscalerInstalled = IsOptiscalerInstalled;
+            game.OptiscalerVersion = OptiscalerVersion;
         }
     }
 }

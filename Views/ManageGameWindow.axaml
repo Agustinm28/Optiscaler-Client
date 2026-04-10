@@ -4,11 +4,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OptiscalerClient"
         xmlns:converters="clr-namespace:OptiscalerClient.Converters"
-        xmlns:models="clr-namespace:OptiscalerClient.Models"
         mc:Ignorable="d"
         x:Class="OptiscalerClient.Views.ManageGameWindow"
         Title="{DynamicResource TxtManageGameWindow}"
-        Height="618" Width="1080"
+        MinHeight="600" Width="1140"
+        SizeToContent="Height"
         SystemDecorations="None"
         TransparencyLevelHint="Transparent"
         Background="Transparent"
@@ -20,179 +20,437 @@
         <converters:BoolToVisibilityConverter  x:Key="BoolToVisibilityConverter"/>
         <converters:NullToVisibilityConverter  x:Key="NullToVisibilityConverter"/>
         <converters:BoolToVisibilityConverter  x:Key="InverseBoolToVisibilityConverter" Invert="True"/>
+        <converters:MultiplyConverter x:Key="MultiplyConverter"/>
     </Window.Resources>
 
-    <Panel Margin="15" Name="RootPanel" Opacity="0">
-        <!-- Main Container with Shadow -->
+    <Window.Styles>
+        <Style Selector="Border.ImageCard">
+            <Setter Property="CornerRadius" Value="{StaticResource RadiusLarge}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BrBorderSubtle}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{StaticResource BrBgCard}"/>
+        </Style>
+        <Style Selector="Border.ImageOverlay">
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="Background" Value="#A0000000"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.ImageCard:pointerover Border.ImageOverlay">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+
+        <Style Selector="Button.InvisibleBtn">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style Selector="Button.InvisibleBtn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="Button.InvisibleBtn:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.IconBtn">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Styles>
+
+    <Panel Margin="12" Name="RootPanel" Opacity="0">
         <Border CornerRadius="12"
                 Background="{StaticResource BrBgBase}"
                 BoxShadow="0 8 32 0 #80000000"
                 BorderBrush="{StaticResource BrBorderSubtle}"
                 BorderThickness="1">
-            
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>   <!-- Custom Header -->
-                    <RowDefinition Height="Auto"/>   <!-- Status card -->
-                    <RowDefinition Height="*"/>      <!-- Detected components -->
-                    <RowDefinition Height="Auto"/>   <!-- Progress bar -->
-                    <RowDefinition Height="Auto"/>   <!-- Action bar -->
-                </Grid.RowDefinitions>
+            <Grid ColumnDefinitions="3*,7*" RowDefinitions="*">
+                <!-- LEFT COLUMN -->
+                <Grid Grid.Column="0" Margin="16" RowDefinitions="*,Auto">
+                    <StackPanel Grid.Row="0" Spacing="12">
+                    <Border Classes="ImageCard"
+                            HorizontalAlignment="Stretch"
+                            Height="{Binding Bounds.Width, RelativeSource={RelativeSource Self}, Converter={StaticResource MultiplyConverter}, ConverterParameter=1.4}"
+                            MaxWidth="320"
+                            MaxHeight="460"
+                            ClipToBounds="True">
+                            <Grid>
+                                <Image Name="ImgGameCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Classes="ImageOverlay">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
+                                        <TextBlock Text="&#xE70F;"
+                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                   FontSize="16"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource TxtEditImage}"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   FontSize="{StaticResource FontSizeBody}"/>
+                                    </StackPanel>
+                                </Border>
+                                <Button Name="BtnEditImage" Classes="InvisibleBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="BtnEditImage_Click"/>
+                            </Grid>
+                        </Border>
 
-                <!-- ════════════════════════════════════════════════════════
-                     HEADER / TITLE BAR (Draggable)
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="0"
-                        Name="TitleBar"
-                        Background="{StaticResource BrBgDeep}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="0,0,0,1"
-                        CornerRadius="12,12,0,0"
-                        Padding="24,18">
-                    <Grid ColumnDefinitions="*, Auto, Auto">
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Name="TxtGameName"
-                                       Text="Game Name"
-                                       FontSize="{StaticResource FontSizeSubtitle}"
-                                       FontWeight="Bold"
-                                       Foreground="{StaticResource BrTextPrimary}"/>
-                            <TextBlock Name="TxtInstallPath"
-                                       Text=""
-                                       FontSize="{StaticResource FontSizeCaption}"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       TextTrimming="CharacterEllipsis"
-                                       Margin="0,4,0,0"/>
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                <TextBlock Name="TxtGameName"
+                                           Text="Game Name"
+                                           FontSize="{StaticResource FontSizeSubtitle}"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource BrTextPrimary}"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBox Name="TxtGameNameEdit"
+                                         IsVisible="False"
+                                         Margin="0,0,8,0"
+                                         VerticalAlignment="Center"/>
+
+                                <Button Grid.Column="1"
+                                        Name="BtnEditTitle"
+                                        Classes="BtnBase"
+                                        Padding="10,6"
+                                        Click="BtnEditTitle_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="&#xE70F;"
+                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                   FontSize="12"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
                         </StackPanel>
+                    </StackPanel>
 
-                        <Button Name="BtnOpenFolder"
-                                Grid.Column="1"
-                                Content="{DynamicResource TxtOpenFolder}"
+                    <!-- Path & Open Folder bottom aligned -->
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom">
+                        <TextBlock Name="TxtInstallPath"
+                                   Grid.Column="0"
+                                   Text=""
+                                   FontSize="{StaticResource FontSizeCaption}"
+                                   Foreground="{StaticResource BrTextSecondary}"
+                                   TextTrimming="CharacterEllipsis"
+                                   VerticalAlignment="Center"
+                                   MaxWidth="260"/>
+
+                        <Button Grid.Column="1"
+                                Name="BtnOpenFolder"
                                 Classes="BtnBase"
-                                Padding="12,7"
-                                Margin="0,0,10,0"
+                                Padding="10,6"
+                                ToolTip.Tip="{DynamicResource TxtOpenFolder}"
                                 VerticalAlignment="Center"
-                                Click="BtnOpenFolder_Click"/>
-                        
-                        <!-- Close button -->
-                        <Button Name="BtnClose"
-                                Grid.Column="2"
-                                Classes="BtnBase"
-                                Width="34" Height="34"
-                                Padding="0"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                VerticalAlignment="Center"
-                                Click="BtnClose_Click">
-                            <TextBlock Text="&#xE711;"
+                                Click="BtnOpenFolder_Click">
+                            <TextBlock Text="&#xE8B7;"
                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
                                        FontSize="12"/>
                         </Button>
                     </Grid>
-                </Border>
+                </Grid>
 
-                <!-- ════════════════════════════════════════════════════════
-                     STATUS CARD
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="1"
-                        Background="{StaticResource BrBgCard}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource RadiusLarge}"
-                        Margin="24,20,24,0"
-                        Padding="20,14">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Status indicator + text -->
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Name="StatusIndicator"
-                                     Width="10" Height="10"
-                                     Margin="0,0,12,0"
-                                     VerticalAlignment="Center"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="{DynamicResource TxtOptiStatus}"
-                                           FontSize="{StaticResource FontSizeCaption}"
-                                           Foreground="{StaticResource BrTextSecondary}"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Name="TxtStatus"
-                                               Text="Not Installed"
-                                               FontSize="{StaticResource FontSizeBodyLarge}"
+                <!-- RIGHT COLUMN -->
+                <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*" Margin="10,10,16,12">
+                    <!-- STATUS CARD -->
+                    <Border Grid.Row="0"
+                            Name="TitleBar"
+                            Background="{StaticResource BrBgCard}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Margin="0,6,0,10"
+                            Padding="16,10">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
+                                    <TextBlock Text="{DynamicResource TxtOptiStatus}"
+                                               FontSize="{StaticResource FontSizeBody}"
                                                FontWeight="SemiBold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
-                                    <TextBlock Name="TxtVersion"
-                                               Text=""
-                                               FontSize="{StaticResource FontSizeBodyLarge}"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               Margin="8,0,0,0"/>
+                                               Foreground="{StaticResource BrTextSecondary}"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Name="StatusIndicator"
+                                                 Width="10" Height="10"
+                                                 Margin="0,0,10,0"
+                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Name="TxtStatus"
+                                                   Text="Installed"
+                                                   FontSize="{StaticResource FontSizeBodyLarge}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Name="TxtVersion"
+                                                   Text=""
+                                                   FontSize="{StaticResource FontSizeBodyLarge}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   Margin="8,0,0,0"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
                                 </StackPanel>
+                                <Button Grid.Column="1"
+                                        Name="BtnClose"
+                                        Classes="IconBtn"
+                                        VerticalAlignment="Top"
+                                        Click="BtnClose_Click">
+                                    <TextBlock Text="&#xE711;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                               FontSize="12"/>
+                                </Button>
+                            </Grid>
+
+                        <!-- PROGRESS BAR (Oculto por defecto, dentro del Status Card) -->
+                        <Border Name="BdProgress" Margin="0,12,0,0" IsVisible="False">
+                            <StackPanel>
+                                <TextBlock Name="TxtProgressState" Text="Downloading OptiScaler..."
+                                           Foreground="{StaticResource BrTextPrimary}" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <ProgressBar Name="PrgDownload" Height="6" Minimum="0" Maximum="100" />
                             </StackPanel>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- ════════════════════════════════════════════════════════
-                     DETECTED COMPONENTS
-                     ════════════════════════════════════════════════════════ -->
-                <StackPanel Grid.Row="2" Margin="24,20,24,0">
-                    <TextBlock Text="{DynamicResource TxtDetectedComponents}"
-                               FontSize="{StaticResource FontSizeBody}"
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource BrTextSecondary}"
-                               Margin="0,0,0,10"/>
-                    <ListBox Name="LstComponents"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             IsHitTestVisible="False">
-                        
-                    </ListBox>
-                </StackPanel>
-
-                <!-- ════════════════════════════════════════════════════════
-                     INSTALL PROGRESS
-                     ════════════════════════════════════════════════════════ -->
-                <Border Name="BdProgress" 
-                        Grid.Row="3"
-                        Background="{StaticResource BrBgCard}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="1"
-                        CornerRadius="{StaticResource RadiusLarge}"
-                        Margin="24,10,24,10"
-                        Padding="20,14"
-                        IsVisible="False">
-                    <StackPanel>
-                        <TextBlock Name="TxtProgressState" Text="Downloading OptiScaler..." 
-                                   Foreground="{StaticResource BrTextPrimary}" FontWeight="SemiBold" Margin="0,0,0,8"/>
-                        <ProgressBar Name="PrgDownload" Height="8" Minimum="0" Maximum="100" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                    </Border>
 
-                <!-- ════════════════════════════════════════════════════════
-                     TOAST NOTIFICATION
-                     ════════════════════════════════════════════════════════ -->
-                <Border Name="BdToast" 
-                        Grid.Row="3" Grid.RowSpan="2"
-                        HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                    <!-- DETECTED COMPONENTS -->
+                    <Border Grid.Row="1"
+                            Background="{StaticResource BrBgSurface}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="12,10"
+                            Margin="0,0,0,10">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="{DynamicResource TxtDetectedComponents}"
+                                       FontSize="{StaticResource FontSizeBody}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource BrTextSecondary}"/>
+                            <ListBox Name="LstComponents"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     IsHitTestVisible="False">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{StaticResource BrBgCard}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1"
+                                                CornerRadius="{StaticResource RadiusPill}"
+                                                Padding="10,6"
+                                                Margin="0,0,6,6">
+                                            <TextBlock Text="{Binding}" Foreground="{StaticResource BrTextPrimary}" FontSize="{StaticResource FontSizeCaption}"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
+
+
+
+                    <!-- CONFIG + ACTIONS -->
+                    <Border Grid.Row="2"
+                            VerticalAlignment="Stretch"
+                            Background="{StaticResource BrBgDeep}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            Padding="14,12">
+                        <StackPanel Name="PnlInstallOptions" Spacing="0">
+                            <!-- Info panel -->
+                            <Border Name="BetaInfoPanel"
+                                    Background="{StaticResource BrBgElevated}"
+                                    BorderBrush="#4A90E2"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Padding="10,6"
+                                    Margin="0,0,0,10"
+                                    IsVisible="False">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="&#xE946;"
+                                               Foreground="#4A90E2"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Text="{DynamicResource TxtBetaIncludesComponents}"
+                                               Foreground="#4A90E2"
+                                               FontSize="12"
+                                               FontWeight="Medium"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Options + Actions (3 columns × 5 rows) -->
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                  ColumnDefinitions="*,*,*"
+                                  RowSpacing="10"
+                                  ColumnSpacing="12">
+
+                                <!-- Row 0, Col 0 : OptiScaler version -->
+                                <StackPanel Grid.Row="0" Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource TxtVersionLbl}"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                    <ComboBox Name="CmbOptiVersion"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              SelectedIndex="0"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 1, Col 0 : Injection method -->
+                                <StackPanel Grid.Row="1" Grid.Column="0">
+                                    <TextBlock Text="{DynamicResource TxtInjectionLbl}"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                    <ComboBox Name="CmbInjectionMethod"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              SelectedIndex="0"
+                                              VerticalContentAlignment="Center">
+                                        <ComboBoxItem Content="dxgi.dll"     Tag="dxgi.dll"/>
+                                        <ComboBoxItem Content="winmm.dll"    Tag="winmm.dll"/>
+                                        <ComboBoxItem Content="d3d12.dll"    Tag="d3d12.dll"/>
+                                        <ComboBoxItem Content="dbghelp.dll"  Tag="dbghelp.dll"/>
+                                        <ComboBoxItem Content="version.dll"  Tag="version.dll"/>
+                                        <ComboBoxItem Content="wininet.dll"  Tag="wininet.dll"/>
+                                        <ComboBoxItem Content="winhttp.dll"  Tag="winhttp.dll"/>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Row 2, Col 0 : Profile selector -->
+                                <StackPanel Grid.Row="2" Grid.Column="0">
+                                    <TextBlock Text="Profile"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                    <ComboBox Name="CmbProfile"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 0, Col 1 : FSR4 INT8 -->
+                                <StackPanel Grid.Row="0" Grid.Column="1">
+                                    <TextBlock Text="FSR4 INT8"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                    <ComboBox Name="CmbExtrasVersion"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 1, Col 1 : OptiPatcher -->
+                                <StackPanel Grid.Row="1" Grid.Column="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                        <TextBlock Text="{DynamicResource TxtOptiPatcherLbl}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="{StaticResource FontSizeCaption}"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="16" Height="16"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtOptiPatcherTooltip}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="10" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbOptiPatcherVersion"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 0, Col 2 : Fakenvapi toggle -->
+                                <StackPanel Grid.Row="0" Grid.Column="2"
+                                            Orientation="Horizontal" Spacing="8"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <ToggleSwitch Name="ChkInstallFakenvapi" VerticalAlignment="Center" OnContent="" OffContent=""/>
+                                    <TextBlock Text="Fakenvapi" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 1, Col 2 : NukemFG toggle -->
+                                <StackPanel Grid.Row="1" Grid.Column="2"
+                                            Orientation="Horizontal" Spacing="8"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <ToggleSwitch Name="ChkInstallNukemFG" VerticalAlignment="Center" OnContent="" OffContent=""/>
+                                    <TextBlock Text="NukemFG" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Row 3, Col 2 : Uninstall button -->
+                                <Button Name="BtnUninstall"
+                                        Grid.Row="3" Grid.Column="2"
+                                        Content="{DynamicResource TxtUninstall}"
+                                        Classes="BtnDanger"
+                                        Padding="14,7"
+                                        HorizontalAlignment="Right"
+                                        IsVisible="False"
+                                        Click="BtnUninstall_Click"/>
+
+                                <!-- Row 4, all columns : Install buttons right-aligned -->
+                                <StackPanel Name="InstallBtnGroup"
+                                            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
+                                            Orientation="Horizontal" Spacing="10"
+                                            HorizontalAlignment="Right">
+                                    <Button Name="BtnInstallManual"
+                                            Content="{DynamicResource TxtBtnManualInstall}"
+                                            Classes="BtnSuccess"
+                                            Padding="16,8"
+                                            Click="BtnInstallManual_Click"/>
+                                    <Button Name="BtnInstall"
+                                            Content="{DynamicResource TxtInstallOpti}"
+                                            Classes="BtnSuccess"
+                                            Padding="16,8"
+                                            Click="BtnInstall_Click"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- TOAST NOTIFICATION -->
+                <Border Name="BdToast"
+                        Grid.ColumnSpan="2"
+                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
                         Background="{StaticResource BrBgElevated}"
                         BorderBrush="{StaticResource BrAccent}"
                         BorderThickness="1"
                         CornerRadius="{StaticResource RadiusMedium}"
-                        Margin="0,0,0,80"
+                        BoxShadow="0 6 16 0 #80000000"
+                        Margin="0,0,36,80"
                         Padding="16,10"
                         IsVisible="False"
-                        ZIndex="10">
+                        ZIndex="100">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Name="TxtToastIcon" Text="✓" Foreground="{StaticResource BrAccent}" FontWeight="Bold" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                        <TextBlock Name="TxtToastMessage" Text="Success" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                        <TextBlock Name="TxtToastIcon" Text="&#x2713;" Foreground="{StaticResource BrAccent}" FontWeight="Bold" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Name="TxtToastMessage" Text="{DynamicResource TxtToastSuccess}" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
 
-                <!-- ════════════════════════════════════════════════════════
-                     UNINSTALL CONFIRMATION MODAL
-                     ════════════════════════════════════════════════════════ -->
-                <Grid Name="BdConfirmUninstall" Grid.RowSpan="5" Background="#80000000" IsVisible="False" ZIndex="20">
+                <!-- UNINSTALL CONFIRMATION MODAL -->
+                <Grid Name="BdConfirmUninstall" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="20">
                     <Border Background="{StaticResource BrBgElevated}"
                             BorderBrush="{StaticResource BrBorderSubtle}"
                             BorderThickness="1"
@@ -202,18 +460,15 @@
                             Padding="24,24,24,20"
                             MaxWidth="400">
                         <StackPanel>
-                            <!-- Warning Icon & Title -->
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                <TextBlock Text="⚠️" Foreground="{StaticResource BrAccentWarm}" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="!" Foreground="{StaticResource BrAccentWarm}" FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
                                 <TextBlock Text="{DynamicResource TxtConfirmUninstallTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                             </StackPanel>
-                            
-                            <!-- Message -->
+
                             <TextBlock Text="{DynamicResource TxtConfirmUninstallMsg}"
                                        Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
                                        TextWrapping="Wrap" Margin="0,0,0,24"/>
-                            
-                            <!-- Buttons -->
+
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Name="BtnConfirmUninstallNo" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="16,8" Margin="0,0,10,0" Click="BtnConfirmUninstallNo_Click"/>
                                 <Button Name="BtnConfirmUninstallYes" Content="{DynamicResource TxtUninstall}" Classes="BtnDanger" Padding="16,8" Click="BtnConfirmUninstallYes_Click"/>
@@ -222,95 +477,67 @@
                     </Border>
                 </Grid>
 
-                <!-- ════════════════════════════════════════════════════════
-                     ACTION BAR
-                     ════════════════════════════════════════════════════════ -->
-                <Border Grid.Row="4"
-                        Background="{StaticResource BrBgDeep}"
-                        BorderBrush="{StaticResource BrBorderSubtle}"
-                        BorderThickness="0,1,0,0"
-                        CornerRadius="0,0,12,12"
-                        Padding="24,16">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="Auto,Auto,*">
-
-                        <!-- Row 0: Beta info panel spanning all columns (appears at the top) -->
-                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                                Name="BetaInfoPanel"
-                                Background="{StaticResource BrBgElevated}"
-                                BorderBrush="#4A90E2"
-                                BorderThickness="1"
-                                CornerRadius="6"
-                                Padding="12,8"
-                                Margin="0,0,0,12"
-                                IsVisible="False">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="ℹ"
-                                           Foreground="#4A90E2"
-                                           FontSize="14"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center"/>
-                                <TextBlock Text="{DynamicResource TxtBetaIncludesComponents}"
-                                           Foreground="#4A90E2"
-                                           FontSize="12"
-                                           FontWeight="Medium"
-                                           VerticalAlignment="Center"/>
+                <!-- COVER IMAGE MODAL -->
+                <Grid Name="BdCoverModal" Grid.ColumnSpan="2" Background="#A0000000" IsVisible="False" ZIndex="30">
+                    <Border Background="{StaticResource BrBgElevated}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            BoxShadow="0 8 32 0 #80000000"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24"
+                            Width="480">
+                        <StackPanel Spacing="16">
+                            <!-- Encabezado -->
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Border Background="{StaticResource BrBgSurface}" Width="36" Height="36" CornerRadius="{StaticResource RadiusMedium}">
+                                    <TextBlock Text="&#xE8B9;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                               FontSize="18"
+                                               Foreground="{StaticResource BrAccent}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{DynamicResource TxtCoverUpdateTitle}"
+                                               FontSize="{StaticResource FontSizeSubtitle}"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource BrTextPrimary}"/>
+                                    <TextBlock Text="{DynamicResource TxtCoverUpdateDesc}"
+                                               FontSize="{StaticResource FontSizeCaption}"
+                                               Foreground="{StaticResource BrTextSecondary}"/>
+                                </StackPanel>
                             </StackPanel>
-                        </Border>
 
-                        <!-- Row 1, Col 0: Version selector -->
-                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
-                            <TextBlock Text="{DynamicResource TxtVersionLbl}"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeBody}"
-                                       Width="65"/>
-                            <ComboBox Name="CmbOptiVersion"
-                                      Width="185"
-                                      Classes="BtnSelector"
-                                      SelectedIndex="0"
-                                      HorizontalContentAlignment="Left"
-                                      VerticalContentAlignment="Center" />
-                            <Border Background="{StaticResource BrBgElevated}"
+                            <!-- Área de preview -->
+                            <Border Background="{StaticResource BrBgSurface}"
                                     BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1" CornerRadius="8"
-                                    Width="16" Height="16"
-                                    Margin="10,0,0,0"
-                                    ToolTip.ShowDelay="100" Cursor="Help"
-                                    ToolTip.Tip="{DynamicResource TxtTooltipOptiScalerVersion}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
-                                            FontSize="10" FontWeight="Bold"
-                                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            Margin="0,-1,0,0"/>
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusMedium}"
+                                    Height="250"
+                                    ClipToBounds="True">
+                                <Grid>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
+                                        <TextBlock Text="&#xE8B9;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" FontSize="32" Foreground="{StaticResource BrTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource TxtPreviewUnavailable}" Foreground="{StaticResource BrTextSecondary}" FontWeight="Medium"/>
+                                    </StackPanel>
+                                    <Image Name="ImgCoverPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
                             </Border>
-                        </StackPanel>
-
-                        <!-- Row 1, Col 2: Fakenvapi only -->
-                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
-                            <CheckBox Name="ChkInstallFakenvapi"
-                                      Content="Fakenvapi"
-                                      VerticalAlignment="Center"/>
-                            <Border Background="{StaticResource BrBgElevated}" BorderBrush="{StaticResource BrBorderSubtle}" BorderThickness="1" CornerRadius="8" Width="16" Height="16" Margin="6,0,0,0" ToolTip.ShowDelay="100" Cursor="Help" ToolTip.Tip="{DynamicResource TxtFakenvapiHelpTip}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- Vertical divider spanning rows 1, 2 and 3 -->
-                        <Border Grid.Row="1" Grid.RowSpan="3" Grid.Column="1"
-                                Width="1"
-                                Background="{StaticResource BrBorderSubtle}"
-                                Margin="20,0"/>
-
-                        <!-- Row 2, Col 0: Injector selector -->
-                        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Injector selector row -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
                             <TextBlock Text="{DynamicResource TxtInjectionLbl}"
                                        Foreground="{StaticResource BrTextSecondary}"
                                        VerticalAlignment="Center"
                                        FontSize="{StaticResource FontSizeBody}"
                                        Width="65"/>
-                            <ComboBox Name="CmbInjectionMethod"
-                                      Width="185"
+                            <ComboBox Name="CmbInjectionMethodCover"
+                                      Width="220"
                                       Classes="BtnSelector"
+                                      Padding="8,0,24,0"
                                       SelectedIndex="0"
+                                      HorizontalContentAlignment="Left"
                                       VerticalContentAlignment="Center">
                                 <ComboBoxItem Content="dxgi.dll"     Tag="dxgi.dll"/>
                                 <ComboBoxItem Content="winmm.dll"    Tag="winmm.dll"/>
@@ -334,72 +561,22 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- Row 2, Col 2: NukemFG (left) + Uninstall button (right) -->
-                        <Grid Grid.Row="2" Grid.Column="2" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                <CheckBox Name="ChkInstallNukemFG"
-                                          Content="NukemFG"
-                                          VerticalAlignment="Center"/>
-                                <Border Background="{StaticResource BrBgElevated}" BorderBrush="{StaticResource BrBorderSubtle}" BorderThickness="1" CornerRadius="8" Width="16" Height="16" Margin="6,0,0,0" ToolTip.ShowDelay="100" Cursor="Help" ToolTip.Tip="{DynamicResource TxtNukemHelpTip}">
-                                    <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
-                                </Border>
-                            </StackPanel>
-                            <Button Grid.Column="1"
-                                    Name="BtnUninstall"
-                                    Content="{DynamicResource TxtUninstall}"
-                                    Classes="BtnDanger"
-                                    Padding="18,8"
-                                    IsVisible="False"
-                                    Click="BtnUninstall_Click"/>
+                        <!-- Action buttons -->
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                            <Button Name="BtnCoverReset" Grid.Column="0" Classes="BtnBase" Padding="14,8" Click="BtnCoverReset_Click" ToolTip.Tip="{DynamicResource TxtCoverRestoreTooltip}">
+                                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                    <TextBlock Text="&#xE777;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" VerticalAlignment="Center" FontSize="12"/>
+                                    <TextBlock Text="{DynamicResource TxtRestore}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Name="BtnCoverSelect" Grid.Column="2" Content="{DynamicResource TxtBrowse}" Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverSelect_Click"/>
+                            <Button Name="BtnCoverCancel" Grid.Column="3" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="14,8" Margin="0,0,8,0" Click="BtnCoverCancel_Click"/>
+                            <Button Name="BtnCoverApply" Grid.Column="4" Content="{DynamicResource TxtApply}" Classes="BtnSuccess" Padding="20,8" Click="BtnCoverApply_Click"/>
                         </Grid>
-
-                        <!-- Row 3, Col 0: FSR4 INT8 version selector -->
-                        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal"
-                                    Margin="0,12,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="FSR4 INT8:"
-                                       Foreground="{StaticResource BrTextSecondary}"
-                                       VerticalAlignment="Center"
-                                       FontSize="{StaticResource FontSizeBody}"
-                                       Margin="0,0,8,0"/>
-                            <ComboBox Name="CmbExtrasVersion"
-                                      Width="170"
-                                      Classes="BtnSelector"
-                                      Padding="8,0,24,0"
-                                      HorizontalContentAlignment="Left"
-                                      VerticalContentAlignment="Center" />
-                            <Border Background="{StaticResource BrBgElevated}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1" CornerRadius="8"
-                                    Width="16" Height="16"
-                                    Margin="10,0,0,0"
-                                    ToolTip.ShowDelay="100" Cursor="Help"
-                                    ToolTip.Tip="{DynamicResource TxtTooltipFsr4Int8}">
-                                <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
-                                           FontSize="10" FontWeight="Bold"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Margin="0,-1,0,0"/>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- Row 3, Col 2: Install buttons -->
-                        <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal"
-                                    Margin="0,4,0,0" VerticalAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    Name="InstallBtnGroup">
-                            <Button Name="BtnInstallManual"
-                                    Content="{DynamicResource TxtBtnManualInstall}"
-                                    Classes="BtnSuccess"
-                                    Padding="18,8"
-                                    Margin="0,0,10,0"
-                                    Click="BtnInstallManual_Click"/>
-                            <Button Name="BtnInstall"
-                                    Content="{DynamicResource TxtInstallOpti}"
-                                    Classes="BtnSuccess"
-                                    Padding="18,8"
-                                    Click="BtnInstall_Click"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+                    </StackPanel>
+                    </Border>
+                </Grid>
             </Grid>
         </Border>
     </Panel>

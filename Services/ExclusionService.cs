@@ -70,8 +70,9 @@ public class ExclusionService
             }
             return list;
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[ExclusionService] Failed to load exclusions: {ex.Message}");
             return DefaultExclusions();
         }
     }

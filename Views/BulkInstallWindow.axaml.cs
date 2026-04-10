@@ -12,6 +12,8 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using OptiscalerClient.Models;
 using OptiscalerClient.Services;
+using OptiscalerClient.Helpers;
+using System.Text.RegularExpressions;
 
 namespace OptiscalerClient.Views;
 
@@ -24,13 +26,19 @@ public partial class BulkInstallWindow : Window
     private readonly ObservableCollection<BulkGameItem> _filteredGameItems;
     private List<BulkGameItem> _allGames = new List<BulkGameItem>();
     private bool _isInstalling = false;
+    private readonly ProfileManagementService _profileService;
+    private Window? _ownerWindow;
+    private string? _lastSelectedProfileName;
+    private bool _isUpdatingProfiles = false;
+    private const string NewProfileTag = "__new_profile__";
 
     public BulkInstallWindow()
     {
         InitializeComponent();
-        
+
         // Initialize fields to avoid nullable warnings
         _componentService = null!;
+        _profileService = null!;
         _installService = null!;
         _gpuService = null!;
         _gameItems = new ObservableCollection<BulkGameItem>();
@@ -40,12 +48,15 @@ public partial class BulkInstallWindow : Window
     public BulkInstallWindow(
         ComponentManagementService componentService,
         GameInstallationService installService,
-        List<Game> games)
+        List<Game> games,
+        Window? owner = null)
     {
         InitializeComponent();
-        
+
         _componentService = componentService;
         _installService = installService;
+        _profileService = new ProfileManagementService();
+        _ownerWindow = owner;
         _gameItems = new ObservableCollection<BulkGameItem>();
         _filteredGameItems = new ObservableCollection<BulkGameItem>();
 
@@ -74,7 +85,7 @@ public partial class BulkInstallWindow : Window
                 OptiscalerVersion = game.OptiscalerVersion,
                 IsOptiscalerInstalled = game.IsOptiscalerInstalled
             };
-            
+
             _gameItems.Add(gameItem);
             _allGames.Add(gameItem);
             _filteredGameItems.Add(gameItem);
@@ -88,7 +99,7 @@ public partial class BulkInstallWindow : Window
 
         // Load versions
         _ = LoadVersionsAsync();
-        
+
         // Update selection count
         UpdateSelectionCount();
 
@@ -114,6 +125,12 @@ public partial class BulkInstallWindow : Window
 
         // Populate FSR4 INT8 versions
         PopulateExtrasComboBox();
+
+        // Populate OptiPatcher versions
+        PopulateOptiPatcherComboBox();
+
+        // Populate profile selector
+        PopulateProfileSelector();
 
         // Fade in animation
         var rootPanel = this.FindControl<Panel>("RootPanel");
@@ -182,16 +199,31 @@ public partial class BulkInstallWindow : Window
                 currentIndex++;
             }
 
-            // Add stable versions - first stable gets LATEST badge
+            var latestStable = _componentService.LatestStableVersion;
+
+            // Add stable versions
             bool isLatestStableMarked = false;
             foreach (var ver in stableVersions)
             {
-                bool isFirstStable = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
-                bool shouldMarkAsLatest = isFirstStable;
+                bool shouldMarkAsLatest = false;
 
-                if (isFirstStable)
+                if (!string.IsNullOrEmpty(latestStable))
+                {
+                    shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    shouldMarkAsLatest = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
+                }
+
+                if (shouldMarkAsLatest)
                 {
                     isLatestStableMarked = true;
+                    // If we didn't default to beta, default to this latest stable
+                    if (!hasBeta)
+                    {
+                        selectedIndex = currentIndex;
+                    }
                 }
 
                 cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: shouldMarkAsLatest));
@@ -205,7 +237,24 @@ public partial class BulkInstallWindow : Window
                 currentIndex++;
             }
 
+            // Override with user-configured default version if set
+            var configDefault = _componentService.Config.DefaultOptiScalerVersion;
+            if (!string.IsNullOrEmpty(configDefault))
+            {
+                for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
+                {
+                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci && string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
+                    {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
             cmbOptiVersion.SelectedIndex = selectedIndex;
+
+            // Refresh OptiPatcher list after versions are loaded
+            PopulateOptiPatcherComboBox();
         });
     }
 
@@ -258,8 +307,8 @@ public partial class BulkInstallWindow : Window
 
         if (txtCount != null)
         {
-            txtCount.Text = selectedCount == 1 
-                ? "1 game selected" 
+            txtCount.Text = selectedCount == 1
+                ? "1 game selected"
                 : $"{selectedCount} games selected";
         }
 
@@ -287,7 +336,7 @@ public partial class BulkInstallWindow : Window
         }
 
         var selectedCount = selectableGames.Count(g => g.IsSelected);
-        
+
         if (selectedCount == 0)
             chkSelectAll.IsChecked = false;
         else if (selectedCount == selectableGames.Count)
@@ -317,11 +366,13 @@ public partial class BulkInstallWindow : Window
         var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
         var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
         var cmbExtrasVersion = this.FindControl<ComboBox>("CmbExtrasVersion");
+        var cmbOptiPatcher = this.FindControl<ComboBox>("CmbOptiPatcherVersion");
         var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
         var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+        var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
 
         if (cmbOptiVersion?.SelectedItem is not ComboBoxItem selectedItem) return;
-        
+
         string version = selectedItem.Tag?.ToString() ?? "";
         bool installFakenvapi = chkFakenvapi?.IsChecked == true;
         bool installNukemFG = chkNukemFG?.IsChecked == true;
@@ -336,8 +387,19 @@ public partial class BulkInstallWindow : Window
         bool injectExtras = !string.IsNullOrEmpty(selectedExtrasVersion) &&
                             !selectedExtrasVersion.Equals("none", StringComparison.OrdinalIgnoreCase);
 
+        // Get selected OptiPatcher version
+        var selectedOptiPatcherItem = cmbOptiPatcher?.SelectedItem as ComboBoxItem;
+        var selectedOptiPatcherVersion = selectedOptiPatcherItem?.Tag?.ToString();
+        bool installOptiPatcher = !string.IsNullOrEmpty(selectedOptiPatcherVersion) &&
+                                  !selectedOptiPatcherVersion.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+        // Get selected profile
+        OptiScalerProfile? selectedProfile = null;
+        if (cmbProfile?.SelectedItem is ComboBoxItem profileItem && profileItem.Tag is OptiScalerProfile prof)
+            selectedProfile = prof;
+
         _isInstalling = true;
-        
+
         var btnInstall = this.FindControl<Button>("BtnInstall");
         var btnCancel = this.FindControl<Button>("BtnCancel");
         var progressSection = this.FindControl<Border>("ProgressSection");
@@ -358,10 +420,10 @@ public partial class BulkInstallWindow : Window
 
             if (txtProgressStatus != null)
                 txtProgressStatus.Text = $"Installing {gameItem.Name}...";
-            
+
             if (txtProgressCount != null)
                 txtProgressCount.Text = $"{currentGame} / {totalGames}";
-            
+
             if (progressBar != null)
                 progressBar.Value = (currentGame - 1) * 100.0 / totalGames;
 
@@ -382,7 +444,8 @@ public partial class BulkInstallWindow : Window
                         fakeCacheDir,
                         installNukemFG,
                         nukemCacheDir,
-                        optiscalerVersion: version
+                        optiscalerVersion: version,
+                        profile: selectedProfile
                     );
                 });
 
@@ -420,6 +483,65 @@ public partial class BulkInstallWindow : Window
                     });
                 }
 
+                // ── OptiPatcher ────────────────────────────────────────────────────
+                if (installOptiPatcher && !string.IsNullOrEmpty(selectedOptiPatcherVersion))
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        if (txtProgressStatus != null) txtProgressStatus.Text = $"Downloading OptiPatcher {selectedOptiPatcherVersion} for {gameItem.Name}...";
+                        if (progressBar != null) progressBar.IsIndeterminate = true;
+                    });
+
+                    try
+                    {
+                        var optiPatcherProgress = new Progress<double>(p =>
+                            Dispatcher.UIThread.Post(() => { if (progressBar != null) { progressBar.IsIndeterminate = false; progressBar.Value = p; } }));
+
+                        var optiPatcherAsiPath = await _componentService.DownloadOptiPatcherAsync(selectedOptiPatcherVersion, optiPatcherProgress);
+
+                        await Task.Run(() =>
+                        {
+                            var gameDir = _installService.DetermineInstallDirectory(gameItem.Game) ?? gameItem.Game.InstallPath;
+
+                            // Create plugins folder and copy the .asi
+                            var pluginsDir = System.IO.Path.Combine(gameDir, "plugins");
+                            System.IO.Directory.CreateDirectory(pluginsDir);
+                            var destAsi = System.IO.Path.Combine(pluginsDir, "OptiPatcher.asi");
+                            System.IO.File.Copy(optiPatcherAsiPath, destAsi, overwrite: true);
+                            DebugWindow.Log($"[BulkInstall][OptiPatcher] Installed to {destAsi}");
+
+                            // Patch OptiScaler.ini: ensure LoadAsiPlugins=true
+                            var iniPath = System.IO.Path.Combine(gameDir, "OptiScaler.ini");
+                            if (System.IO.File.Exists(iniPath))
+                            {
+                                var lines = System.IO.File.ReadAllLines(iniPath).ToList();
+                                bool found = false;
+                                for (int idx = 0; idx < lines.Count; idx++)
+                                {
+                                    var trimmed = lines[idx].Trim();
+                                    if (trimmed.StartsWith("LoadAsiPlugins", StringComparison.OrdinalIgnoreCase) &&
+                                        (trimmed.Length == "LoadAsiPlugins".Length || trimmed["LoadAsiPlugins".Length] == '='))
+                                    {
+                                        lines[idx] = "LoadAsiPlugins=true";
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) lines.Add("LoadAsiPlugins=true");
+                                System.IO.File.WriteAllLines(iniPath, lines);
+                                DebugWindow.Log($"[BulkInstall][OptiPatcher] Patched OptiScaler.ini for {gameItem.Name}");
+                            }
+                        });
+
+                        Dispatcher.UIThread.Post(() => { if (progressBar != null) progressBar.IsIndeterminate = false; });
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatcher.UIThread.Post(() => { if (progressBar != null) progressBar.IsIndeterminate = false; });
+                        DebugWindow.Log($"[BulkInstall][OptiPatcher] Failed for {gameItem.Name}: {ex.Message}");
+                    }
+                }
+
                 gameItem.IsInstalled = true;
                 gameItem.CanInstall = false;
                 gameItem.IsSelected = false;
@@ -438,7 +560,7 @@ public partial class BulkInstallWindow : Window
         await Task.Delay(500);
 
         _isInstalling = false;
-        
+
         if (progressSection != null) progressSection.IsVisible = false;
         if (btnCancel != null) btnCancel.IsEnabled = true;
 
@@ -475,6 +597,125 @@ public partial class BulkInstallWindow : Window
     private void CmbOptiVersion_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         UpdateCheckboxStatesForVersion(sender as ComboBox);
+    }
+
+    private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
+    {
+        if (cmb == null) return;
+
+        var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+        bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
+
+        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
+        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+
+        // Disable Fakenvapi/NukemFG for any OptiScaler version >= 0.9 regardless of beta
+        bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
+
+        if (includedInPackage)
+        {
+            if (chkFakenvapi != null)
+            {
+                chkFakenvapi.IsEnabled = false;
+                chkFakenvapi.IsChecked = false;
+                ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+            }
+            if (chkNukemFG != null)
+            {
+                chkNukemFG.IsEnabled = false;
+                chkNukemFG.IsChecked = false;
+                ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+            }
+        }
+        else
+        {
+            if (chkFakenvapi != null)
+            {
+                chkFakenvapi.IsEnabled = true;
+                ToolTip.SetTip(chkFakenvapi, null);
+            }
+            if (chkNukemFG != null)
+            {
+                chkNukemFG.IsEnabled = true;
+                ToolTip.SetTip(chkNukemFG, null);
+            }
+        }
+    }
+
+    private static bool IsVersionGreaterOrEqual(string? ver, int targetMajor, int targetMinor)
+    {
+        if (string.IsNullOrEmpty(ver)) return false;
+
+        var m = Regex.Match(ver, "^\\d+(\\.\\d+)*");
+        if (!m.Success) return false;
+
+        if (!Version.TryParse(m.Value, out var parsed)) return false;
+
+        if (parsed.Major > targetMajor) return true;
+        if (parsed.Major < targetMajor) return false;
+        return parsed.Minor >= targetMinor;
+    }
+
+    private void PopulateProfileSelector()
+    {
+        var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
+        if (cmbProfile == null) return;
+
+        _isUpdatingProfiles = true;
+        cmbProfile.SelectionChanged -= CmbProfile_SelectionChanged;
+        cmbProfile.Items.Clear();
+
+        var profiles = _profileService.GetAllProfiles();
+        foreach (var profile in profiles)
+        {
+            var item = new ComboBoxItem { Content = profile.Name, Tag = profile };
+            ToolTip.SetTip(item, profile.Description);
+            cmbProfile.Items.Add(item);
+        }
+
+        cmbProfile.Items.Add(new ComboBoxItem
+        {
+            Content = "+ New Profile",
+            Tag = NewProfileTag
+        });
+
+        var defaultName = _profileService.GetDefaultProfile()?.Name;
+        var selectedIndex = profiles.FindIndex(p => p.Name == defaultName);
+        cmbProfile.SelectedIndex = selectedIndex >= 0 ? selectedIndex : Math.Max(0, profiles.Count - 1);
+
+        if (profiles.Count > 0 && cmbProfile.SelectedIndex >= 0 && cmbProfile.SelectedIndex < profiles.Count)
+            _lastSelectedProfileName = profiles[cmbProfile.SelectedIndex].Name;
+
+        cmbProfile.SelectionChanged += CmbProfile_SelectionChanged;
+        _isUpdatingProfiles = false;
+    }
+
+    private void CmbProfile_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (_isUpdatingProfiles) return;
+        if (sender is not ComboBox cmbProfile) return;
+        if (cmbProfile.SelectedItem is not ComboBoxItem item) return;
+
+        if (item.Tag is OptiScalerProfile profile)
+        {
+            _lastSelectedProfileName = profile.Name;
+            return;
+        }
+
+        if (item.Tag is string tag && tag == NewProfileTag)
+        {
+            var profiles = _profileService.GetAllProfiles();
+            var fallbackName = _lastSelectedProfileName ?? _profileService.GetDefaultProfile()?.Name;
+            var fallbackIndex = profiles.FindIndex(p => p.Name == fallbackName);
+
+            _isUpdatingProfiles = true;
+            cmbProfile.SelectedIndex = fallbackIndex >= 0 ? fallbackIndex : 0;
+            _isUpdatingProfiles = false;
+
+            this.Close();
+            if (_ownerWindow is MainWindow mainWindow)
+                mainWindow.NavigateToProfiles();
+        }
     }
 
     /// <summary>
@@ -521,13 +762,13 @@ public partial class BulkInstallWindow : Window
         {
             try
             {
-                var gpu = _gpuService.GetDiscreteGPU() ?? _gpuService.GetPrimaryGPU();
+                var gpu = GpuSelectionHelper.GetPreferredGpu(_gpuService, _componentService.Config.DefaultGpuId);
                 // RDNA 4 = Radeon RX 9000 series (GPU name contains "RX 9" or similar)
                 isRdna4 = gpu != null && gpu.Vendor == GpuVendor.AMD &&
                           (gpu.Name.Contains(" 9", StringComparison.OrdinalIgnoreCase) ||
                            gpu.Name.Contains("RX 9", StringComparison.OrdinalIgnoreCase));
             }
-            catch { /* silent */ }
+            catch (Exception ex) { DebugWindow.Log($"[BulkInstall] GPU detection failed: {ex.Message}"); }
         }
 
         // Determine target index
@@ -581,45 +822,41 @@ public partial class BulkInstallWindow : Window
         cmb.SelectedIndex = targetIndex;
     }
 
-    private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
+    private void PopulateOptiPatcherComboBox()
     {
+        var cmb = this.FindControl<ComboBox>("CmbOptiPatcherVersion");
         if (cmb == null) return;
 
-        var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
-        bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
+        cmb.Items.Clear();
+        cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
 
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
-
-        if (isBeta)
+        var versions = _componentService.OptiPatcherAvailableVersions;
+        foreach (var ver in versions)
         {
-            if (chkFakenvapi != null)
+            bool isLatest = ver == _componentService.LatestOptiPatcherVersion;
+            cmb.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: isLatest));
+        }
+
+        // Respect configured default
+        int targetIndex = 0;
+        var savedDefault = _componentService.Config.DefaultOptiPatcherVersion;
+        if (!string.IsNullOrEmpty(savedDefault) && !savedDefault.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int i = 1; i < cmb.Items.Count; i++)
             {
-                chkFakenvapi.IsEnabled = false;
-                chkFakenvapi.IsChecked = false;
-                ToolTip.SetTip(chkFakenvapi, "Included in beta version");
-            }
-            if (chkNukemFG != null)
-            {
-                chkNukemFG.IsEnabled = false;
-                chkNukemFG.IsChecked = false;
-                ToolTip.SetTip(chkNukemFG, "Included in beta version");
+                if (cmb.Items[i] is ComboBoxItem ci &&
+                    string.Equals(ci.Tag?.ToString(), savedDefault, StringComparison.OrdinalIgnoreCase))
+                {
+                    targetIndex = i;
+                    break;
+                }
             }
         }
-        else
-        {
-            if (chkFakenvapi != null)
-            {
-                chkFakenvapi.IsEnabled = true;
-                ToolTip.SetTip(chkFakenvapi, null);
-            }
-            if (chkNukemFG != null)
-            {
-                chkNukemFG.IsEnabled = true;
-                ToolTip.SetTip(chkNukemFG, null);
-            }
-        }
+
+        cmb.SelectedIndex = targetIndex;
     }
+
+    // (Replaced by unified version earlier)
 
     private void TxtSearch_TextChanged(object? sender, TextChangedEventArgs e)
     {
@@ -641,7 +878,7 @@ public partial class BulkInstallWindow : Window
     private void ApplyFilter(string? searchText)
     {
         _filteredGameItems.Clear();
-        
+
         if (string.IsNullOrWhiteSpace(searchText))
         {
             // Show all games
@@ -653,9 +890,9 @@ public partial class BulkInstallWindow : Window
         else
         {
             // Filter games
-            var filtered = _allGames.Where(g => 
+            var filtered = _allGames.Where(g =>
                 g.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
-            
+
             foreach (var game in filtered)
             {
                 _filteredGameItems.Add(game);

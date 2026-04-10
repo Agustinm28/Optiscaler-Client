@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text.Json;
 using OptiscalerClient.Models;
 using OptiscalerClient.Views;
@@ -28,6 +29,22 @@ namespace OptiscalerClient.Services
     {
         private const string BackupFolderName = "OptiScalerBackup";
         private const string ManifestFileName = "optiscaler_manifest.json";
+        private static readonly string[] KnownOptiscalerArtifacts =
+        {
+            // OptiScaler core
+            "OptiScaler.ini", "OptiScaler.log", "OptiScaler.dll",
+            "dxgi.dll", "winmm.dll", "d3d12.dll", "dbghelp.dll",
+            "version.dll", "wininet.dll", "winhttp.dll",
+            "nvngx.dll", "libxess.dll", "amdxcffx64.dll",
+            // Fakenvapi
+            "nvapi64.dll", "fakenvapi.ini", "fakenvapi.log",
+            // NukemFG
+            "dlssg_to_fsr3_amd_is_better.dll",
+            // FSR 4 INT8 mod
+            "amd_fidelityfx_upscaler_dx12.dll",
+            // OptiPatcher
+            @"plugins\OptiPatcher.asi"
+        };
 
         // Files that we want to track specifically for backup purposes if they exist in the game folder
         // essentially anything that OptiScaler might replace.
@@ -38,12 +55,13 @@ namespace OptiscalerClient.Services
                                      bool installFakenvapi = false, string fakenvapiCachePath = "",
                                      bool installNukemFG = false, string nukemFGCachePath = "",
                                      string? optiscalerVersion = null,
-                                     string? overrideGameDir = null)
+                                     string? overrideGameDir = null,
+                                     OptiScalerProfile? profile = null)
         {
             DebugWindow.Log($"[Install] Starting OptiScaler installation for game: {game.Name}");
             DebugWindow.Log($"[Install] Version: {optiscalerVersion}, Injection: {injectionDllName}");
             DebugWindow.Log($"[Install] Cache path: {cachePath}");
-            
+
             if (!Directory.Exists(cachePath))
                 throw new DirectoryNotFoundException("Updates cache directory not found. Please download OptiScaler first.");
 
@@ -87,13 +105,31 @@ namespace OptiscalerClient.Services
             // Create installation manifest — OptiscalerVersion is the authoritative source for the UI
             var manifest = new InstallationManifest
             {
+                OperationId = Guid.NewGuid().ToString("N"),
+                OperationStatus = "in_progress",
+                StartedAtUtc = DateTime.UtcNow.ToString("O"),
                 InjectionMethod = injectionDllName,
                 InstallDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 OptiscalerVersion = optiscalerVersion,
+                IncludesOptiscaler = true,
+                IncludesFakenvapi = installFakenvapi,
+                IncludesNukemFG = installNukemFG,
                 // Store the EXACT directory used (already resolved for Phoenix/UE5 games).
                 // Uninstall will read this directly, avoiding re-detection issues.
                 InstalledGameDirectory = gameDir
             };
+
+            manifest.PreInstallKeyFiles = CapturePreInstallKeySnapshot(gameDir, injectionDllName);
+            manifest.ExpectedFinalMarkers.Add(injectionDllName);
+            manifest.ExpectedFinalMarkers.Add(Path.Combine(BackupFolderName, ManifestFileName));
+            manifest.AppliedProfileName = profile?.Name;
+            var manifestPath = Path.Combine(backupDir, ManifestFileName);
+
+            // Persist immediately as in-progress so crashes can be recovered later.
+            SaveManifest(manifestPath, manifest);
+
+            try
+            {
 
             // Find the main OptiScaler DLL (OptiScaler.dll or nvngx.dll for older versions)
             string? optiscalerMainDll = null;
@@ -110,14 +146,16 @@ namespace OptiscalerClient.Services
             }
 
             if (optiscalerMainDll == null)
-                throw new Exception("OptiScaler.dll or nvngx.dll not found in the downloaded package. Please re-download OptiScaler.");
+                throw new Exception("Installation failed because the downloaded package is corrupt or incomplete (missing OptiScaler.dll). Please go to Settings -> Manage Cache, delete this version, and try the installation again.");
 
             // Step 1: Install the main OptiScaler DLL with the selected injection method name
             var injectionDllPath = Path.Combine(gameDir, injectionDllName);
             DebugWindow.Log($"[Install] Installing main DLL as: {injectionDllName}");
+            var injectionExisted = File.Exists(injectionDllPath);
+            var injectionPreHash = injectionExisted ? ComputeSha256(injectionDllPath) : null;
 
             // Backup existing file if it exists
-            if (File.Exists(injectionDllPath))
+            if (injectionExisted)
             {
                 var backupPath = Path.Combine(backupDir, injectionDllName);
                 var backupSubDir = Path.GetDirectoryName(backupPath);
@@ -135,12 +173,18 @@ namespace OptiscalerClient.Services
             // Copy OptiScaler.dll as the injection DLL
             File.Copy(optiscalerMainDll, injectionDllPath, true);
             manifest.InstalledFiles.Add(injectionDllName);
+            TrackManifestFileMutation(
+                manifest,
+                relativePath: injectionDllName,
+                existedBefore: injectionExisted,
+                preInstallHash: injectionPreHash,
+                postInstallHash: ComputeSha256(injectionDllPath));
             DebugWindow.Log($"[Install] Installed main OptiScaler DLL");
 
             // Step 2: Copy all other files (configs, dependencies, etc.)
             DebugWindow.Log($"[Install] Copying additional files...");
             var additionalFileCount = 0;
-            
+
             foreach (var sourcePath in cacheFiles)
             {
                 var fileName = Path.GetFileName(sourcePath);
@@ -171,7 +215,9 @@ namespace OptiscalerClient.Services
                 }
 
                 // Backup existing file if needed
-                if (File.Exists(destPath))
+                bool existedBefore = File.Exists(destPath);
+                var preHash = existedBefore ? ComputeSha256(destPath) : null;
+                if (existedBefore)
                 {
                     var backupPath = Path.Combine(backupDir, relativePath);
                     var backupSubDir = Path.GetDirectoryName(backupPath);
@@ -188,10 +234,35 @@ namespace OptiscalerClient.Services
 
                 File.Copy(sourcePath, destPath, true);
                 manifest.InstalledFiles.Add(relativePath);
+                TrackManifestFileMutation(
+                    manifest,
+                    relativePath: relativePath,
+                    existedBefore: existedBefore,
+                    preInstallHash: preHash,
+                    postInstallHash: ComputeSha256(destPath));
                 additionalFileCount++;
             }
 
             DebugWindow.Log($"[Install] Copied {additionalFileCount} additional files");
+
+            // Step 2.5: Generate OptiScaler.ini from profile if provided (skip for Default profile)
+            if (profile != null && profile.IniSettings.Count > 0)
+            {
+                try
+                {
+                    var profileService = new ProfileManagementService();
+                    profileService.WriteOptiScalerIniToFile(gameDir, profile);
+                    DebugWindow.Log($"[Install] Generated OptiScaler.ini from profile: {profile.Name}");
+                }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Install] Warning: Failed to generate OptiScaler.ini from profile: {ex.Message}");
+                }
+            }
+            else if (profile != null && profile.Name == "Default")
+            {
+                DebugWindow.Log($"[Install] Using Default profile - OptiScaler will use its default configuration");
+            }
 
             // Step 3: Install Fakenvapi if requested (AMD/Intel only)
             if (installFakenvapi && !string.IsNullOrEmpty(fakenvapiCachePath) && Directory.Exists(fakenvapiCachePath))
@@ -209,9 +280,11 @@ namespace OptiscalerClient.Services
                         fileName.Equals("fakenvapi.ini", StringComparison.OrdinalIgnoreCase))
                     {
                         var destPath = Path.Combine(gameDir, fileName);
+                        var existedBefore = File.Exists(destPath);
+                        var preHash = existedBefore ? ComputeSha256(destPath) : null;
 
                         // Backup if exists
-                        if (File.Exists(destPath))
+                        if (existedBefore)
                         {
                             var backupPath = Path.Combine(backupDir, fileName);
                             if (!File.Exists(backupPath))
@@ -224,12 +297,27 @@ namespace OptiscalerClient.Services
 
                         File.Copy(sourcePath, destPath, true);
                         manifest.InstalledFiles.Add(fileName);
+                        TrackManifestFileMutation(
+                            manifest,
+                            relativePath: fileName,
+                            existedBefore: existedBefore,
+                            preInstallHash: preHash,
+                            postInstallHash: ComputeSha256(destPath));
                         fakeFileCount++;
                         DebugWindow.Log($"[Install] Installed Fakenvapi file: {fileName}");
                     }
                 }
-                
+
                 DebugWindow.Log($"[Install] Installed {fakeFileCount} Fakenvapi files");
+                if (fakeFileCount > 0)
+                {
+                    manifest.IncludesFakenvapi = true;
+                    manifest.ExpectedFinalMarkers.Add("nvapi64.dll");
+                }
+                else
+                {
+                    throw new Exception("Installation failed because the Fakenvapi package is corrupt or incomplete.");
+                }
             }
 
             // Step 4: Install NukemFG if requested
@@ -248,9 +336,11 @@ namespace OptiscalerClient.Services
                     if (fileName.Equals("dlssg_to_fsr3_amd_is_better.dll", StringComparison.OrdinalIgnoreCase))
                     {
                         var destPath = Path.Combine(gameDir, fileName);
+                        var existedBefore = File.Exists(destPath);
+                        var preHash = existedBefore ? ComputeSha256(destPath) : null;
 
                         // Backup if exists
-                        if (File.Exists(destPath))
+                        if (existedBefore)
                         {
                             var backupPath = Path.Combine(backupDir, fileName);
                             if (!File.Exists(backupPath))
@@ -263,6 +353,12 @@ namespace OptiscalerClient.Services
 
                         File.Copy(sourcePath, destPath, true);
                         manifest.InstalledFiles.Add(fileName);
+                        TrackManifestFileMutation(
+                            manifest,
+                            relativePath: fileName,
+                            existedBefore: existedBefore,
+                            preInstallHash: preHash,
+                            postInstallHash: ComputeSha256(destPath));
                         nukemFileCount++;
                         DebugWindow.Log($"[Install] Installed NukemFG file: {fileName}");
 
@@ -271,14 +367,24 @@ namespace OptiscalerClient.Services
                         DebugWindow.Log($"[Install] Modified OptiScaler.ini for NukemFG");
                     }
                 }
-                
+
                 DebugWindow.Log($"[Install] Installed {nukemFileCount} NukemFG files");
+                if (nukemFileCount > 0)
+                {
+                    manifest.IncludesNukemFG = true;
+                    manifest.ExpectedFinalMarkers.Add("dlssg_to_fsr3_amd_is_better.dll");
+                }
+                else
+                {
+                    throw new Exception("Installation failed because the NukemFG package is corrupt or incomplete.");
+                }
             }
 
             // Save manifest
-            var manifestPath = Path.Combine(backupDir, ManifestFileName);
-            var manifestJson = JsonSerializer.Serialize(manifest, OptimizerContext.Default.InstallationManifest);
-            File.WriteAllText(manifestPath, manifestJson);
+            manifest.ExpectedFinalMarkers = manifest.ExpectedFinalMarkers.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            manifest.OperationStatus = "committed";
+            manifest.FinishedAtUtc = DateTime.UtcNow.ToString("O");
+            SaveManifest(manifestPath, manifest);
             DebugWindow.Log($"[Install] Saved installation manifest");
 
             // Immediately update the game object so the UI reflects the correct state
@@ -291,11 +397,27 @@ namespace OptiscalerClient.Services
             // AnalyzeGame will also confirm OptiscalerVersion via the manifest.
             DebugWindow.Log($"[Install] Re-analyzing game to update component information...");
             var analyzer = new GameAnalyzerService();
-            analyzer.AnalyzeGame(game);
-            
+            GameAnalyzerService.InvalidateCacheForPath(game.InstallPath);
+            analyzer.AnalyzeGame(game, forceRefresh: true);
+            GameAnalyzerService.FlushCacheToDisk();
+
             DebugWindow.Log($"[Install] OptiScaler installation completed successfully for {game.Name}");
             DebugWindow.Log($"[Install] Total files installed: {manifest.InstalledFiles.Count}");
             DebugWindow.Log($"[Install] Total files backed up: {manifest.BackedUpFiles.Count}");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Install] Installation failed. Starting rollback. Error: {ex.Message}");
+
+                manifest.OperationStatus = "failed";
+                manifest.FinishedAtUtc = DateTime.UtcNow.ToString("O");
+                SaveManifest(manifestPath, manifest);
+
+                var rollbackSummary = RollbackFailedInstall(gameDir, backupDir, manifest);
+                DebugWindow.Log($"[Install] Rollback completed. Restored={rollbackSummary.Restored}, Deleted={rollbackSummary.Deleted}");
+
+                throw new Exception($"{ex.Message}", ex);
+            }
         }
 
         public void UninstallOptiScaler(Game game)
@@ -335,7 +457,10 @@ namespace OptiscalerClient.Services
                     // The manifest lives inside OptiScalerBackup/, so its parent == backup dir
                 }
             }
-            catch { /* If search fails, fall through to legacy */ }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Uninstall] Manifest search failed, using legacy fallback: {ex.Message}");
+            }
 
             InstallationManifest? manifest = null;
 
@@ -346,7 +471,10 @@ namespace OptiscalerClient.Services
                     var manifestJson = File.ReadAllText(manifestPath);
                     manifest = JsonSerializer.Deserialize(manifestJson, OptimizerContext.Default.InstallationManifest);
                 }
-                catch { /* Corrupt manifest — use legacy fallback */ }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Uninstall] Corrupt manifest at '{manifestPath}': {ex.Message}");
+                }
             }
 
             // ── Resolve gameDir ───────────────────────────────────────────────────
@@ -379,8 +507,13 @@ namespace OptiscalerClient.Services
             {
                 // ── Manifest-based uninstallation (precise) ───────────────────────
 
-                // Step 1: Delete all installed files (OptiScaler + Fakenvapi + NukemFG)
-                foreach (var installedFile in manifest.InstalledFiles)
+                // Step 1: Delete files created by install.
+                // If v2 tracking is unavailable, fall back to legacy InstalledFiles list.
+                var filesToDelete = manifest.FilesCreated.Count > 0
+                    ? manifest.FilesCreated.Select(f => f.RelativePath)
+                    : manifest.InstalledFiles;
+
+                foreach (var installedFile in filesToDelete.Distinct(StringComparer.OrdinalIgnoreCase))
                 {
                     try
                     {
@@ -388,21 +521,43 @@ namespace OptiscalerClient.Services
                         if (File.Exists(filePath))
                             File.Delete(filePath);
                     }
-                    catch { /* Continue */ }
+                    catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to delete '{installedFile}': {ex.Message}"); }
                 }
 
-                // Step 2: Restore backed-up files (files that existed before installation)
-                foreach (var backedUpFile in manifest.BackedUpFiles)
+                // Step 2: Restore overwritten files from backup.
+                // If v2 tracking is unavailable, fall back to legacy BackedUpFiles list.
+                if (manifest.FilesOverwritten.Count > 0)
                 {
-                    try
+                    foreach (var overwritten in manifest.FilesOverwritten)
                     {
-                        var backupPath = Path.Combine(backupDir, backedUpFile);
-                        var destPath = Path.Combine(gameDir, backedUpFile);
+                        try
+                        {
+                            var backupRelative = string.IsNullOrWhiteSpace(overwritten.BackupRelativePath)
+                                ? overwritten.RelativePath
+                                : overwritten.BackupRelativePath;
+                            var backupPath = Path.Combine(backupDir, backupRelative);
+                            var destPath = Path.Combine(gameDir, overwritten.RelativePath);
 
-                        if (File.Exists(backupPath))
-                            File.Copy(backupPath, destPath, overwrite: true);
+                            if (File.Exists(backupPath))
+                                File.Copy(backupPath, destPath, overwrite: true);
+                        }
+                        catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to restore '{overwritten.RelativePath}': {ex.Message}"); }
                     }
-                    catch { /* Continue */ }
+                }
+                else
+                {
+                    foreach (var backedUpFile in manifest.BackedUpFiles)
+                    {
+                        try
+                        {
+                            var backupPath = Path.Combine(backupDir, backedUpFile);
+                            var destPath = Path.Combine(gameDir, backedUpFile);
+
+                            if (File.Exists(backupPath))
+                                File.Copy(backupPath, destPath, overwrite: true);
+                        }
+                        catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to restore backup '{backedUpFile}': {ex.Message}"); }
+                    }
                 }
 
                 // Step 3: Remove installed (now-empty) subdirectories, deepest first
@@ -414,16 +569,12 @@ namespace OptiscalerClient.Services
                         if (Directory.Exists(dirPath) && !Directory.EnumerateFileSystemEntries(dirPath).Any())
                             Directory.Delete(dirPath, false);
                     }
-                    catch { /* Continue */ }
+                    catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to remove directory '{installedDir}': {ex.Message}"); }
                 }
 
-                // Step 4: Remove the backup directory itself
-                try
-                {
-                    if (Directory.Exists(backupDir))
-                        Directory.Delete(backupDir, true);
-                }
-                catch { }
+                // NOTE: Backup directory is NOT deleted here — ForceRemoveAllArtifacts
+                // will clean it up after ValidateAndHealPostUninstall has had a chance
+                // to use the backups for restoration.
             }
             else
             {
@@ -453,34 +604,18 @@ namespace OptiscalerClient.Services
                                 var destPath = Path.Combine(dir, relativePath);
                                 File.Copy(backupFile, destPath, overwrite: true);
                             }
-                            catch { }
+                            catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to restore legacy backup file: {ex.Message}"); }
                         }
 
                         try { Directory.Delete(legacyBackupDir, true); }
-                        catch { }
+                        catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to delete legacy backup dir: {ex.Message}"); }
                     }
                 }
-
-                // Delete all known OptiScaler / Fakenvapi / NukemFG files
-                var knownFiles = new[]
-                {
-                    // OptiScaler core
-                    "OptiScaler.ini", "OptiScaler.log", "OptiScaler.dll",
-                    "dxgi.dll", "winmm.dll", "d3d12.dll", "dbghelp.dll",
-                    "version.dll", "wininet.dll", "winhttp.dll",
-                    "nvngx.dll", "libxess.dll", "amdxcffx64.dll",
-                    // Fakenvapi
-                    "nvapi64.dll", "fakenvapi.ini",
-                    // NukemFG
-                    "dlssg_to_fsr3_amd_is_better.dll",
-                    // FSR 4 INT8 mod
-                    "amd_fidelityfx_upscaler_dx12.dll"
-                };
 
                 foreach (var dir in dirsToScan)
                 {
                     var legacyBackupDir = Path.Combine(dir, BackupFolderName);
-                    foreach (var fileName in knownFiles)
+                    foreach (var fileName in KnownOptiscalerArtifacts)
                     {
                         var filePath = Path.Combine(dir, fileName);
                         if (!File.Exists(filePath)) continue;
@@ -501,10 +636,24 @@ namespace OptiscalerClient.Services
                             if (!File.Exists(backupPath) && !Directory.Exists(legacyBackupDir))
                                 File.Delete(filePath);
                         }
-                        catch { }
+                        catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to clean legacy artifact '{fileName}': {ex.Message}"); }
                     }
                 }
             }
+
+            // We verify expected state and try to heal residues without touching files
+            // that existed before installation.
+            ValidateAndHealPostUninstall(gameDir, backupDir, manifest);
+
+            // Final unconditional sweep: remove ALL known OptiScaler artifacts.
+            // This guarantees a clean game directory regardless of manifest state,
+            // interrupted installs, or corrupted tracking data.
+            ForceRemoveAllArtifacts(gameDir);
+
+            // Last resort: compare every file in the cached OptiScaler version against
+            // the game directory. If any cached file still exists in the game dir, it
+            // means the previous steps missed it — delete it unconditionally.
+            SweepResidualFilesFromCache(gameDir, manifest);
 
             // Clear game state immediately so the UI reflects the uninstallation
             game.IsOptiscalerInstalled = false;
@@ -513,7 +662,546 @@ namespace OptiscalerClient.Services
 
             // Re-analyze to refresh DLSS/FSR/XeSS detection after files were removed/restored
             var analyzer = new GameAnalyzerService();
-            analyzer.AnalyzeGame(game);
+            GameAnalyzerService.InvalidateCacheForPath(game.InstallPath);
+            analyzer.AnalyzeGame(game, forceRefresh: true);
+            GameAnalyzerService.FlushCacheToDisk();
+        }
+
+        public bool RecoverIncompleteInstallIfNeeded(string installRoot)
+        {
+            if (string.IsNullOrWhiteSpace(installRoot) || !Directory.Exists(installRoot))
+                return false;
+
+            string? manifestPath = null;
+            try
+            {
+                var options = new EnumerationOptions
+                {
+                    RecurseSubdirectories = true,
+                    IgnoreInaccessible = true,
+                    MatchCasing = MatchCasing.CaseInsensitive
+                };
+
+                manifestPath = Directory.GetFiles(installRoot, ManifestFileName, options).FirstOrDefault();
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(manifestPath) || !File.Exists(manifestPath))
+                return false;
+
+            InstallationManifest? manifest;
+            try
+            {
+                var manifestJson = File.ReadAllText(manifestPath);
+                manifest = JsonSerializer.Deserialize(manifestJson, OptimizerContext.Default.InstallationManifest);
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (manifest == null)
+                return false;
+
+            if (string.Equals(manifest.OperationStatus, "committed", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            var gameDir = !string.IsNullOrWhiteSpace(manifest.InstalledGameDirectory) &&
+                          Directory.Exists(manifest.InstalledGameDirectory)
+                ? manifest.InstalledGameDirectory
+                : Path.GetDirectoryName(Path.GetDirectoryName(manifestPath));
+
+            if (string.IsNullOrWhiteSpace(gameDir) || !Directory.Exists(gameDir))
+                return false;
+
+            var backupDir = Path.Combine(gameDir, BackupFolderName);
+            DebugWindow.Log($"[Recovery] Found incomplete install manifest (status={manifest.OperationStatus}). Starting recovery for: {gameDir}");
+
+            var rollbackSummary = RollbackFailedInstall(gameDir, backupDir, manifest);
+            ValidateAndHealPostUninstall(gameDir, backupDir, manifest);
+
+            DebugWindow.Log($"[Recovery] Completed. Restored={rollbackSummary.Restored}, Deleted={rollbackSummary.Deleted}");
+            return true;
+        }
+
+        private List<KeyFileSnapshot> CapturePreInstallKeySnapshot(string gameDir, string injectionDllName)
+        {
+            var keys = new HashSet<string>(_criticalFiles, StringComparer.OrdinalIgnoreCase)
+            {
+                injectionDllName,
+                "OptiScaler.ini",
+                "nvapi64.dll",
+                "dlssg_to_fsr3_amd_is_better.dll",
+                "amd_fidelityfx_upscaler_dx12.dll"
+            };
+
+            var snapshots = new List<KeyFileSnapshot>();
+            foreach (var relPath in keys)
+            {
+                var fullPath = Path.Combine(gameDir, relPath);
+                var existed = File.Exists(fullPath);
+                snapshots.Add(new KeyFileSnapshot
+                {
+                    RelativePath = relPath,
+                    Existed = existed,
+                    Sha256 = existed ? ComputeSha256(fullPath) : null
+                });
+            }
+
+            return snapshots.OrderBy(x => x.RelativePath, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+
+        private static void TrackManifestFileMutation(
+            InstallationManifest manifest,
+            string relativePath,
+            bool existedBefore,
+            string? preInstallHash,
+            string? postInstallHash)
+        {
+            if (string.IsNullOrWhiteSpace(relativePath))
+                return;
+
+            if (existedBefore)
+            {
+                var record = manifest.FilesOverwritten.FirstOrDefault(
+                    x => x.RelativePath.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
+
+                if (record == null)
+                {
+                    record = new ManifestFileRecord
+                    {
+                        RelativePath = relativePath,
+                        BackupRelativePath = relativePath
+                    };
+                    manifest.FilesOverwritten.Add(record);
+                }
+
+                record.ExistedBefore = true;
+                record.PreInstallSha256 = preInstallHash;
+                record.PostInstallSha256 = postInstallHash;
+            }
+            else
+            {
+                var record = manifest.FilesCreated.FirstOrDefault(
+                    x => x.RelativePath.Equals(relativePath, StringComparison.OrdinalIgnoreCase));
+
+                if (record == null)
+                {
+                    record = new ManifestFileRecord
+                    {
+                        RelativePath = relativePath,
+                        BackupRelativePath = null
+                    };
+                    manifest.FilesCreated.Add(record);
+                }
+
+                record.ExistedBefore = false;
+                record.PreInstallSha256 = null;
+                record.PostInstallSha256 = postInstallHash;
+            }
+        }
+
+        private static string? ComputeSha256(string filePath)
+        {
+            try
+            {
+                using var sha = SHA256.Create();
+                using var stream = File.OpenRead(filePath);
+                var hash = sha.ComputeHash(stream);
+                return Convert.ToHexString(hash);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static void SaveManifest(string manifestPath, InstallationManifest manifest)
+        {
+            var manifestJson = JsonSerializer.Serialize(manifest, OptimizerContext.Default.InstallationManifest);
+            File.WriteAllText(manifestPath, manifestJson);
+        }
+
+        private RollbackResult RollbackFailedInstall(string gameDir, string backupDir, InstallationManifest manifest)
+        {
+            var result = new RollbackResult();
+
+            foreach (var record in manifest.FilesCreated)
+            {
+                var fullPath = Path.Combine(gameDir, record.RelativePath);
+                if (TryDeleteFileIfExists(fullPath))
+                    result.Deleted++;
+            }
+
+            foreach (var record in manifest.FilesOverwritten)
+            {
+                if (!record.ExistedBefore)
+                    continue;
+
+                if (TryRestoreFromBackup(gameDir, backupDir, record.RelativePath, record.BackupRelativePath))
+                    result.Restored++;
+            }
+
+            if (manifest.FilesCreated.Count == 0)
+            {
+                foreach (var rel in manifest.InstalledFiles.Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    var fullPath = Path.Combine(gameDir, rel);
+                    if (TryDeleteFileIfExists(fullPath))
+                        result.Deleted++;
+                }
+            }
+
+            if (manifest.FilesOverwritten.Count == 0)
+            {
+                foreach (var rel in manifest.BackedUpFiles.Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    if (TryRestoreFromBackup(gameDir, backupDir, rel, rel))
+                        result.Restored++;
+                }
+            }
+
+            return result;
+        }
+
+        private void ValidateAndHealPostUninstall(string gameDir, string backupDir, InstallationManifest? manifest)
+        {
+            var preInstallState = BuildPreInstallStateMap(manifest);
+            var deletedResidues = 0;
+            var restoredFiles = 0;
+
+            // 1) Ensure files created by install are removed.
+            if (manifest != null)
+            {
+                foreach (var record in manifest.FilesCreated)
+                {
+                    var fullPath = Path.Combine(gameDir, record.RelativePath);
+                    if (TryDeleteFileIfExists(fullPath))
+                    {
+                        deletedResidues++;
+                        DebugWindow.Log($"[Uninstall][Validate] Removed residue created by install: {record.RelativePath}");
+                    }
+                }
+
+                // 2) Ensure overwritten files were restored.
+                foreach (var record in manifest.FilesOverwritten)
+                {
+                    if (!record.ExistedBefore)
+                        continue;
+
+                    var targetPath = Path.Combine(gameDir, record.RelativePath);
+                    var currentHash = File.Exists(targetPath) ? ComputeSha256(targetPath) : null;
+                    var hashMismatch = !string.IsNullOrEmpty(record.PreInstallSha256) &&
+                                       !string.Equals(record.PreInstallSha256, currentHash, StringComparison.OrdinalIgnoreCase);
+
+                    if (!File.Exists(targetPath) || hashMismatch)
+                    {
+                        if (TryRestoreFromBackup(gameDir, backupDir, record.RelativePath, record.BackupRelativePath))
+                        {
+                            restoredFiles++;
+                            DebugWindow.Log($"[Uninstall][Validate] Restored overwritten file from backup: {record.RelativePath}");
+                        }
+                    }
+                }
+            }
+
+            // 3) Fallback sweep over known artifacts.
+            // If a file existed before install, we try to keep/restore it.
+            // If it did not exist before install, we remove it as residue.
+            foreach (var relativePath in KnownOptiscalerArtifacts)
+            {
+                var fullPath = Path.Combine(gameDir, relativePath);
+                if (!File.Exists(fullPath))
+                    continue;
+
+                if (preInstallState.TryGetValue(relativePath, out var snapshot) && snapshot.Existed)
+                {
+                    var currentHash = ComputeSha256(fullPath);
+                    var expectedHash = snapshot.Sha256;
+                    var mismatch = !string.IsNullOrEmpty(expectedHash) &&
+                                   !string.Equals(expectedHash, currentHash, StringComparison.OrdinalIgnoreCase);
+
+                    if (mismatch && TryRestoreFromBackup(gameDir, backupDir, relativePath, relativePath))
+                    {
+                        restoredFiles++;
+                        DebugWindow.Log($"[Uninstall][Validate] Restored key file to pre-install state: {relativePath}");
+                    }
+                }
+                else
+                {
+                    if (TryDeleteFileIfExists(fullPath))
+                    {
+                        deletedResidues++;
+                        DebugWindow.Log($"[Uninstall][Validate] Removed known residue: {relativePath}");
+                    }
+                }
+            }
+
+            // NOTE: Backup directory cleanup is now handled by ForceRemoveAllArtifacts.
+
+            DebugWindow.Log($"[Uninstall][Validate] Validation completed. Restored={restoredFiles}, ResiduesRemoved={deletedResidues}");
+        }
+
+        /// <summary>
+        /// Final unconditional sweep that removes ALL known OptiScaler artifacts from the
+        /// game directory. This runs as the absolute last step of uninstall to guarantee a
+        /// clean game directory regardless of manifest state, interrupted installs, double
+        /// installs, or corrupted tracking data.
+        ///
+        /// By this point, the smart cleanup (manifest-based restore + ValidateAndHealPostUninstall)
+        /// has already attempted to restore game originals from backup. Any file still matching
+        /// a known artifact name is treated as an OptiScaler residue and deleted unconditionally.
+        ///
+        /// If a game shipped with files that share names with OptiScaler artifacts (e.g.
+        /// nvngx.dll, libxess.dll), they may be deleted — the user can restore them via
+        /// their game launcher's "Verify Files" feature.
+        /// </summary>
+        private void ForceRemoveAllArtifacts(string gameDir)
+        {
+            var dirsToScan = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { gameDir };
+            var phoenixDir = DetectCorrectInstallDirectory(gameDir);
+            if (!phoenixDir.Equals(gameDir, StringComparison.OrdinalIgnoreCase))
+                dirsToScan.Add(phoenixDir);
+
+            var deletedCount = 0;
+
+            foreach (var dir in dirsToScan)
+            {
+                // Delete every known artifact unconditionally
+                foreach (var artifact in KnownOptiscalerArtifacts)
+                {
+                    var fullPath = Path.Combine(dir, artifact);
+                    try
+                    {
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                            deletedCount++;
+                            DebugWindow.Log($"[Uninstall][ForceClean] Deleted: {artifact}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Uninstall][ForceClean] Could not delete '{artifact}': {ex.Message}");
+                    }
+                }
+
+                // Remove backup directory
+                var backupDir = Path.Combine(dir, BackupFolderName);
+                try
+                {
+                    if (Directory.Exists(backupDir))
+                    {
+                        Directory.Delete(backupDir, true);
+                        DebugWindow.Log("[Uninstall][ForceClean] Removed backup directory.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Uninstall][ForceClean] Could not remove backup directory: {ex.Message}");
+                }
+
+                // Remove plugins directory if empty
+                var pluginsDir = Path.Combine(dir, "plugins");
+                try
+                {
+                    if (Directory.Exists(pluginsDir) && !Directory.EnumerateFileSystemEntries(pluginsDir).Any())
+                    {
+                        Directory.Delete(pluginsDir, false);
+                        DebugWindow.Log("[Uninstall][ForceClean] Removed empty plugins directory.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Uninstall][ForceClean] Could not remove plugins directory: {ex.Message}");
+                }
+            }
+
+            DebugWindow.Log($"[Uninstall][ForceClean] Final sweep completed. Artifacts removed: {deletedCount}");
+        }
+
+        /// <summary>
+        /// Compares the actual files in the cached OptiScaler version (and component caches)
+        /// against what remains in the game directory. Any file whose name matches a cached
+        /// file is deleted unconditionally. This catches files not in KnownOptiscalerArtifacts
+        /// (e.g. new DLLs added in future OptiScaler versions, setup scripts, readme files,
+        /// subdirectories like D3D12_Optiscaler/, Licenses/, etc.).
+        /// </summary>
+        private void SweepResidualFilesFromCache(string gameDir, InstallationManifest? manifest)
+        {
+            var componentService = new ComponentManagementService();
+            var cacheDirs = new List<string>();
+
+            // Resolve the OptiScaler version cache directory
+            var version = manifest?.OptiscalerVersion;
+            if (!string.IsNullOrEmpty(version))
+            {
+                var optiCachePath = componentService.GetOptiScalerCachePath(version);
+                if (Directory.Exists(optiCachePath))
+                    cacheDirs.Add(optiCachePath);
+            }
+
+            // Also check Fakenvapi, NukemFG, Extras and OptiPatcher caches
+            var fakenvapiCache = componentService.GetFakenvapiCachePath();
+            if (Directory.Exists(fakenvapiCache))
+                cacheDirs.Add(fakenvapiCache);
+
+            var nukemCache = componentService.GetNukemFGCachePath();
+            if (Directory.Exists(nukemCache))
+                cacheDirs.Add(nukemCache);
+
+            if (cacheDirs.Count == 0)
+            {
+                DebugWindow.Log("[Uninstall][CacheSweep] No cache directories found — skipping cache-based sweep.");
+                return;
+            }
+
+            // Build the set of relative paths from all cache directories
+            var cachedRelativePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var cacheDir in cacheDirs)
+            {
+                try
+                {
+                    foreach (var entry in Directory.GetFileSystemEntries(cacheDir, "*", SearchOption.AllDirectories))
+                    {
+                        var relativePath = Path.GetRelativePath(cacheDir, entry);
+                        cachedRelativePaths.Add(relativePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugWindow.Log($"[Uninstall][CacheSweep] Error enumerating cache dir '{cacheDir}': {ex.Message}");
+                }
+            }
+
+            if (cachedRelativePaths.Count == 0)
+            {
+                DebugWindow.Log("[Uninstall][CacheSweep] Cache directories are empty — skipping.");
+                return;
+            }
+
+            // Collect all game directories to scan (main + Phoenix/UE5 subdirs)
+            var dirsToScan = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { gameDir };
+            var phoenixDir = DetectCorrectInstallDirectory(gameDir);
+            if (!phoenixDir.Equals(gameDir, StringComparison.OrdinalIgnoreCase))
+                dirsToScan.Add(phoenixDir);
+
+            var deletedCount = 0;
+
+            foreach (var dir in dirsToScan)
+            {
+                foreach (var relativePath in cachedRelativePaths)
+                {
+                    var fullPath = Path.Combine(dir, relativePath);
+
+                    // Delete files
+                    try
+                    {
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                            deletedCount++;
+                            DebugWindow.Log($"[Uninstall][CacheSweep] Deleted residual file: {relativePath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Uninstall][CacheSweep] Could not delete '{relativePath}': {ex.Message}");
+                    }
+                }
+
+                // Delete directories that came from the cache (deepest first)
+                var cachedDirs = cachedRelativePaths
+                    .Select(p => Path.Combine(dir, p))
+                    .Where(p => Directory.Exists(p))
+                    .OrderByDescending(p => p.Length);
+
+                foreach (var dirPath in cachedDirs)
+                {
+                    try
+                    {
+                        if (Directory.Exists(dirPath) && !Directory.EnumerateFileSystemEntries(dirPath).Any())
+                        {
+                            Directory.Delete(dirPath, false);
+                            DebugWindow.Log($"[Uninstall][CacheSweep] Removed empty directory: {Path.GetRelativePath(dir, dirPath)}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Uninstall][CacheSweep] Could not remove directory: {ex.Message}");
+                    }
+                }
+            }
+
+            DebugWindow.Log($"[Uninstall][CacheSweep] Cache comparison sweep completed. Residual files removed: {deletedCount}");
+        }
+
+        private sealed class RollbackResult
+        {
+            public int Restored { get; set; }
+            public int Deleted { get; set; }
+        }
+
+        private static Dictionary<string, KeyFileSnapshot> BuildPreInstallStateMap(InstallationManifest? manifest)
+        {
+            var map = new Dictionary<string, KeyFileSnapshot>(StringComparer.OrdinalIgnoreCase);
+            if (manifest?.PreInstallKeyFiles == null)
+                return map;
+
+            foreach (var snapshot in manifest.PreInstallKeyFiles)
+            {
+                if (string.IsNullOrWhiteSpace(snapshot.RelativePath))
+                    continue;
+
+                map[snapshot.RelativePath] = snapshot;
+            }
+
+            return map;
+        }
+
+        private static bool TryRestoreFromBackup(string gameDir, string backupDir, string relativePath, string? backupRelativePath)
+        {
+            try
+            {
+                var effectiveBackupRelative = string.IsNullOrWhiteSpace(backupRelativePath)
+                    ? relativePath
+                    : backupRelativePath;
+
+                var backupPath = Path.Combine(backupDir, effectiveBackupRelative);
+                if (!File.Exists(backupPath))
+                    return false;
+
+                var destinationPath = Path.Combine(gameDir, relativePath);
+                var destinationDir = Path.GetDirectoryName(destinationPath);
+                if (!string.IsNullOrEmpty(destinationDir) && !Directory.Exists(destinationDir))
+                    Directory.CreateDirectory(destinationDir);
+
+                File.Copy(backupPath, destinationPath, overwrite: true);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool TryDeleteFileIfExists(string fullPath)
+        {
+            try
+            {
+                if (!File.Exists(fullPath))
+                    return false;
+
+                File.Delete(fullPath);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -547,7 +1235,10 @@ namespace OptiscalerClient.Services
             {
                 allExes = Directory.GetFiles(game.InstallPath, "*.exe", SearchOption.AllDirectories);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Install] Could not enumerate executables in '{game.InstallPath}': {ex.Message}");
+            }
 
             string? bestMatchDir = null;
 
@@ -598,7 +1289,10 @@ namespace OptiscalerClient.Services
                             score += 10;
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Install] Could not read file info for '{exePath}': {ex.Message}");
+                    }
 
                     var exeDir = Path.GetDirectoryName(exePath);
                     if (exeDir != null)
@@ -616,7 +1310,10 @@ namespace OptiscalerClient.Services
                                 }
                             }
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            DebugWindow.Log($"[Install] Could not enumerate DLLs in '{exeDir}': {ex.Message}");
+                        }
                     }
 
                     if (score > bestScore)
@@ -757,9 +1454,9 @@ namespace OptiscalerClient.Services
 
                 File.WriteAllLines(iniPath, lines);
             }
-            catch
+            catch (Exception ex)
             {
-                // If modification fails, try to create a new file
+                DebugWindow.Log($"[Install] Failed to modify OptiScaler.ini, creating new: {ex.Message}");
                 File.WriteAllText(iniPath, $"[General]\n{key}={value}\n");
             }
         }

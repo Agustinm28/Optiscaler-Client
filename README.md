@@ -1,6 +1,6 @@
 ﻿# ✦ OptiScaler Client
 
-[![GitHub Release](https://img.shields.io/github/v/release/Agustinm28/Optiscaler-Client?style=flat-square&color=8A2BE2)](https://github.com/Agustinm28/Optiscaler-Client/releases/tag/OptiscalerClient-1.0.3.1)
+[![GitHub Release](https://img.shields.io/github/v/release/Agustinm28/Optiscaler-Client?style=flat-square&color=8A2BE2)](https://github.com/Agustinm28/Optiscaler-Client/releases/tag/OptiscalerClient-1.0.4)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-yellow.svg?style=flat-square)](LICENSE)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows)](https://www.microsoft.com/windows)
 
@@ -14,45 +14,159 @@
 
 * Main window
 
-<img width="1266" height="752" alt="1 0 3_A" src="https://github.com/user-attachments/assets/09b0706a-e047-485c-9ac7-0847d80a3fc5" />
+<img width="1920" height="1032" alt="1 0 4_A" src="https://github.com/user-attachments/assets/f39de984-a055-41ef-8900-3ee4e4317a68" />
 
 * Game management
 
-<img width="1266" height="751" alt="1 0 3_B" src="https://github.com/user-attachments/assets/b4c86a32-13df-4ae2-921e-b89aacb7dfa1" />
+<img width="1140" height="600" alt="1 0 4_B" src="https://github.com/user-attachments/assets/61316142-4a9b-43fd-96e7-7963afcb0489" />
 
-* Main window after installation
+* Game management after installation
 
-<img width="1266" height="752" alt="1 0 3_C" src="https://github.com/user-attachments/assets/e88307c8-13af-4401-90a0-a6daaf8a4977" />
+<img width="1140" height="600" alt="1 0 4_C" src="https://github.com/user-attachments/assets/c129bd7d-005d-478f-b326-90f87ab862bf" />
 
 ---
 
 ## 🚀 Key Features
 
-*   **Auto-Scanner**: Deeply scans Steam, Epic Games, GOG, EA, Ubisoft, Battle.net, and Xbox libraries to find your games instantly.
-*   **One-Click Install**: Automatically downloads and configures the latest OptiScaler versions for specific titles.
-*   **Component Control**: Manage additional tools like **Fakenvapi** (for AMD/Intel GPUs), **Nukem's DLSSG-to-FSR3** mod, and **FSR 4 INT8** injection for non-RDNA 4 GPUs.
-*   **Cache Management**: Keep your storage clean by managing different downloaded mod versions.
-*   **Localization**: Full support for Multiple languages (English, Spanish & Brazilian Portuguese).
-*   **Native Performance**: Fully self-contained, single-file executable for a zero-footprint installation.
+### Game Discovery
+
+- **Multi-Platform Auto-Scanner** — Scans **Steam, Epic Games, GOG, EA, Ubisoft, Battle.net, and Xbox/Microsoft Store** libraries in parallel.
+- **Custom Folder Scanning** — Add any folder as a scan source for DRM-free or standalone games.
+- **Manual Game Addition** — Add games by selecting the executable directly.
+- **Drive Root Filtering** — Limit scanning to specific drives.
+- **Smart Exclusions** — Pre-configured exclusions for non-game entries (e.g., Wallpaper Engine, Steamworks Redistributables).
+- **Cover Art Fetching** — Automatically fetches game cover art from Steam API and SteamGridDB with local caching.
+
+### Installation & Uninstallation
+
+- **Quick Install / Uninstall** — One-click toggle per game directly from the main view. Automatically downloads components if not cached.
+- **Auto Install** — Detects game directory structure automatically, including **UE5/Phoenix** game layouts.
+- **Manual Install** — Select the target executable manually for non-standard game structures.
+- **Bulk Install** — Install OptiScaler across multiple games at once with platform filtering, component selection, and profile application.
+- **Injection Method Selection** — Choose the DLL injection method: `dxgi.dll`, `winmm.dll`, `d3d12.dll`, `dbghelp.dll`, `version.dll`, `wininet.dll`, `winhttp.dll`.
+- **Backup & Restore** — Original game files are backed up before installation and restored on uninstall.
+
+### Component Management
+
+- **OptiScaler** — Core upscaling mod with stable and beta version channels.
+- **Fakenvapi** — Compatibility layer for **AMD/Intel GPUs**, installed alongside OptiScaler when needed.
+- **Nukem's DLSSG-to-FSR3** — Frame generation bridge that converts DLSS Frame Gen to FSR3.
+- **FSR 4 INT8 Extras** — INT8 shader injection for non-RDNA 4 GPUs.
+- **OptiPatcher** — ASI plugin loader, automatically configured with `LoadAsiPlugins=true` in OptiScaler.ini.
+
+### Profiles
+
+- **OptiScaler Profiles** — Create, edit, clone, and manage INI-based configuration profiles.
+- **Easy Mode Editor** — Simple toggle-based interface for common settings.
+- **Advanced Mode Editor** — Full section-based settings editor with search and sidebar navigation.
+- **Default Profile** — Set a default profile that is applied automatically during Quick Install and Bulk Install.
+- **Built-in Default** — "OptiScaler Standard" profile ships out-of-the-box with sensible defaults.
+
+### Settings & Customization
+
+- **Default Versions** — Configure default OptiScaler, Extras, and OptiPatcher versions for Quick Install.
+- **Beta Channel Toggle** — Show or hide beta versions in all version selectors.
+- **GPU Detection** — Automatically detects installed GPUs via WMI, with discrete GPU preference logic.
+- **Preferred GPU Selection** — Choose which GPU is used for installation decisions.
+- **Scan Source Management** — Enable/disable per-platform scanners and configure custom folders.
+- **Cache Management** — View and delete cached OptiScaler and Extras versions to free storage.
+- **SteamGridDB Integration** — Optional API key for improved cover art fetching.
+- **Clear Application Cache** — Full reset: delete all stored data (games, covers, config, analysis cache).
+
+### UI & UX
+
+- **List & Grid Views** — Switch between compact list and card-based grid layouts (preference saved).
+- **Real-Time Search** — Filter games by name as you type.
+- **Edit Mode** — Reorder games via drag-and-drop or arrow buttons; hide/show games.
+- **Technology Badges** — Visual indicators showing detected DLSS, FSR, XeSS, DLSS Frame Gen versions.
+- **Platform Badges** — Icons for each supported game platform.
+- **Toast Notifications** — Non-blocking notifications with progress bars for downloads and operations.
+- **Status Bar** — Footer with real-time operation feedback and GPU info.
+- **Loading Overlays** — Animated indicators during scanning and startup checks.
+- **Window State Persistence** — Window size, position, and maximized state are saved across sessions.
+- **Configurable Animations** — UI transitions can be disabled in Settings for performance.
+
+### Localization
+
+Full interface translation in **14 languages**:
+
+| Language | Language |
+|---|---|
+| 🇬🇧 English | 🇯🇵 Japanese |
+| 🇪🇸 Spanish | 🇰🇷 Korean |
+| 🇩🇪 German | 🇳🇱 Dutch |
+| 🇫🇷 French | 🇵🇱 Polish |
+| 🇮🇹 Italian | 🇷🇺 Russian |
+| 🇧🇷 Portuguese (Brazil) | 🇹🇷 Turkish |
+| 🇨🇳 Chinese (Simplified) | 🇹🇼 Chinese (Traditional) |
 
 ---
 
 ## 📖 Usage Guide
 
-Follow these simple steps to enhance your games:
+### Getting Started
 
-1.  **Find your games**: Click the **"Scan Games"** button to automatically detect installed titles. You can also manage scan sources or add custom folders for scanning in the **Settings** menu. For standalone or DRM-free games, use the **"Add Manually"** button.
-2.  **Select a Game**: Click the **"Manage"** button next to any game in your list to enter the management dashboard.
-3.  **Install OptiScaler**: Choose your desired version and click **"Auto Install"**. If the game uses a non-standard structure, use **"Manual Install"** to select the executable yourself.
-4.  **Launch & Tweak**: Start your game normally. Once inside, press the **`Insert`** key to open the OptiScaler menu and fine-tune your upscaling settings in real-time.
+1. **Find your games** — Click **"Scan Games"** to automatically detect installed titles from all supported platforms. You can manage scan sources or add custom folders in **Settings**. For standalone games, use **"Add Manually"**.
+2. **Select a Game** — Click **"Manage"** next to any game, or use **Quick Install** for a one-click experience.
+3. **Install OptiScaler** — From the Manage window, choose version, injection method, components, and profile, then click **"Auto Install"**. Or just hit **Quick Install** from the main view to install with your configured defaults.
+4. **Bulk Install** — Use the **"Bulk Install"** button to install OptiScaler on multiple games simultaneously.
+5. **Launch & Tweak** — Start your game normally. Press **`Insert`** to open the OptiScaler in-game menu and adjust upscaling settings in real-time.
+
+### Profiles
+
+1. Navigate to the **Profiles** tab in the sidebar.
+2. Click **"New Profile"** to create a custom configuration.
+3. Use **Easy Mode** for quick toggles or **Advanced Mode** for full INI control.
+4. Set a default profile in **Settings → Manage Default Versions** so it's applied automatically during Quick Install.
+
+### Uninstalling
+
+- **Quick Uninstall** — Click the Quick Install button on any game that already has OptiScaler installed.
+- **Manage → Uninstall** — Open the game management window and click **Uninstall**.
+- Both methods will restore original game files from backup and clean up all OptiScaler artifacts.
 
 ---
 
 ## 🛠️ Installation & Requirements
 
-1.  Download the latest version from the [Releases](https://github.com/Agustinm28/Optiscaler-Client/releases) page.
-2.  Run `OptiscalerClient.exe`.
-3.  **Requirements**: Windows 10/11 is required. The app is self-contained, so no external .NET runtime installation is needed.
+1. Download the latest version from the [Releases](https://github.com/Agustinm28/Optiscaler-Client/releases) page.
+2. Run `OptiscalerClient.exe`.
+3. **Requirements**: Windows 10/11 is required. The app is self-contained, so no external .NET runtime installation is needed.
+
+---
+
+## 🛡️ Security & Antivirus False Positives
+
+**Is this software safe?**
+
+Yes, OptiScaler Client is completely safe and open-source. However, some antivirus programs may flag it as suspicious due to **false positive detections**.
+
+### Why does this happen?
+
+- **File Downloads**: The app downloads `.zip` and `.dll` files from GitHub (OptiScaler, Fakenvapi, NukemFG)
+- **Heuristic Detection**: Antivirus software may flag download behavior as "potentially unwanted"
+- **Unsigned Binary**: The executable is not digitally signed (code signing certificates cost $100-300/year)
+
+### Common False Positives
+
+- **Zillya**: `Downloader.MLoki.Win64.10` — Known for aggressive heuristics
+- **Other AVs**: May show generic "downloader" or "trojan" warnings
+
+### What you can do
+
+1. **Verify the Source**: Download only from official [GitHub Releases](https://github.com/Agustinm28/Optiscaler-Client/releases)
+2. **Check VirusTotal**: Upload the file to [VirusTotal.com](https://www.virustotal.com) — most reputable AVs will show clean
+3. **Review the Code**: This is open-source — you can inspect all code before running
+4. **Add Exception**: Whitelist `OptiscalerClient.exe` in your antivirus settings
+
+### Transparency
+
+All downloads are from official sources:
+- OptiScaler: `github.com/optiscaler/OptiScaler`
+- Fakenvapi: `github.com/optiscaler/fakenvapi`
+- NukemFG: `github.com/Nukem9/dlssg-to-fsr3`
+
+The application **never** collects personal data, connects to third-party servers, or performs any malicious actions. All source code is available for audit.
 
 ---
 
@@ -60,11 +174,11 @@ Follow these simple steps to enhance your games:
 
 We welcome contributions! If you'd like to improve OptiScaler Client:
 
-1.  **Fork** the project.
-2.  Create your **Feature Branch** (`git checkout -b feature/AmazingFeature`).
-3.  **Commit** your changes (`git commit -m 'Add some AmazingFeature'`).
-4.  **Push** to the branch (`git push origin feature/AmazingFeature`).
-5.  Open a **Pull Request**.
+1. **Fork** the project.
+2. Create your **Feature Branch** (`git checkout -b feature/AmazingFeature`).
+3. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`).
+4. **Push** to the branch (`git push origin feature/AmazingFeature`).
+5. Open a **Pull Request**.
 
 ---
 
@@ -80,10 +194,11 @@ This program is distributed in the hope that it will be useful, but **WITHOUT AN
 
 ### Acknowledgments & Third-Party Software
 
-*   **Special thanks and deep respect to the OptiScaler development team** for creating and maintaining this incredible software that enhances gaming experiences for countless users worldwide.
-*   **[OptiScaler](https://github.com/optiscaler/OptiScaler)**: The core upscaling technology that makes this possible.
-*   **[fakenvapi](https://github.com/optiscaler/fakenvapi)**: Essential compatibility layer developed by the OptiScaler team.
-*   **[NukemFG (DLSSG-to-FSR3)](https://github.com/Nukem9/dlssg-to-fsr3)**: Frame Generation bridge by Nukem.
+- **Special thanks and deep respect to the OptiScaler development team** for creating and maintaining this incredible software that enhances gaming experiences for countless users worldwide.
+- **[OptiScaler](https://github.com/optiscaler/OptiScaler)**: The core upscaling technology that makes this possible.
+- **[fakenvapi](https://github.com/optiscaler/fakenvapi)**: Essential compatibility layer developed by the OptiScaler team.
+- **[OptiPatcher](https://github.com/optiscaler/OptiPatcher)**: ASI plugin loader by the OptiScaler team.
+- **[NukemFG (DLSSG-to-FSR3)](https://github.com/Nukem9/dlssg-to-fsr3)**: Frame Generation bridge by Nukem.
 
 This client application is merely a frontend interface to help users more easily manage and install the amazing work done by the OptiScaler team and other contributors. While OptiScaler Client itself is licensed under GPL-3.0-or-later, the third-party components it downloads and manages may be subject to their own respective licenses.
 

@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
@@ -37,6 +37,17 @@
     <x:String x:Key="TxtTipUpdateNukem">새로운 NukemFG 버전을 사용할 수 있습니다. 업데이트된 DLL을 제공하려면 클릭하세요.</x:String>
     <x:String x:Key="TxtDefaultGpu">GPU 감지 중…</x:String>
     <x:String x:Key="TxtManageGame">관리</x:String>
+    <x:String x:Key="TxtQuickInstall">✦ 빠른 설치</x:String>
+    <x:String x:Key="TxtQuickUninstall">🗑️ 빠른 제거</x:String>
+    <x:String x:Key="TxtInitialScanTitle">초기 스캔</x:String>
+    <x:String x:Key="TxtInitialScanDesc">게임을 찾기 전에 스캔할 드라이브와 소스를 선택하세요. 이 창을 닫고 나중에 스캔할 수 있습니다.</x:String>
+    <x:String x:Key="TxtScanSetupTitle">스캔 설정</x:String>
+    <x:String x:Key="TxtScanSetupDesc">스캔할 드라이브와 소스를 선택하세요. 이 창을 닫고 나중에 스캔할 수 있습니다.</x:String>
+    <x:String x:Key="TxtInitialScanDrives">스캔할 드라이브</x:String>
+    <x:String x:Key="TxtInitialScanSources">스캔할 소스</x:String>
+    <x:String x:Key="TxtInitialScanStart">스캔 시작</x:String>
+    <x:String x:Key="TxtInitialScanClose">닫기</x:String>
+    <x:String x:Key="TxtInitialScanNoDrives">드라이브가 감지되지 않았습니다.</x:String>
     <x:String x:Key="TxtStatusReady">준비 완료</x:String>
     <x:String x:Key="TxtScanningTitle">게임 스캔 중...</x:String>
     <x:String x:Key="TxtScanningDesc">모든 플랫폼에서 게임 검색 중...</x:String>
@@ -121,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">나중에</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">정보</x:String>
+    <x:String x:Key="TxtAboutTitle">도움말</x:String>
     <x:String x:Key="TxtFeedbackTitle">피드백</x:String>
     <x:String x:Key="TxtFeedbackDesc">기능을 요청하거나 버그를 보고하려면 GitHub 저장소에서 issue를 열어주세요.</x:String>
     <x:String x:Key="TxtBuildDateLbl">마지막 빌드 날짜</x:String>
@@ -142,6 +153,8 @@
     <x:String x:Key="TxtLoadedGamesFormat">{0}개 게임이 로드되었습니다.</x:String>
     <x:String x:Key="TxtScanningShort">게임 스캔 중...</x:String>
     <x:String x:Key="TxtScanCompleteFormat">스캔 완료. 총 게임: {0}</x:String>
+    <x:String x:Key="TxtFetchingCoversFormat">커버 이미지 불러오는 중: {0}/{1}...</x:String>
+    <x:String x:Key="TxtCoversCompleteFmt">커버 이미지 로드 완료. 전체 게임 수: {0}</x:String>
     <x:String x:Key="TxtErrorFormat">오류: {0}</x:String>
     <x:String x:Key="TxtSelectExe">게임 실행 파일 선택</x:String>
     <x:String x:Key="TxtGameDuplicate">이 게임은 이미 목록에 있습니다.</x:String>
@@ -195,4 +208,295 @@
     <x:String x:Key="TxtNoGames">게임 없음</x:String>
     <x:String x:Key="TxtNoGamesFound">게임을 찾을 수 없습니다. 먼저 게임을 스캔해 주세요.</x:String>
 
-</ResourceDictionary>
+
+    <!-- SteamGridDB -->
+    <x:String x:Key="TxtSteamGridGuideStep1Title">1. Open the SteamGridDB API page</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">커버 아트 매칭 정확도를 향상시키는 데 사용됩니다. 선택 사항이지만 권장됩니다.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. API 키 생성</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">https://www.steamgriddb.com/profile/preferences/api 에 접속하여 로그인하세요.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">키를 저장한 후 새 스캔을 실행하면 커버가 더 정확하게 갱신됩니다.</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">API 키 가져오기</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">해당 페이지에서 새 API 키를 생성하고 복사하세요.</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">페이지 열기</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. 게임을 다시 스캔하세요</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeader">Get your SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideTitle">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">게임 커버 감지를 개선하기 위한 빠른 안내서.</x:String>
+    <x:String x:Key="TxtSteamGridApiKey">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Paste your SteamGridDB API key here</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. 설정에 붙여넣기</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Desc">Return to the app and paste the key into the SteamGridDB API Key field.</x:String>
+
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">다음 페이지로 이동하여 </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> 에 로그인하세요.</x:String>
+
+    <x:String x:Key="TxtViewGrid">그리드 보기</x:String>
+    <x:String x:Key="TxtViewList">목록 보기</x:String>
+    <x:String x:Key="TxtLoadingResources">리소스 로드 중...</x:String>
+    <x:String x:Key="TxtLoadingResourcesDesc">Fetching version data from GitHub</x:String>
+    <x:String x:Key="TxtEditImage">이미지 편집</x:String>
+    <x:String x:Key="TxtCoverUpdateTitle">커버 업데이트</x:String>
+    <x:String x:Key="TxtCoverUpdateDesc">게임에 대한 사용자 지정 이미지를 선택하세요.</x:String>
+    <x:String x:Key="TxtPreviewUnavailable">미리보기 사용 불가</x:String>
+    <x:String x:Key="TxtCoverRestoreTooltip">게임의 기본 커버 이미지로 복원</x:String>
+    <x:String x:Key="TxtRestore">복원</x:String>
+    <x:String x:Key="TxtApply">적용</x:String>
+    <x:String x:Key="TxtNoImageSelected">선택된 이미지가 없습니다</x:String>
+    <x:String x:Key="TxtDownloadInProgressFormat">v{0}에 대한 다운로드가 이미 진행 중입니다.</x:String>
+    <x:String x:Key="TxtDownloadingExtrasFormat">FSR4 INT8 v{0} 다운로드 중... {1}%</x:String>
+    <x:String x:Key="TxtVersionUnavailable">현재 OptiScaler v{0}을(를) 설치할 수 없습니다.
+
+이 버전은 다운로드할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도하세요.</x:String>
+    <x:String x:Key="TxtAppInfoTitle">애플리케이션</x:String>
+    <x:String x:Key="TxtExternalResourcesTitle">외부 리소스</x:String>
+    <x:String x:Key="TxtFeedbackBugs">🐛 버그 보고: 재현 단계가 포함된 "Bug or Error report" 템플릿을 사용하세요</x:String>
+    <x:String x:Key="TxtFeedbackFeatures">✨ 기능 요청: 새로운 기능 제안은 "Feature request" 템플릿을 사용하세요</x:String>
+    <x:String x:Key="TxtFeedbackImprovements">🔧 개선 요청: 기존 기능 개선은 "Improvement request" 템플릿을 사용하세요</x:String>
+    <x:String x:Key="TxtFeedbackSystem">더 빠른 해결을 위해 OS, GPU, 앱 버전을 포함하세요</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">베타 버전에는 이미 Fakenvapi 및 NukemFG가 포함되어 있습니다</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultTitle">기본 FSR4 INT8</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultDesc">게임을 열 때 미리 선택되는 기본 FSR4 INT8 모드 버전입니다. RDNA 4 GPU(RX 9000 시리즈)는 자동으로 없음으로 설정됩니다.</x:String>
+    <x:String x:Key="TxtDefaultGpuTitle">기본 GPU</x:String>
+    <x:String x:Key="TxtDefaultGpuDesc">기본값 및 GPU별 안내에 사용됩니다.</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionTitle">기본 OptiScaler 버전</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionDesc">관리 열기 또는 빠른 설치 시 미리 선택되는 버전입니다. '자동'은 최신 권장 버전을 선택합니다.</x:String>
+    <x:String x:Key="TxtDefaultVersionsTitle">기본 버전</x:String>
+    <x:String x:Key="TxtDefaultVersionsDesc">게임 관리 및 빠른 설치를 위한 기본 구성 요소 버전 관리</x:String>
+    <x:String x:Key="TxtManageDefaultVersions">기본 버전 관리</x:String>
+    <x:String x:Key="TxtManageDefaultVersionsDesc">게임 관리 창을 열거나 빠른 설치를 사용할 때 미리 선택되는 구성 요소 버전을 설정합니다.</x:String>
+    <x:String x:Key="TxtOptiPatcherDefaultTitle">기본 OptiPatcher 버전</x:String>
+    <x:String x:Key="TxtOptiPatcherDefaultDesc">관리 열기 또는 빠른 설치 시 미리 선택되는 OptiPatcher 버전입니다. 설치를 건너뛰려면 없음을 선택하세요.</x:String>
+    <x:String x:Key="TxtOptiPatcherSupportLinkText">호환 게임 목록 보기</x:String>
+    <x:String x:Key="TxtClearAppCacheTitle">앱 캐시 지우기</x:String>
+    <x:String x:Key="TxtClearAppCacheDesc">스캔된 게임, 커버 이미지 및 캐시된 버전 데이터를 제거합니다. 앱은 다음 시작 시 다시 스캔합니다.</x:String>
+    <x:String x:Key="TxtClearCacheBtn">캐시 지우기</x:String>
+    <x:String x:Key="TxtClearAppCacheDialogMsg">경고: 스캔된 모든 게임, 커버 이미지 및 캐시된 OptiScaler 버전 데이터가 영구적으로 삭제됩니다.&#x0a;&#x0a;지운 후 애플리케이션이 종료됩니다. 다음 시작 시 라이브러리를 다시 스캔하고 버전 정보를 다시 다운로드합니다.</x:String>    <x:String x:Key="TxtWarning">경고</x:String>
+    <x:String x:Key="TxtNoVersionsFound">설치 가능한 OptiScaler 버전이 없습니다.</x:String>
+
+    <!-- Help Window -->
+    <x:String x:Key="TxtHelpTitle">도움말</x:String>
+    <x:String x:Key="TxtHelpCategoryGuides">가이드</x:String>
+    <x:String x:Key="TxtHelpPageAbout">정보 &amp; 피드백</x:String>
+    <x:String x:Key="TxtHelpPageGettingStarted">시작하기</x:String>
+    <x:String x:Key="TxtHelpPageFeatures">기능</x:String>
+    <x:String x:Key="TxtHelpPageMainWindow">메인 창</x:String>
+    <x:String x:Key="TxtHelpPageGameManagement">게임 관리</x:String>
+    <x:String x:Key="TxtHelpPageProfiles">프로필 시스템</x:String>
+    <x:String x:Key="TxtHelpPageSettings">설정 &amp; 구성</x:String>
+    <x:String x:Key="TxtHelpPageBulkOperations">일괄 작업</x:String>
+    <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; 문제 해결</x:String>
+    <x:String x:Key="TxtHelpDisclaimerTitle">면책 조항 ⚠️</x:String>
+    <x:String x:Key="TxtHelpDisclaimerContent">이것은 OptiScaler의 공식 프로젝트가 아닙니다. 저는 OptiScaler 팀과 아무런 관련이 없습니다. 이것은 상업적 목적 없이 개발된 개인 프로젝트입니다. 누구든지 자신의 책임 하에 이 소프트웨어를 사용할 수 있습니다.&#x0a;&#x0a;크레딧: OptiScaler 팀에 특별한 감사를 드립니다. 이 도구는 그들의 놀라운 원본 모드 작업 덕분에 가능합니다.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later 라이선스에 따라 사용이 허가되었습니다. 이것은 자유 소프트웨어입니다: 특정 조건 하에 수정 및 재배포가 가능합니다. 자세한 내용은 LICENSE 파일을 참조하세요.&#x0a;&#x0a;서드파티 컴포넌트 (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8)는 각각의 라이선스를 따릅니다.</x:String>
+    <x:String x:Key="TxtHelpSystemTitle">시스템</x:String>
+    <x:String x:Key="TxtHelpLicenseTitle">라이선스 &amp; 저작권</x:String>
+
+
+    <!-- Help - Getting Started -->
+    <x:String x:Key="TxtHelpGSWelcomeTitle">OptiScaler Client에 오신 것을 환영합니다</x:String>
+    <x:String x:Key="TxtHelpGSWelcomeContent">OptiScaler Client는 전체 게임 라이브러리에서 OptiScaler 모드의 설치, 관리 및 업데이트를 간소화하도록 설계된 현대적이고 고성능의 데스크톱 유틸리티입니다.</x:String>
+    <x:String x:Key="TxtHelpGSIntroContent">이 가이드는 프로그램의 핵심 기능을 이해하고 탐색하는 데 도움을 드립니다. 종합 도움말 센터 역할을 하며 단계별 튜토리얼도 포함되어 있습니다.</x:String>
+    <x:String x:Key="TxtHelpGSQuickStart">빠른 시작</x:String>
+    <x:String x:Key="TxtHelpGSStep1Label">1단계: 게임 검색</x:String>
+    <x:String x:Key="TxtHelpGSStep1Text">메인 창의 '검색' 버튼을 클릭하여 Steam, Epic Games 등에서 게임을 자동으로 감지합니다.</x:String>
+    <x:String x:Key="TxtHelpGSStep2Label">2단계: 게임 선택</x:String>
+    <x:String x:Key="TxtHelpGSStep2Text">게임 라이브러리를 탐색하고 업스케일링으로 향상시키려는 게임의 '관리'를 클릭합니다.</x:String>
+    <x:String x:Key="TxtHelpGSStep3Label">3단계: 구성 &amp; 설치</x:String>
+    <x:String x:Key="TxtHelpGSStep3Text">설치 전에 옵션을 조정하세요. 준비가 되면 '자동 설치'를 클릭하여 설정을 적용합니다.</x:String>
+    <x:String x:Key="TxtHelpGSStep4Label">4단계: 즐기세요!</x:String>
+    <x:String x:Key="TxtHelpGSStep4Text">모든 준비가 완료되었습니다! 이제 게임을 직접 실행하여 즐기세요.</x:String>
+
+
+    <!-- Help - Features -->
+    <x:String x:Key="TxtHelpFeatOffersTitle">OptiScaler Client가 제공하는 것</x:String>
+    <x:String x:Key="TxtHelpFeatOffersContent">OptiScaler Client는 OptiScaler에 대한 포괄적인 관리 기능을 제공합니다.</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionLabel">자동 게임 감지</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionText">Steam, Epic Games, GOG 및 기타 플랫폼을 스캔하여 설치된 게임을 찾습니다.</x:String>
+    <x:String x:Key="TxtHelpFeatInstallLabel">원클릭 설치</x:String>
+    <x:String x:Key="TxtHelpFeatInstallText">빠른 설치 기능으로 최적의 설정으로 몇 초 만에 OptiScaler를 배포합니다.</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesLabel">프로필 관리</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesText">다양한 게임과 시나리오에 맞는 사용자 정의 프로필을 만들고 관리합니다.</x:String>
+    <x:String x:Key="TxtHelpFeatBulkLabel">일괄 작업</x:String>
+    <x:String x:Key="TxtHelpFeatBulkText">여러 게임에 동시에 OptiScaler를 설치하거나 업데이트합니다.</x:String>
+    <x:String x:Key="TxtHelpFeatVersionLabel">버전 관리</x:String>
+    <x:String x:Key="TxtHelpFeatVersionText">OptiScaler, Fakenvapi, NukemFG의 다양한 버전 간에 쉽게 전환할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataLabel">메타데이터 통합</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataText">SteamGridDB에서 자동으로 커버 아트와 게임 정보를 가져옵니다.</x:String>
+
+
+    <!-- Help - Main Window + Game Management -->
+    <x:String x:Key="TxtHelpMWTitle">게임 라이브러리 개요</x:String>
+    <x:String x:Key="TxtHelpMWContent">메인 창은 모든 게임을 관리하는 중심 허브입니다. 게임 라이브러리를 보고, 새 게임을 검색하고, 관리 기능에 접근할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpMWGameListLabel">게임 목록 🎮</x:String>
+    <x:String x:Key="TxtHelpMWGameListText">감지된 모든 게임을 커버 아트, 제목, 설치 상태와 함께 표시합니다.</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnLabel">관리 버튼 ⚙️</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnText">선택한 게임의 관리 창을 열어 OptiScaler를 설치, 구성 및 관리할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallLabel">빠른 설치 버튼 ✦</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallText">선택한 게임에 최적의 설정으로 OptiScaler를 빠르게 설치합니다.</x:String>
+    <x:String x:Key="TxtHelpMWScanLabel">검색 버튼 🔍</x:String>
+    <x:String x:Key="TxtHelpMWScanText">Steam, Epic Games, GOG, EA, Ubisoft, Xbox, Battle.net의 게임을 자동으로 감지합니다. 스캔할 소스와 디스크를 선택할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpMWAddManualLabel">수동 추가 버튼 ➕</x:String>
+    <x:String x:Key="TxtHelpMWAddManualText">자동으로 감지되지 않은 게임을 수동으로 추가할 수 있습니다. 독립 실행형 게임이나 사용자 정의 설치에 유용합니다.</x:String>
+    <x:String x:Key="TxtHelpMWBulkLabel">일괄 설치 ⚡</x:String>
+    <x:String x:Key="TxtHelpMWBulkText">일괄 설치 창을 열어 여러 게임에 동시에 OptiScaler를 설치할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpMWSearchLabel">검색 &amp; 필터 🔍</x:String>
+    <x:String x:Key="TxtHelpMWSearchText">검색 바를 사용하여 게임을 빠르게 찾습니다.</x:String>
+    <x:String x:Key="TxtHelpMWViewLabel">그리드 &amp; 목록 보기 버튼 📊</x:String>
+    <x:String x:Key="TxtHelpMWViewText">그리드와 목록 보기 모드 사이를 전환하여 게임 라이브러리를 원하는 대로 정리합니다.</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeLabel">게임 정리 ✏️</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeText">이 모드에서 게임 목록의 순서를 변경하고 표시/숨기기할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpGMTitle">개별 게임 관리</x:String>
+    <x:String x:Key="TxtHelpGMContent">게임 관리 창은 특정 게임의 OptiScaler 설치 및 구성에 대한 완전한 제어를 제공합니다.</x:String>
+    <x:String x:Key="TxtHelpGMInfoLabel">게임 정보 🎮</x:String>
+    <x:String x:Key="TxtHelpGMInfoText">제목, 실행 파일 경로, 플랫폼 및 현재 OptiScaler 설치 상태 등 게임 세부 정보를 확인합니다.</x:String>
+    <x:String x:Key="TxtHelpGMFolderLabel">폴더 열기 📁</x:String>
+    <x:String x:Key="TxtHelpGMFolderText">파일 탐색기에서 게임의 설치 폴더를 엽니다.</x:String>
+    <x:String x:Key="TxtHelpGMCoverLabel">커버 및 게임 이름 편집 🎨</x:String>
+    <x:String x:Key="TxtHelpGMCoverText">게임의 커버 이미지와 이름을 편집합니다.</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallLabel">자동 설치 ✦</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallText">알고리즘을 사용하여 게임의 실행 파일을 자동으로 찾아 OptiScaler를 설치합니다. 견고하지만 완벽하지는 않습니다.</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallLabel">수동 설치 ✦</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallText">게임의 실행 파일을 수동으로 선택할 수 있습니다. 자동 설치가 실패할 경우 권장합니다.</x:String>
+    <x:String x:Key="TxtHelpGMUninstallLabel">제거 🗑️</x:String>
+    <x:String x:Key="TxtHelpGMUninstallText">게임에서 OptiScaler를 완전히 제거하고 백업에서 원본 파일과 구성을 복원합니다.</x:String>
+    <x:String x:Key="TxtHelpGMProfileLabel">프로필 선택 🎯</x:String>
+    <x:String x:Key="TxtHelpGMProfileText">미리 구성된 프로필에서 선택하거나 특정 게임이나 성능 요구에 맞춘 사용자 정의 프로필을 만듭니다.</x:String>
+    <x:String x:Key="TxtHelpGMVersionLabel">OptiScaler 버전 📦</x:String>
+    <x:String x:Key="TxtHelpGMVersionText">설치할 OptiScaler 버전을 선택합니다. 안정 릴리즈와 베타 빌드 사이를 전환할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiLabel">Fakenvapi &amp; NukemFG 📦</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiText">특정 게임과의 호환성을 향상시키는 선택적 구성 요소입니다. 이미 해당 파일을 포함하는 OptiScaler 베타에는 필요하지 않습니다.</x:String>
+    <x:String x:Key="TxtHelpGMInjectionLabel">주입 방법 🚀</x:String>
+    <x:String x:Key="TxtHelpGMInjectionText">OptiScaler가 게임 프로세스에 주입되는 방법을 선택합니다. 대부분의 경우 기본 옵션(dxgi.dll)으로 충분합니다.</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Label">FSR 4 INT8 ⚡</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Text">비 RDNA 4 GPU를 위한 FSR 4의 INT 8 버전을 주입할 수 있는 선택기입니다.</x:String>
+
+
+    <!-- Help - Profiles / Settings / Bulk / FAQ -->
+    <x:String x:Key="TxtHelpProfTitle">프로필 생성 및 관리</x:String>
+    <x:String x:Key="TxtHelpProfContent">프로필을 사용하면 OptiScaler 구성(.ini 파일)을 저장하고 관리하여 새 설치에 쉽게 배포할 수 있습니다. 게임 라이브러리 전반에 걸쳐 일관된 설정을 유지하거나 특수 조정을 적용하는 가장 효율적인 방법입니다.</x:String>
+    <x:String x:Key="TxtHelpProfMgmtLabel">프로필 관리 창 📎</x:String>
+    <x:String x:Key="TxtHelpProfMgmtText">사이드바에서 접근할 수 있습니다. 이 섹션에서 현재 프로필을 관리하고 검색, 생성, 복제, 편집 또는 삭제할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpProfEditorLabel">프로필 편집기 📝</x:String>
+    <x:String x:Key="TxtHelpProfEditorText">업스케일링 방법, 품질 프리셋, DLL 옵션 및 고급 매개변수를 포함한 모든 OptiScaler(.ini) 설정을 구성합니다. 해당 창에서 볼 수 있는 섹션은:</x:String>
+    <x:String x:Key="TxtHelpSetTitle">애플리케이션 설정</x:String>
+    <x:String x:Key="TxtHelpSetContent">OptiScaler 클라이언트 동작, 스캔 소스, 메타데이터 서비스 및 고급 옵션을 구성합니다.</x:String>
+    <x:String x:Key="TxtHelpSetCacheLabel">로컬 캐시 관리</x:String>
+    <x:String x:Key="TxtHelpSetCacheText">OptiScaler 및 FSR INT8의 캐시된 버전을 보고 삭제할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpSetProfileLabel">프로필 관리</x:String>
+    <x:String x:Key="TxtHelpSetProfileText">다양한 프로필을 관리할 수 있습니다. 자세한 내용은 '프로필 시스템' 페이지를 참조하세요.</x:String>
+    <x:String x:Key="TxtHelpSetScanLabel">스캔 소스</x:String>
+    <x:String x:Key="TxtHelpSetScanText">'스캔' 클릭 시 스캔할 소스를 관리합니다. Steam, Epic 같은 플랫폼과 사용자 지정 폴더 등이 포함됩니다.</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Label">FSR INT8 기본값</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Text">게임 관리 또는 빠른 설치 시 주입 섹션의 기본 FSR INT8 버전을 선택합니다. AMD 9000 시리즈 그래픽 카드 사용자는 '없음'으로 설정하는 것이 좋습니다.</x:String>
+    <x:String x:Key="TxtHelpSetGpuLabel">기본 GPU 선택</x:String>
+    <x:String x:Key="TxtHelpSetGpuText">시스템에서 여러 GPU가 감지될 때 사용할 GPU를 선택합니다.</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanLabel">시작 시 자동 스캔</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanText">애플리케이션 시작 시 자동으로 게임을 검색합니다.</x:String>
+    <x:String x:Key="TxtHelpSetBetaLabel">최신 베타를 기본값으로 선호</x:String>
+    <x:String x:Key="TxtHelpSetBetaText">활성화하면 OptiScaler 클라이언트가 사용 가능한 경우 컴포넌트의 최신 베타 버전을 우선 다운로드하여 사용합니다.</x:String>
+    <x:String x:Key="TxtHelpSetAnimLabel">애니메이션 활성화</x:String>
+    <x:String x:Key="TxtHelpSetAnimText">활성화하면 OptiScaler 클라이언트가 더 세련된 사용자 경험을 위해 애니메이션과 전환을 표시합니다.</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridLabel">SteamGridDB API 키</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridText">기본적으로 가져올 수 없는 커버 아트 가져오기를 개선하는 데 사용됩니다. 이 매개변수는 완전히 선택 사항입니다.</x:String>
+    <x:String x:Key="TxtHelpBulkTitle">여러 게임 관리</x:String>
+    <x:String x:Key="TxtHelpBulkContent">일괄 설치 창을 사용하면 여러 게임에 동시에 OptiScaler를 설치하거나 업데이트할 수 있어 시간을 절약하고 일관성을 보장합니다.</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelLabel">게임 선택</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelText">일괄 작업에 포함할 게임을 선택합니다. 전체 선택하거나 개별 게임을 수동으로 선택합니다.</x:String>
+    <x:String x:Key="TxtHelpBulkConfigLabel">통합 구성</x:String>
+    <x:String x:Key="TxtHelpBulkConfigText">선택한 모든 게임에 동일한 프로필, OptiScaler 버전 및 설정을 한 번에 적용합니다.</x:String>
+    <x:String x:Key="TxtHelpBulkProgressLabel">진행 추적</x:String>
+    <x:String x:Key="TxtHelpBulkProgressText">각 게임의 설치 진행 상황을 모니터링합니다. 성공/실패 상태와 자세한 로그를 확인할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpBulkErrorLabel">오류 처리</x:String>
+    <x:String x:Key="TxtHelpBulkErrorText">일부 설치가 실패하더라도 나머지 게임 처리를 계속합니다. 완료 후 오류를 검토합니다.</x:String>
+    <x:String x:Key="TxtHelpFaqTitle">일반적인 문제</x:String>
+    <x:String x:Key="TxtHelpFaqContent">문제가 발생하면 먼저 이 일반적인 해결책을 확인하세요.</x:String>
+    <x:String x:Key="TxtHelpFaqWhatLabel">OptiScaler란 무엇인가요?</x:String>
+    <x:String x:Key="TxtHelpFaqWhatText">OptiScaler는 게임이 기본적으로 지원하지 않더라도 다양한 업스케일링 기술(DLSS, FSR, XeSS)을 사용할 수 있게 해주는 모드입니다.</x:String>
+    <x:String x:Key="TxtHelpFaqSafeLabel">이 앱은 안전한가요?</x:String>
+    <x:String x:Key="TxtHelpFaqSafeText">네, 앱은 완전히 안전합니다. VirusTotal에서 스캔하여 위협이 없음을 확인할 수 있으며, 오픈소스이므로 코드를 누구나 검토할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetLabel">게임이 감지되지 않음</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetText">게임이 설치되어 있는지 확인하고 '수동 추가' 버튼으로 수동 추가를 시도하세요. 설정에서 스캔 소스도 확인할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailLabel">설치 실패</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailText">게임 디렉토리에 쓰기 권한이 있는지 확인하세요. 필요한 경우 관리자로 애플리케이션을 실행해 보세요.</x:String>
+    <x:String x:Key="TxtHelpFaqCrashLabel">설치 후 게임이 충돌</x:String>
+    <x:String x:Key="TxtHelpFaqCrashText">다른 OptiScaler 버전이나 프로필을 시도하세요. 일부 게임은 특정 구성이 필요할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpFaqUpscLabel">게임에서 업스케일링이 작동하지 않음</x:String>
+    <x:String x:Key="TxtHelpFaqUpscText">게임이 DLSS/FSR/XeSS를 기본적으로 지원하는지 확인하세요. OptiScaler는 기존 업스케일링 구현을 대체합니다.</x:String>
+    <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll 또는 nvngx.dll을 찾을 수 없음 및 기타 오류.</x:String>
+    <x:String x:Key="TxtHelpFaqDllText">설정에서 캐시를 지우는 버튼을 사용하세요. 대부분의 문제가 해결될 것입니다.</x:String>
+
+    <!-- Help - Profile Bullets -->
+    <x:String x:Key="TxtHelpProfDefaultTitle">기본 프로필</x:String>
+    <x:String x:Key="TxtHelpProfDefaultText">게임 관리 또는 빠른 설치 사용 시 기본적으로 선택될 프로필을 설정합니다.</x:String>
+    <x:String x:Key="TxtHelpProfNameTitle">프로필 이름</x:String>
+    <x:String x:Key="TxtHelpProfNameText">프로필의 표시 이름을 설정합니다.</x:String>
+    <x:String x:Key="TxtHelpProfDescTitle">설명</x:String>
+    <x:String x:Key="TxtHelpProfDescText">프로필에 대한 설명을 설정합니다.</x:String>
+    <x:String x:Key="TxtHelpProfModeTitle">모드</x:String>
+    <x:String x:Key="TxtHelpProfModeText">쉬운 모드와 고급 모드 중에서 선택합니다. 쉬운 모드는 초보자에게 이상적인 빠르고 간단한 설정을 위해 필수 설정으로 제한합니다. 고급 모드는 .ini 파일의 전체 편집을 허용하여 파워 유저에게 완전한 제어와 최대 커스터마이징을 제공합니다.</x:String>
+    <x:String x:Key="TxtHelpProfNavTitle">탐색 섹션</x:String>
+    <x:String x:Key="TxtHelpProfNavText">프로필 편집기의 다양한 섹션을 탐색할 수 있습니다.</x:String>
+    <x:String x:Key="TxtHelpProfSearchTitle">검색 바</x:String>
+    <x:String x:Key="TxtHelpProfSearchText">프로필 편집기 내에서 특정 설정을 검색할 수 있습니다.</x:String>
+
+    <!-- Profile Management View -->
+    <x:String x:Key="TxtProfViewTitle">프로필</x:String>
+    <x:String x:Key="TxtProfViewDesc">OptiScaler 구성 프로필 생성 및 관리</x:String>
+    <x:String x:Key="TxtBtnNewProfile">새 프로필</x:String>
+    <x:String x:Key="TxtBtnImportIni">.ini 가져오기...</x:String>
+    <x:String x:Key="TxtBtnSetDefault">기본값으로 설정</x:String>
+    <x:String x:Key="TxtBtnEdit">편집</x:String>
+    <x:String x:Key="TxtBtnDuplicate">복제</x:String>
+    <x:String x:Key="TxtBtnExportIni">.ini 내보내기</x:String>
+    <x:String x:Key="TxtSearchProfiles">프로필 검색...</x:String>
+    <x:String x:Key="TxtProfInfoFormat">프로필 {0}개 (사용자 정의 {1}개).</x:String>
+    <x:String x:Key="TxtProfSearchResultFormat">{1}개 중 {0}개 결과.</x:String>
+    <x:String x:Key="TxtProfNotFound">프로필을 찾을 수 없습니다.</x:String>
+    <x:String x:Key="TxtProfSearchNotFound">일치하는 프로필을 찾을 수 없습니다.</x:String>
+    <x:String x:Key="TxtDefaultBadge">기본값</x:String>
+
+    <!-- Profile Editor View -->
+    <x:String x:Key="TxtEditorBackBtn">← 프로필</x:String>
+    <x:String x:Key="TxtEditorTitle">프로필 편집기</x:String>
+    <x:String x:Key="TxtEditorDesc">이 프로필의 OptiScaler 설정을 구성합니다</x:String>
+    <x:String x:Key="TxtEditorNewTitle">새 프로필</x:String>
+    <x:String x:Key="TxtEditorEditTitleFmt">편집: {0}</x:String>
+    <x:String x:Key="TxtEditorNameLabel">프로필 이름</x:String>
+    <x:String x:Key="TxtEditorNameWatermark">프로필 이름 입력</x:String>
+    <x:String x:Key="TxtEditorDescLabel">설명</x:String>
+    <x:String x:Key="TxtEditorDescWatermark">설명 입력 (선택 사항)</x:String>
+    <x:String x:Key="TxtEditorModeLabel">모드</x:String>
+    <x:String x:Key="TxtEditorModeEasy">쉬운</x:String>
+    <x:String x:Key="TxtEditorModeAdvanced">고급</x:String>
+    <x:String x:Key="TxtEditorNavLabel">탐색</x:String>
+    <x:String x:Key="TxtEditorSearchWm">설정 검색...</x:String>
+    <x:String x:Key="TxtEditorFooterNote">구성된 설정만 OptiScaler 기본값을 재정의합니다</x:String>
+    <x:String x:Key="TxtEditorCancel">취소</x:String>
+    <x:String x:Key="TxtEditorSave">프로필 저장</x:String>
+
+    <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtRefreshCoversTitle">누락된 커버만 새로 고침</x:String>
+    <x:String x:Key="TxtRefreshCoversDesc">전체 검색을 건너뛰고 이전에 가져오지 못한 게임의 커버 이미지만 다시 시도합니다. SteamGridDB API 키를 설정한 후 유용합니다.</x:String>
+    <x:String x:Key="TxtOrganizeGamesTooltip">게임 정리</x:String>
+    <x:String x:Key="TxtOrganizeModeBanner">정리 모드</x:String>
+    <x:String x:Key="TxtOrganizeModeReorder">▲▼ 순서 변경</x:String>
+    <x:String x:Key="TxtOrganizeModeHideShow">표시/숨기기</x:String>
+    <x:String x:Key="TxtOrganizeModeDone">완료</x:String>
+    <x:String x:Key="TxtDragToReorder">드래그하여 순서 변경</x:String>
+    <x:String x:Key="TxtMoveUp">위로 이동</x:String>
+    <x:String x:Key="TxtMoveDown">아래로 이동</x:String>
+    <x:String x:Key="TxtHideShowGame">게임 표시/숨기기</x:String>
+    <x:String x:Key="TxtHideGame">숨기기</x:String>
+    <x:String x:Key="TxtShowGame">표시</x:String>
+    <x:String x:Key="TxtRefreshingCovers">누락된 커버 새로 고침 중...</x:String>
+    <x:String x:Key="TxtCoverRefreshDoneFmt">커버 새로 고침 완료. {0}/{1}개의 누락된 커버를 찾았습니다.</x:String>
+    <x:String x:Key="TxtCoverRefreshToastFmt">커버 새로 고침 완료 — {0}/{1}개의 커버를 찾았습니다.</x:String>
+
+    <!-- OptiPatcher -->
+    <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
+    <x:String x:Key="TxtOptiPatcherTooltip">지원 게임에서 스푸핑 없이 DLSS/DLSS-FG 입력을 노출하는 OptiScaler용 ASI 플러그인입니다. Intel Arc 사용자의 D3D12 오류와 Dxgi 스푸핑으로 인한 성능 저하 또는 크래시를 방지합니다.</x:String>
+    <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher 다운로드 중...</x:String>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher 설치 중...</x:String></ResourceDictionary>
+
+
+

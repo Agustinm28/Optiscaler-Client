@@ -32,10 +32,22 @@ namespace OptiscalerClient
 
             // Ensure trace and console output go to Terminal
             System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Console.Out));
-            
+
             AppDomain.CurrentDomain.UnhandledException += (s, args) =>
             {
-                System.IO.File.WriteAllText("crash.log", args.ExceptionObject.ToString());
+                try
+                {
+                    var crashDir = System.IO.Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                        "OptiscalerClient");
+                    System.IO.Directory.CreateDirectory(crashDir);
+                    var crashLogPath = System.IO.Path.Combine(crashDir, "crash.log");
+                    System.IO.File.WriteAllText(crashLogPath, args.ExceptionObject.ToString());
+                }
+                catch
+                {
+                    // Last-resort handler — nothing we can do if writing fails
+                }
             };
         }
 
@@ -77,9 +89,9 @@ namespace OptiscalerClient
                 }
                 CurrentLanguage = langCode;
             }
-            catch
+            catch (Exception ex)
             {
-                // Fallback or ignore
+                System.Diagnostics.Debug.WriteLine($"[App] Failed to change language to '{langCode}': {ex.Message}");
             }
         }
     }
