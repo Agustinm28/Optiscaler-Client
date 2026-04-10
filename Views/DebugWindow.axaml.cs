@@ -92,7 +92,13 @@ namespace OptiscalerClient.Views
 
         private async void BtnCopy_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
-            await TopLevel.GetTopLevel(this)!.Clipboard!.SetTextAsync(_logContent.ToString());
+            try
+            {
+                var topLevel = TopLevel.GetTopLevel(this);
+                if (topLevel?.Clipboard != null)
+                    await topLevel.Clipboard.SetTextAsync(_logContent.ToString());
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[DebugWindow] Clipboard copy failed: {ex.Message}"); }
         }
 
         private void BtnOpenCacheFolder_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

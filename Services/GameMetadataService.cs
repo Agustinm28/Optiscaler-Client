@@ -55,7 +55,10 @@ public class GameMetadataService
             if (File.Exists(sentinelPath))
                 File.Delete(sentinelPath);
         }
-        catch { /* ignore */ }
+        catch (Exception ex)
+        {
+            DebugWindow.Log(() => $"[Cover] Failed to delete sentinel for '{appIdKey}': {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -122,7 +125,8 @@ public class GameMetadataService
         }
 
         DebugWindow.Log(() => $"[Cover] FAIL in {sw.ElapsedMilliseconds}ms — no cover found for: \"{gameName}\" — writing sentinel");
-        try { await File.WriteAllBytesAsync(sentinelPath, Array.Empty<byte>()); } catch { }
+        try { await File.WriteAllBytesAsync(sentinelPath, Array.Empty<byte>()); }
+        catch (Exception ex) { DebugWindow.Log(() => $"[Cover] Failed to write sentinel: {ex.Message}"); }
 
         return null;
     }
@@ -160,7 +164,11 @@ public class GameMetadataService
 
             (string url, byte[]? bytes) result;
             try { result = await completed; }
-            catch { continue; }
+            catch (Exception ex)
+            {
+                DebugWindow.Log(() => $"[Cover] Fallback task failed: {ex.Message}");
+                continue;
+            }
 
             if (result.bytes != null)
             {
@@ -460,7 +468,10 @@ public class GameMetadataService
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            DebugWindow.Log(() => $"[Cover] SteamGridDB search error: {ex.Message}");
+        }
         return null;
     }
 }

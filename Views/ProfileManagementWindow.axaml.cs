@@ -328,52 +328,62 @@ namespace OptiscalerClient.Views
 
         private async void BtnNewProfile_Click(object? sender, RoutedEventArgs e)
         {
-            var newProfile = OptiScalerProfile.CreateEmpty();
-            var editor = new ProfileEditorWindow(newProfile, isNewProfile: true);
-            await editor.ShowDialog(this);
-
-            if (editor.ProfileSaved)
+            try
             {
-                LoadProfiles();
+                var newProfile = OptiScalerProfile.CreateEmpty();
+                var editor = new ProfileEditorWindow(newProfile, isNewProfile: true);
+                await editor.ShowDialog(this);
+
+                if (editor.ProfileSaved)
+                {
+                    LoadProfiles();
+                }
             }
+            catch (Exception ex) { DebugWindow.Log($"[ProfileManagement] New profile failed: {ex.Message}"); }
         }
 
         private async void BtnEditProfile_Click(object? sender, RoutedEventArgs e)
         {
             if (_selectedProfile == null) return;
-
-            var wasDefault = _selectedProfile.Name.Equals(_defaultProfileName, StringComparison.OrdinalIgnoreCase);
-
-            var editor = new ProfileEditorWindow(_selectedProfile, isNewProfile: false);
-            await editor.ShowDialog(this);
-
-            if (editor.ProfileSaved)
+            try
             {
-                if (wasDefault)
+                var wasDefault = _selectedProfile.Name.Equals(_defaultProfileName, StringComparison.OrdinalIgnoreCase);
+
+                var editor = new ProfileEditorWindow(_selectedProfile, isNewProfile: false);
+                await editor.ShowDialog(this);
+
+                if (editor.ProfileSaved)
                 {
-                    _componentService.Config.DefaultProfileName = _selectedProfile.Name;
-                    _componentService.SaveConfiguration();
-                    _defaultProfileName = _selectedProfile.Name;
+                    if (wasDefault)
+                    {
+                        _componentService.Config.DefaultProfileName = _selectedProfile.Name;
+                        _componentService.SaveConfiguration();
+                        _defaultProfileName = _selectedProfile.Name;
+                    }
+                    LoadProfiles();
                 }
-                LoadProfiles();
             }
+            catch (Exception ex) { DebugWindow.Log($"[ProfileManagement] Edit profile failed: {ex.Message}"); }
         }
 
         private async void BtnDuplicateProfile_Click(object? sender, RoutedEventArgs e)
         {
             if (_selectedProfile == null) return;
-
-            var duplicatedProfile = _selectedProfile.Clone();
-            duplicatedProfile.Name = $"{_selectedProfile.Name} (Copy)";
-            duplicatedProfile.IsBuiltIn = false;
-
-            var editor = new ProfileEditorWindow(duplicatedProfile, isNewProfile: true);
-            await editor.ShowDialog(this);
-
-            if (editor.ProfileSaved)
+            try
             {
-                LoadProfiles();
+                var duplicatedProfile = _selectedProfile.Clone();
+                duplicatedProfile.Name = $"{_selectedProfile.Name} (Copy)";
+                duplicatedProfile.IsBuiltIn = false;
+
+                var editor = new ProfileEditorWindow(duplicatedProfile, isNewProfile: true);
+                await editor.ShowDialog(this);
+
+                if (editor.ProfileSaved)
+                {
+                    LoadProfiles();
+                }
             }
+            catch (Exception ex) { DebugWindow.Log($"[ProfileManagement] Duplicate profile failed: {ex.Message}"); }
         }
 
         private async void BtnDeleteProfile_Click(object? sender, RoutedEventArgs e)

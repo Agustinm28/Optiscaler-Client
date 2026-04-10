@@ -14,7 +14,7 @@ namespace OptiscalerClient.Services
         private readonly string _profilesDir;
         private readonly string _builtInProfilesDir;
         private readonly string _customProfilesDir;
-        
+
         private List<OptiScalerProfile> _cachedProfiles = new();
         private DateTime _lastCacheTime = DateTime.MinValue;
 
@@ -37,7 +37,7 @@ namespace OptiscalerClient.Services
             var defaultProfile = OptiScalerProfile.CreateDefault();
             var profilePath = Path.Combine(_builtInProfilesDir, $"{SanitizeFileName(defaultProfile.Name)}.json");
             var legacyProfilePath = Path.Combine(_builtInProfilesDir, "Default.json");
-            
+
             if (!File.Exists(profilePath))
             {
                 if (File.Exists(legacyProfilePath))
@@ -221,7 +221,7 @@ namespace OptiscalerClient.Services
             if (File.Exists(templatePath))
             {
                 try { templateContent = File.ReadAllText(templatePath); }
-                catch { /* fall through */ }
+                catch (Exception ex) { DebugWindow.Log($"[Profiles] Failed to read template '{templatePath}': {ex.Message}"); }
             }
             templateContent ??= TryGetEmbeddedTemplate();
 
@@ -302,12 +302,12 @@ namespace OptiscalerClient.Services
             foreach (var section in profile.IniSettings.OrderBy(s => s.Key))
             {
                 sb.AppendLine($"[{section.Key}]");
-                
+
                 foreach (var setting in section.Value.OrderBy(s => s.Key))
                 {
                     sb.AppendLine($"{setting.Key}={setting.Value}");
                 }
-                
+
                 sb.AppendLine();
             }
 
@@ -318,7 +318,7 @@ namespace OptiscalerClient.Services
         {
             var iniPath = Path.Combine(gameDir, "OptiScaler.ini");
             var iniContent = GenerateOptiScalerIni(profile, iniPath);
-            
+
             try
             {
                 File.WriteAllText(iniPath, iniContent);

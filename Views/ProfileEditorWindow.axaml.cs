@@ -113,37 +113,41 @@ namespace OptiscalerClient.Views
 
         private async void NavButton_Click(object? sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is string sectionName && _sectionBorders.TryGetValue(sectionName, out var sectionBorder))
+            try
             {
-                var scrollViewer = this.FindControl<ScrollViewer>("SettingsScrollViewer");
-                if (scrollViewer != null && _sectionsWrap != null)
+                if (sender is Button button && button.Tag is string sectionName && _sectionBorders.TryGetValue(sectionName, out var sectionBorder))
                 {
-                    // Wait for layout to be updated
-                    await System.Threading.Tasks.Task.Delay(10);
-                    
-                    // Force layout update
-                    scrollViewer.InvalidateMeasure();
-                    scrollViewer.InvalidateArrange();
-                    _sectionsWrap.InvalidateMeasure();
-                    _sectionsWrap.InvalidateArrange();
-                    
-                    // Wait a bit more for the layout to settle
-                    await System.Threading.Tasks.Task.Delay(50);
-                    
-                    // Calculate the position of the section relative to the scroll viewer's content
-                    var transform = sectionBorder.TransformToVisual(_sectionsWrap);
-                    if (transform.HasValue)
+                    var scrollViewer = this.FindControl<ScrollViewer>("SettingsScrollViewer");
+                    if (scrollViewer != null && _sectionsWrap != null)
                     {
-                        var position = transform.Value.Transform(new Point(0, 0));
-                        
-                        // Get current scroll offset and add the section's position
-                        var targetOffset = position.Y - 20; // 20px padding from top
-                        
-                        // Scroll to the section
-                        scrollViewer.Offset = new Vector(0, Math.Max(0, targetOffset));
+                        // Wait for layout to be updated
+                        await System.Threading.Tasks.Task.Delay(10);
+
+                        // Force layout update
+                        scrollViewer.InvalidateMeasure();
+                        scrollViewer.InvalidateArrange();
+                        _sectionsWrap.InvalidateMeasure();
+                        _sectionsWrap.InvalidateArrange();
+
+                        // Wait a bit more for the layout to settle
+                        await System.Threading.Tasks.Task.Delay(50);
+
+                        // Calculate the position of the section relative to the scroll viewer's content
+                        var transform = sectionBorder.TransformToVisual(_sectionsWrap);
+                        if (transform.HasValue)
+                        {
+                            var position = transform.Value.Transform(new Point(0, 0));
+
+                            // Get current scroll offset and add the section's position
+                            var targetOffset = position.Y - 20; // 20px padding from top
+
+                            // Scroll to the section
+                            scrollViewer.Offset = new Vector(0, Math.Max(0, targetOffset));
+                        }
                     }
                 }
             }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[ProfileEditor] Nav scroll failed: {ex.Message}"); }
         }
 
         private void LoadProfileData()
@@ -191,13 +195,13 @@ namespace OptiscalerClient.Views
             _sectionsWrap = sectionsWrap;
             _sidebarNav = sidebarNav;
             sectionsWrap.Children.Clear();
-            
+
             // Clear existing navigation buttons (except the title)
             while (sidebarNav.Children.Count > 1)
             {
                 sidebarNav.Children.RemoveAt(1);
             }
-            
+
             _sectionBorders.Clear();
 
             string schemaFileName = _isEasyMode ? "easy_profile_editor_schema.json" : "profile_editor_schema.json";
@@ -242,7 +246,7 @@ namespace OptiscalerClient.Views
                 {
                     sectionsWrap.Children.Add(sectionCard);
                     _sectionBorders[sectionName] = sectionCard;
-                    
+
                     // Add navigation button
                     var navButton = new Button
                     {
@@ -377,7 +381,7 @@ namespace OptiscalerClient.Views
                             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
                         };
                         settingControl = textBox;
-                        settingRef = new SettingControlRef(settingControl, () => 
+                        settingRef = new SettingControlRef(settingControl, () =>
                             string.IsNullOrWhiteSpace(textBox.Text) ? "auto" : textBox.Text, setting.AppliesTo);
                     }
                     else if (string.Equals(setting.ControlType, "folderpath", StringComparison.OrdinalIgnoreCase))
@@ -891,7 +895,7 @@ namespace OptiscalerClient.Views
         {
             var btnEasy = this.FindControl<Button>("BtnEasyMode");
             var btnAdvanced = this.FindControl<Button>("BtnAdvancedMode");
-            
+
             if (btnEasy != null && btnAdvanced != null)
             {
                 if (_isEasyMode)

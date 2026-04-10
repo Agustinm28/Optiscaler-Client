@@ -440,7 +440,7 @@ namespace OptiscalerClient.Views
                               (gpu.Name.Contains(" 9", StringComparison.OrdinalIgnoreCase) ||
                                gpu.Name.Contains("RX 9", StringComparison.OrdinalIgnoreCase));
                 }
-                catch { /* silent */ }
+                catch (Exception ex) { DebugWindow.Log($"[ManageGame] GPU detection failed: {ex.Message}"); }
             }
 
             // Determine target index
@@ -731,8 +731,9 @@ namespace OptiscalerClient.Views
                 var defaultCover = await metadataService.FetchAndCacheCoverImageAsync(_game.Name, appIdKey);
                 _game.CoverImageUrl = defaultCover;
             }
-            catch
+            catch (Exception ex)
             {
+                DebugWindow.Log($"[ManageGame] Cover reset fetch failed: {ex.Message}");
                 _game.CoverImageUrl = null;
             }
 
@@ -873,12 +874,14 @@ namespace OptiscalerClient.Views
 
         private async void BtnInstall_Click(object sender, RoutedEventArgs e)
         {
-            await ExecuteInstallAsync(false);
+            try { await ExecuteInstallAsync(false); }
+            catch (Exception ex) { DebugWindow.Log($"[ManageGame] Install failed: {ex.Message}"); }
         }
 
         private async void BtnInstallManual_Click(object sender, RoutedEventArgs e)
         {
-            await ExecuteInstallAsync(true);
+            try { await ExecuteInstallAsync(true); }
+            catch (Exception ex) { DebugWindow.Log($"[ManageGame] Manual install failed: {ex.Message}"); }
         }
 
         private async Task ExecuteInstallAsync(bool isManualMode)
@@ -1125,15 +1128,15 @@ namespace OptiscalerClient.Views
 
                     if (instEx.Message.Contains("Fakenvapi", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (Directory.Exists(fakeCacheDir)) try { Directory.Delete(fakeCacheDir, true); } catch { }
+                        if (Directory.Exists(fakeCacheDir)) try { Directory.Delete(fakeCacheDir, true); } catch (Exception delEx) { DebugWindow.Log($"[Install] Failed to delete Fakenvapi cache: {delEx.Message}"); }
                     }
                     else if (instEx.Message.Contains("NukemFG", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (Directory.Exists(nukemCacheDir)) try { Directory.Delete(nukemCacheDir, true); } catch { }
+                        if (Directory.Exists(nukemCacheDir)) try { Directory.Delete(nukemCacheDir, true); } catch (Exception delEx) { DebugWindow.Log($"[Install] Failed to delete NukemFG cache: {delEx.Message}"); }
                     }
                     else
                     {
-                        if (Directory.Exists(optiCacheDir)) try { Directory.Delete(optiCacheDir, true); } catch { }
+                        if (Directory.Exists(optiCacheDir)) try { Directory.Delete(optiCacheDir, true); } catch (Exception delEx) { DebugWindow.Log($"[Install] Failed to delete OptiScaler cache: {delEx.Message}"); }
                     }
 
                     Dispatcher.UIThread.Post(() => { if (prgDownload != null) { prgDownload.Value = 0; prgDownload.IsIndeterminate = true; } });
@@ -1195,7 +1198,7 @@ namespace OptiscalerClient.Views
                     {
                         retryDone = true;
                         DebugWindow.Log($"[Install] Detected corrupt FSR4 INT8 cache. Triggering auto-retry...");
-                        try { if (File.Exists(extrasDllPath)) File.Delete(extrasDllPath); } catch { }
+                        try { if (File.Exists(extrasDllPath)) File.Delete(extrasDllPath); } catch (Exception delEx) { DebugWindow.Log($"[Install] Failed to delete FSR4 INT8 cache: {delEx.Message}"); }
                         Dispatcher.UIThread.Post(() => { if (prgDownload != null) { prgDownload.Value = 0; prgDownload.IsIndeterminate = true; } });
                         goto RetryFullInstall;
                     }
