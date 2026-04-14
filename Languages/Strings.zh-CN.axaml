@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">当前没有下载的版本。</x:String>
     <x:String x:Key="TxtToastSuccess">成功</x:String>
     <x:String x:Key="TxtConfirmDelTitle">确认删除</x:String>
+    <x:String x:Key="TxtCustomVersions">自定义 OptiScaler 版本</x:String>
+    <x:String x:Key="TxtImportArchive">导入归档</x:String>
+    <x:String x:Key="TxtNoCustomVersions">尚未导入自定义版本。</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ 请将自定义 OptiScaler 构建导入为 7z、zip 或 rar 归档文件。如果归档包含应用无法跟踪的文件，安装/卸载可能失败。请仅包含 OptiScaler 发布文件。</x:String>
+    <x:String x:Key="TxtImporting">正在导入...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">您确定要删除此版本吗？</x:String>
     <x:String x:Key="TxtCancel">取消</x:String>
     <x:String x:Key="TxtDeletePlain">删除</x:String>

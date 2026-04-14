@@ -32,6 +32,7 @@ public partial class BulkInstallWindow : Window
     private bool _isUpdatingProfiles = false;
     private const string NewProfileTag = "__new_profile__";
     private bool _optiShowingBeta;
+    private bool _optiShowingCustom;
     private bool _optiTabInitialized;
 
     public BulkInstallWindow()
@@ -169,12 +170,27 @@ public partial class BulkInstallWindow : Window
 
         Dispatcher.UIThread.Post(() =>
         {
+            var customVersions = _componentService.CustomVersions;
+
+            // Show/hide Custom tab
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+            var gridTabs = this.FindControl<Grid>("GridOptiTabs");
+            bool hasCustom = customVersions.Count > 0;
+            if (btnCustom != null) btnCustom.IsVisible = hasCustom;
+            if (gridTabs != null)
+                gridTabs.ColumnDefinitions = hasCustom
+                    ? new ColumnDefinitions("*,*,*")
+                    : new ColumnDefinitions("*,*");
+
             // Determine initial tab on first load
             if (!_optiTabInitialized)
             {
                 var configDefault = _componentService.Config.DefaultOptiScalerVersion;
                 _optiShowingBeta = !string.IsNullOrEmpty(configDefault) &&
                                    _componentService.BetaVersions.Contains(configDefault);
+                _optiShowingCustom = !string.IsNullOrEmpty(configDefault) &&
+                                     customVersions.Contains(configDefault);
+                if (_optiShowingCustom) _optiShowingBeta = false;
                 _optiTabInitialized = true;
             }
 
@@ -188,9 +204,10 @@ public partial class BulkInstallWindow : Window
     {
         var allVersions = _componentService.OptiScalerAvailableVersions;
         var betaVersions = _componentService.BetaVersions;
+        var customVersions = _componentService.CustomVersions;
         var latestStable = _componentService.LatestStableVersion;
         var latestBeta = _componentService.LatestBetaVersion;
-        string? latestInChannel = _optiShowingBeta ? latestBeta : latestStable;
+        string? latestInChannel = _optiShowingCustom ? null : (_optiShowingBeta ? latestBeta : latestStable);
         string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
 
         var cmb = this.FindControl<ComboBox>("CmbOptiVersion");
@@ -199,7 +216,7 @@ public partial class BulkInstallWindow : Window
         cmb.SelectionChanged -= CmbOptiVersion_SelectionChanged;
         cmb.Items.Clear();
 
-        if (allVersions.Count == 0)
+        if (allVersions.Count == 0 && !_optiShowingCustom)
         {
             cmb.Items.Add("No versions available");
             cmb.SelectedIndex = 0;
@@ -208,7 +225,11 @@ public partial class BulkInstallWindow : Window
             return;
         }
 
-        var versionsToShow = allVersions.Where(v => betaVersions.Contains(v) == _optiShowingBeta).ToList();
+        System.Collections.Generic.List<string> versionsToShow;
+        if (_optiShowingCustom)
+            versionsToShow = allVersions.Where(v => customVersions.Contains(v)).ToList();
+        else
+            versionsToShow = allVersions.Where(v => !customVersions.Contains(v) && betaVersions.Contains(v) == _optiShowingBeta).ToList();
 
         if (versionsToShow.Count == 0)
         {
@@ -247,7 +268,11 @@ public partial class BulkInstallWindow : Window
 
         int selectedIndex = 0;
         var configDefault = _componentService.Config.DefaultOptiScalerVersion;
-        if (!string.IsNullOrEmpty(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta)
+        bool defaultInChannel = !string.IsNullOrEmpty(configDefault) &&
+            (_optiShowingCustom
+                ? customVersions.Contains(configDefault)
+                : !customVersions.Contains(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta);
+        if (defaultInChannel)
         {
             for (int i = 0; i < cmb.Items.Count; i++)
             {
@@ -268,24 +293,37 @@ public partial class BulkInstallWindow : Window
     {
         var btnStable = this.FindControl<Button>("BtnOptiStable");
         var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+        var btnCustom = this.FindControl<Button>("BtnOptiCustom");
         if (btnStable == null || btnBeta == null) return;
 
-        if (_optiShowingBeta)
+        void SetActive(Button b) { b.Classes.Remove("BtnSecondary"); b.Classes.Add("BtnPrimary"); }
+        void SetInactive(Button b) { b.Classes.Remove("BtnPrimary"); b.Classes.Add("BtnSecondary"); }
+
+        if (_optiShowingCustom)
         {
-            btnStable.Classes.Remove("BtnPrimary"); btnStable.Classes.Add("BtnSecondary");
-            btnBeta.Classes.Remove("BtnSecondary"); btnBeta.Classes.Add("BtnPrimary");
+            SetInactive(btnStable);
+            SetInactive(btnBeta);
+            if (btnCustom != null) SetActive(btnCustom);
+        }
+        else if (_optiShowingBeta)
+        {
+            SetInactive(btnStable);
+            SetActive(btnBeta);
+            if (btnCustom != null) SetInactive(btnCustom);
         }
         else
         {
-            btnStable.Classes.Remove("BtnSecondary"); btnStable.Classes.Add("BtnPrimary");
-            btnBeta.Classes.Remove("BtnPrimary"); btnBeta.Classes.Add("BtnSecondary");
+            SetActive(btnStable);
+            SetInactive(btnBeta);
+            if (btnCustom != null) SetInactive(btnCustom);
         }
     }
 
     private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
     {
-        if (!_optiShowingBeta) return;
+        if (!_optiShowingBeta && !_optiShowingCustom) return;
         _optiShowingBeta = false;
+        _optiShowingCustom = false;
         UpdateOptiChannelButtons();
         PopulateOptiVersionCombo();
     }
@@ -294,6 +332,16 @@ public partial class BulkInstallWindow : Window
     {
         if (_optiShowingBeta) return;
         _optiShowingBeta = true;
+        _optiShowingCustom = false;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
+    }
+
+    private void BtnOptiCustom_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_optiShowingCustom) return;
+        _optiShowingCustom = true;
+        _optiShowingBeta = false;
         UpdateOptiChannelButtons();
         PopulateOptiVersionCombo();
     }

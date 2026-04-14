@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">현재 다운로드된 버전이 없습니다.</x:String>
     <x:String x:Key="TxtToastSuccess">성공</x:String>
     <x:String x:Key="TxtConfirmDelTitle">삭제 확인</x:String>
+    <x:String x:Key="TxtCustomVersions">사용자 지정 OptiScaler 버전</x:String>
+    <x:String x:Key="TxtImportArchive">아카이브 가져오기</x:String>
+    <x:String x:Key="TxtNoCustomVersions">가져온 사용자 지정 버전이 없습니다.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ 사용자 지정 OptiScaler 빌드를 7z, zip 또는 rar 아카이브로 가져오세요. 앱이 추적할 수 없는 파일이 포함된 경우 설치/제거가 실패할 수 있습니다. OptiScaler 릴리스 파일만 포함하세요.</x:String>
+    <x:String x:Key="TxtImporting">가져오는 중...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">이 버전을 삭제하시겠습니까?</x:String>
     <x:String x:Key="TxtCancel">취소</x:String>
     <x:String x:Key="TxtDeletePlain">삭제</x:String>

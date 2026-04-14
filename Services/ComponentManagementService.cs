@@ -69,7 +69,19 @@ namespace OptiscalerClient.Services
         private static string? _cachedLatestOptiPatcherVersion = null;
 
         public System.Collections.Generic.List<string> OptiScalerAvailableVersions
-            => _cachedOptiScalerVersions ?? GetDownloadedOptiScalerVersions();
+        {
+            get
+            {
+                var baseList = _cachedOptiScalerVersions ?? GetDownloadedOptiScalerVersions();
+                var custom = _config.CustomOptiScalerVersions;
+                if (custom.Count == 0) return baseList;
+                var merged = new System.Collections.Generic.List<string>(baseList);
+                foreach (var cv in custom)
+                    if (!merged.Contains(cv, StringComparer.OrdinalIgnoreCase))
+                        merged.Add(cv);
+                return merged;
+            }
+        }
         public System.Collections.Generic.HashSet<string> BetaVersions => _cachedBetaVersions;
         public string? LatestBetaVersion => _cachedLatestBetaVersion;
         public string? LatestStableVersion => _cachedLatestStableVersion;
@@ -1813,7 +1825,8 @@ namespace OptiscalerClient.Services
                         continue;
                     }
 
-                    if (System.Linq.Enumerable.Any(dirName, char.IsDigit) || dirName.Equals("latest", StringComparison.OrdinalIgnoreCase))
+                    if (System.Linq.Enumerable.Any(dirName, char.IsDigit) || dirName.Equals("latest", StringComparison.OrdinalIgnoreCase) ||
+                        _config.CustomOptiScalerVersions.Contains(dirName, StringComparer.OrdinalIgnoreCase))
                     {
                         versions.Add(dirName);
                     }
@@ -1836,11 +1849,116 @@ namespace OptiscalerClient.Services
             {
                 Directory.Delete(cachePath, true);
             }
+            // Also remove from custom versions list if present
+            if (_config.CustomOptiScalerVersions.Remove(version))
+                SaveConfiguration();
+            // Keep static cache in sync
+            _cachedOptiScalerVersions?.Remove(version);
             if (_localVersions.OptiScalerVersion == version)
             {
                 _localVersions.OptiScalerVersion = GetDownloadedOptiScalerVersions().FirstOrDefault();
                 SaveLocalVersions();
             }
+        }
+
+        /// <summary>Returns the set of custom OptiScaler version names imported by the user.</summary>
+        public System.Collections.Generic.HashSet<string> CustomVersions
+            => new(_config.CustomOptiScalerVersions, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Imports a custom OptiScaler version from a 7z archive.
+        /// Extracts to Cache/OptiScaler/{versionName}/ and registers it.
+        /// </summary>
+        public async Task<string> ImportCustomOptiScalerVersionAsync(string archivePath)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(archivePath);
+            // Sanitize to produce a safe directory name
+            var versionName = "custom-" + SanitizeVersionName(fileName);
+            var targetDir = Path.Combine(_cacheDir, "OptiScaler", versionName);
+
+            if (Directory.Exists(targetDir))
+                Directory.Delete(targetDir, true);
+            Directory.CreateDirectory(targetDir);
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using var stream = File.OpenRead(archivePath);
+                    using var archive = SharpCompress.Archives.ArchiveFactory.Open(stream);
+                    var fileEntries = archive.Entries.Where(e => !e.IsDirectory).ToList();
+                    var commonPrefix = FindCommonArchivePrefix(fileEntries.Select(e => e.Key).ToList());
+
+                    // Use ExtractAllEntries (sequential reader) which works for all formats
+                    // including solid RAR/7z where random OpenEntryStream() can fail.
+                    using var reader = archive.ExtractAllEntries();
+                    while (reader.MoveToNextEntry())
+                    {
+                        if (reader.Entry.IsDirectory) continue;
+                        ExtractEntry(reader.Entry.Key, targetDir, commonPrefix,
+                            dest => reader.WriteEntryTo(dest));
+                    }
+                });
+            }
+            catch
+            {
+                // Clean up partial extraction so the empty dir doesn't appear as a ghost version
+                try { if (Directory.Exists(targetDir)) Directory.Delete(targetDir, true); }
+                catch { /* best effort */ }
+                throw;
+            }
+
+            // Register as custom version
+            if (!_config.CustomOptiScalerVersions.Contains(versionName, StringComparer.OrdinalIgnoreCase))
+            {
+                _config.CustomOptiScalerVersions.Add(versionName);
+                SaveConfiguration();
+            }
+            // Update static cache so other windows see the new version immediately
+            if (_cachedOptiScalerVersions != null && !_cachedOptiScalerVersions.Contains(versionName, StringComparer.OrdinalIgnoreCase))
+                _cachedOptiScalerVersions.Add(versionName);
+            return versionName;
+        }
+
+        private static void ExtractEntry(string? key, string targetDir, string commonPrefix, Action<Stream> writeAction)
+        {
+            var entryKey = (key ?? "").Replace('/', Path.DirectorySeparatorChar);
+            if (!string.IsNullOrEmpty(commonPrefix) && entryKey.StartsWith(commonPrefix, StringComparison.OrdinalIgnoreCase))
+                entryKey = entryKey.Substring(commonPrefix.Length);
+            if (string.IsNullOrEmpty(entryKey)) return;
+
+            // Guard against path traversal
+            var destPath = Path.GetFullPath(Path.Combine(targetDir, entryKey));
+            if (!destPath.StartsWith(Path.GetFullPath(targetDir) + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var destDir = Path.GetDirectoryName(destPath);
+            if (!string.IsNullOrEmpty(destDir))
+                Directory.CreateDirectory(destDir);
+
+            using var fileStream = File.Create(destPath);
+            writeAction(fileStream);
+        }
+
+        private static string SanitizeVersionName(string name)
+        {
+            var invalid = Path.GetInvalidFileNameChars();
+            var sb = new System.Text.StringBuilder(name.Length);
+            foreach (var c in name)
+                sb.Append(invalid.Contains(c) ? '_' : c);
+            return sb.ToString();
+        }
+
+        private static string FindCommonArchivePrefix(System.Collections.Generic.List<string?> keys)
+        {
+            if (keys.Count == 0) return "";
+            var normalizedKeys = keys.Select(k => (k ?? "").Replace('/', Path.DirectorySeparatorChar)).ToList();
+            var firstSep = normalizedKeys[0].IndexOf(Path.DirectorySeparatorChar);
+            if (firstSep < 0) return "";
+            var candidate = normalizedKeys[0].Substring(0, firstSep + 1);
+            if (normalizedKeys.All(k => k.StartsWith(candidate, StringComparison.OrdinalIgnoreCase)))
+                return candidate;
+            return "";
         }
 
         public string GetVersionString()

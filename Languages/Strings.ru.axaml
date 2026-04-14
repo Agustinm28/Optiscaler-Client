@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">В настоящее время нет загруженных версий.</x:String>
     <x:String x:Key="TxtToastSuccess">Успешно</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Подтвердить удаление</x:String>
+    <x:String x:Key="TxtCustomVersions">Пользовательские версии OptiScaler</x:String>
+    <x:String x:Key="TxtImportArchive">Импортировать архив</x:String>
+    <x:String x:Key="TxtNoCustomVersions">Пользовательские версии не импортированы.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Импортируйте пользовательские сборки OptiScaler в виде архивов 7z, zip или rar. Установка/удаление может завершиться неудачей, если архив содержит файлы, не отслеживаемые приложением. Включайте только файлы релиза OptiScaler.</x:String>
+    <x:String x:Key="TxtImporting">Импортирование...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Вы уверены, что хотите удалить эту версию?</x:String>
     <x:String x:Key="TxtCancel">Отмена</x:String>
     <x:String x:Key="TxtDeletePlain">Удалить</x:String>

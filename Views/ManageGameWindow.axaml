@@ -296,7 +296,7 @@
                                     <TextBlock Text="{DynamicResource TxtVersionLbl}"
                                                Foreground="{StaticResource BrTextSecondary}"
                                                FontSize="{StaticResource FontSizeCaption}"/>
-                                    <Grid ColumnDefinitions="*,*">
+                                    <Grid Name="GridOptiTabs" ColumnDefinitions="*,*">
                                         <Button Name="BtnOptiStable"
                                                 Grid.Column="0"
                                                 Content="Stable"
@@ -317,6 +317,17 @@
                                                 Padding="8,5"
                                                 Margin="2,0,0,0"
                                                 Click="BtnOptiBeta_Click"/>
+                                        <Button Name="BtnOptiCustom"
+                                                Grid.Column="2"
+                                                Content="Custom"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                IsVisible="False"
+                                                Click="BtnOptiCustom_Click"/>
                                     </Grid>
                                     <ComboBox Name="CmbOptiVersion"
                                               HorizontalAlignment="Stretch"

@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Input;
+using Avalonia.Platform.Storage;
 
 namespace OptiscalerClient.Views
 {
@@ -60,13 +61,20 @@ namespace OptiscalerClient.Views
         {
             var pnlVersions = this.FindControl<StackPanel>("PnlVersions");
             var pnlExtras = this.FindControl<StackPanel>("PnlExtrasVersions");
+            var pnlCustom = this.FindControl<StackPanel>("PnlCustomVersions");
             if (pnlVersions == null || pnlExtras == null) return;
 
             pnlVersions.Children.Clear();
             pnlExtras.Children.Clear();
+            pnlCustom?.Children.Clear();
 
             var versions = _componentService.GetDownloadedOptiScalerVersions();
             var extras = _componentService.GetDownloadedExtrasVersions();
+            var customSet = _componentService.CustomVersions;
+
+            // Separate official vs custom
+            var officialVersions = versions.Where(v => !customSet.Contains(v)).ToList();
+            var customVersions = versions.Where(v => customSet.Contains(v)).ToList();
 
             var txtCacheInfo = this.FindControl<TextBlock>("TxtCacheInfo");
             if (txtCacheInfo != null)
@@ -75,8 +83,8 @@ namespace OptiscalerClient.Views
                 txtCacheInfo.Text = $"{totalCount} items stored locally (OptiScaler & FSR4 Extras).";
             }
 
-            // Populate OptiScaler Versions
-            if (!versions.Any())
+            // Populate OptiScaler Versions (official only)
+            if (!officialVersions.Any())
             {
                 pnlVersions.Children.Add(new TextBlock
                 {
@@ -89,10 +97,34 @@ namespace OptiscalerClient.Views
             }
             else
             {
-                foreach (var ver in versions)
+                foreach (var ver in officialVersions)
                 {
                     var card = CreateVersionCard(ver, isExtras: false);
                     pnlVersions.Children.Add(card);
+                }
+            }
+
+            // Populate Custom Versions
+            if (pnlCustom != null)
+            {
+                if (!customVersions.Any())
+                {
+                    pnlCustom.Children.Add(new TextBlock
+                    {
+                        Text = Application.Current?.FindResource("TxtNoCustomVersions") as string ?? "No custom versions imported.",
+                        Foreground = Brushes.Gray,
+                        FontSize = 11,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                        Margin = new Thickness(0, 10)
+                    });
+                }
+                else
+                {
+                    foreach (var ver in customVersions)
+                    {
+                        var card = CreateVersionCard(ver, isExtras: false);
+                        pnlCustom.Children.Add(card);
+                    }
                 }
             }
 
@@ -210,6 +242,60 @@ namespace OptiscalerClient.Views
         }
 
         private bool _isAnimatingClose = false;
+
+        private async void BtnImportCustom_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = "Select OptiScaler Archive",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        new FilePickerFileType("Archives (7z, zip, rar)")
+                        {
+                            Patterns = new[] { "*.7z", "*.zip", "*.rar" }
+                        }
+                    }
+                });
+
+                if (files == null || files.Count == 0) return;
+
+                var filePath = files[0].Path.IsAbsoluteUri
+                    ? files[0].Path.LocalPath
+                    : files[0].TryGetLocalPath();
+                if (string.IsNullOrEmpty(filePath)) return;
+
+                // Show importing overlay
+                var overlay = this.FindControl<Grid>("OverlayImporting");
+                var btnImport = this.FindControl<Button>("BtnImportCustom");
+                var txtStatus = this.FindControl<TextBlock>("TxtImportStatus");
+                if (overlay != null) overlay.IsVisible = true;
+                if (btnImport != null) btnImport.IsEnabled = false;
+                if (txtStatus != null) txtStatus.Text = "";
+
+                var versionName = await _componentService.ImportCustomOptiScalerVersionAsync(filePath);
+                DebugWindow.Log($"[Cache] Custom version imported: {versionName}");
+
+                if (overlay != null) overlay.IsVisible = false;
+                if (txtStatus != null) txtStatus.Text = $"✓ {versionName}";
+                if (btnImport != null) btnImport.IsEnabled = true;
+                LoadCacheItems();
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Cache] Import custom version failed: {ex}");
+                var overlay = this.FindControl<Grid>("OverlayImporting");
+                var btnImport = this.FindControl<Button>("BtnImportCustom");
+                var txtStatus = this.FindControl<TextBlock>("TxtImportStatus");
+                if (overlay != null) overlay.IsVisible = false;
+                if (btnImport != null) btnImport.IsEnabled = true;
+                if (txtStatus != null) txtStatus.Text = "";
+                var innerMsg = ex.InnerException != null ? $"\n{ex.InnerException.Message}" : "";
+                await new ConfirmDialog(this, "Import Error", $"Failed to import custom version:\n{ex.Message}{innerMsg}").ShowDialog<object>(this);
+            }
+        }
 
         private void BtnClose_Click(object? sender, RoutedEventArgs e) => _ = CloseAnimated();
 

@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Şu anda indirilen sürüm yok.</x:String>
     <x:String x:Key="TxtToastSuccess">Başarılı</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Silme İşlemini Onayla</x:String>
+    <x:String x:Key="TxtCustomVersions">Özel OptiScaler Sürümleri</x:String>
+    <x:String x:Key="TxtImportArchive">Arşiv İçe Aktar</x:String>
+    <x:String x:Key="TxtNoCustomVersions">İçe aktarılmış özel sürüm yok.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Özel OptiScaler yapılarını 7z, zip veya rar arşivi olarak içe aktarın. Arşiv uygulama tarafından izlenemeyen dosyalar içeriyorsa kurulum/kaldırma başarısız olabilir. Yalnızca OptiScaler sürüm dosyalarını ekleyin.</x:String>
+    <x:String x:Key="TxtImporting">İçe aktarılıyor...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Bu sürümü silmek istediğinizden emin misiniz?</x:String>
     <x:String x:Key="TxtCancel">İptal</x:String>
     <x:String x:Key="TxtDeletePlain">Sil</x:String>

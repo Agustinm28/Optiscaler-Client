@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Nenhuma versão baixada no momento.</x:String>
     <x:String x:Key="TxtToastSuccess">Sucesso</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Confirmar exclusão</x:String>
+    <x:String x:Key="TxtCustomVersions">Versões personalizadas do OptiScaler</x:String>
+    <x:String x:Key="TxtImportArchive">Importar arquivo</x:String>
+    <x:String x:Key="TxtNoCustomVersions">Nenhuma versão personalizada importada.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Importe builds personalizados do OptiScaler como arquivos 7z, zip ou rar. A instalação/desinstalação pode falhar se o arquivo contiver ficheiros não rastreáveis pelo app. Inclua apenas os arquivos do release do OptiScaler.</x:String>
+    <x:String x:Key="TxtImporting">Importando...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Tem certeza de que deseja excluir esta versão?</x:String>
     <x:String x:Key="TxtCancel">Cancelar</x:String>
     <x:String x:Key="TxtDeletePlain">Excluir</x:String>

@@ -11,6 +11,36 @@
         CanResize="False"
         ShowInTaskbar="False">
 
+    <Window.Styles>
+        <Style Selector="Ellipse#ImportDot1">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Ellipse#ImportDot2">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" Delay="0:0:0.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Ellipse#ImportDot3">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" Delay="0:0:0.4" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </Window.Styles>
+
     <Panel Margin="16" Name="RootPanel" Opacity="0">
         <Border CornerRadius="12"
                 Background="{StaticResource BrBgBase}"
@@ -75,7 +105,47 @@
                                     <!-- OptiScaler versions go here -->
                                 </StackPanel>
 
-                                <!-- Group 2: FSR 4 INT8 Extras -->
+                                <!-- Group 2: Custom OptiScaler Versions -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,12">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{DynamicResource TxtCustomVersions}"
+                                               FontWeight="SemiBold"
+                                               FontSize="13"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1"
+                                               Name="TxtImportStatus"
+                                               FontSize="11"
+                                               Foreground="{StaticResource BrAccent}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,10,0"/>
+                                    <Button Grid.Column="2"
+                                            Name="BtnImportCustom"
+                                            Content="{DynamicResource TxtImportArchive}"
+                                            Classes="BtnBase"
+                                            Padding="12,5"
+                                            FontSize="11"
+                                            Click="BtnImportCustom_Click"/>
+                                </Grid>
+
+                                <!-- Warning banner -->
+                                <Border Background="#1AFF9800"
+                                        BorderBrush="#FF9800"
+                                        BorderThickness="1"
+                                        CornerRadius="6"
+                                        Padding="10,8"
+                                        Margin="0,0,0,12">
+                                    <TextBlock Text="{DynamicResource TxtCustomVersionWarning}"
+                                               Foreground="#FF9800"
+                                               FontSize="11"
+                                               TextWrapping="Wrap"/>
+                                </Border>
+
+                                <StackPanel Name="PnlCustomVersions" Spacing="8" Margin="0,0,0,24">
+                                    <!-- Custom versions go here -->
+                                </StackPanel>
+
+                                <!-- Group 3: FSR 4 INT8 Extras -->
                                 <TextBlock Text="FSR4 INT8 (Injection DLLs)" 
                                            FontWeight="SemiBold" 
                                            FontSize="13" 
@@ -106,6 +176,35 @@
                                         Click="BtnClose_Click"/>
                             </Grid>
                         </Border>
+
+                        <!-- Importing overlay -->
+                        <Grid Name="OverlayImporting"
+                              Grid.RowSpan="3"
+                              Background="#CC000000"
+                              IsVisible="False"
+                              ZIndex="100">
+                            <Border Background="{StaticResource BrBgElevated}"
+                                    BorderBrush="{StaticResource BrAccent}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Padding="60,44">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                                        <Ellipse Name="ImportDot1" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                        <Ellipse Name="ImportDot2" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                        <Ellipse Name="ImportDot3" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{DynamicResource TxtImporting}"
+                                               FontSize="{StaticResource FontSizeSubtitle}"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource BrTextPrimary}"
+                                               HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
                     </Grid>
                 </Border>
             </Grid>

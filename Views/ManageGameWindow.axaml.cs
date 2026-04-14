@@ -45,7 +45,9 @@ namespace OptiscalerClient.Views
         private readonly IGpuDetectionService _gpuService;
         private Window? _ownerWindow;
         private HashSet<string> _betaVersions = new();
+        private HashSet<string> _customVersions = new();
         private bool _optiShowingBeta;
+        private bool _optiShowingCustom;
         private bool _optiTabInitialized;
         private ComponentManagementService? _cachedComponentService;
         private string? _pendingCoverPath;
@@ -273,12 +275,25 @@ namespace OptiscalerClient.Views
         {
             _cachedComponentService = componentService;
             _betaVersions = componentService.BetaVersions;
+            _customVersions = componentService.CustomVersions;
+
+            // Show/hide Custom tab based on whether custom versions exist
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+            var gridTabs = this.FindControl<Grid>("GridOptiTabs");
+            bool hasCustom = _customVersions.Count > 0;
+            if (btnCustom != null) btnCustom.IsVisible = hasCustom;
+            if (gridTabs != null)
+                gridTabs.ColumnDefinitions = hasCustom
+                    ? new ColumnDefinitions("*,*,*")
+                    : new ColumnDefinitions("*,*");
 
             // Determine initial tab only on the first load
             if (!_optiTabInitialized)
             {
                 var configDefault = componentService.Config.DefaultOptiScalerVersion;
                 _optiShowingBeta = !string.IsNullOrEmpty(configDefault) && _betaVersions.Contains(configDefault);
+                _optiShowingCustom = !string.IsNullOrEmpty(configDefault) && _customVersions.Contains(configDefault);
+                if (_optiShowingCustom) _optiShowingBeta = false;
                 _optiTabInitialized = true;
             }
 
@@ -298,9 +313,11 @@ namespace OptiscalerClient.Views
         {
             var allVersions = componentService.OptiScalerAvailableVersions;
             var betaVersions = componentService.BetaVersions;
+            var customVersions = _customVersions;
             var latestStable = componentService.LatestStableVersion;
             var latestBeta = componentService.LatestBetaVersion;
-            string? latestInChannel = _optiShowingBeta ? latestBeta : latestStable;
+
+            string? latestInChannel = _optiShowingCustom ? null : (_optiShowingBeta ? latestBeta : latestStable);
             string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
 
             var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
@@ -309,7 +326,7 @@ namespace OptiscalerClient.Views
             cmbOptiVersion.SelectionChanged -= CmbOptiVersion_SelectionChanged;
             cmbOptiVersion.Items.Clear();
 
-            if (allVersions.Count == 0)
+            if (allVersions.Count == 0 && !_optiShowingCustom)
             {
                 cmbOptiVersion.Items.Add(GetResourceString("TxtNoOptiDetected", "No version detected"));
                 cmbOptiVersion.SelectedIndex = 0;
@@ -318,7 +335,11 @@ namespace OptiscalerClient.Views
                 return;
             }
 
-            var versionsToShow = allVersions.Where(v => betaVersions.Contains(v) == _optiShowingBeta).ToList();
+            System.Collections.Generic.List<string> versionsToShow;
+            if (_optiShowingCustom)
+                versionsToShow = allVersions.Where(v => customVersions.Contains(v)).ToList();
+            else
+                versionsToShow = allVersions.Where(v => !customVersions.Contains(v) && betaVersions.Contains(v) == _optiShowingBeta).ToList();
 
             if (versionsToShow.Count == 0)
             {
@@ -358,7 +379,11 @@ namespace OptiscalerClient.Views
             // Select version: try to match config default if it's in this channel, else select first (latest)
             int selectedIndex = 0;
             var configDefault = componentService.Config.DefaultOptiScalerVersion;
-            if (!string.IsNullOrEmpty(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta)
+            bool defaultInChannel = !string.IsNullOrEmpty(configDefault) &&
+                (_optiShowingCustom
+                    ? customVersions.Contains(configDefault)
+                    : !customVersions.Contains(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta);
+            if (defaultInChannel)
             {
                 for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
                 {
@@ -380,24 +405,37 @@ namespace OptiscalerClient.Views
         {
             var btnStable = this.FindControl<Button>("BtnOptiStable");
             var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
             if (btnStable == null || btnBeta == null) return;
 
-            if (_optiShowingBeta)
+            void SetActive(Button b) { b.Classes.Remove("BtnSecondary"); b.Classes.Add("BtnPrimary"); }
+            void SetInactive(Button b) { b.Classes.Remove("BtnPrimary"); b.Classes.Add("BtnSecondary"); }
+
+            if (_optiShowingCustom)
             {
-                btnStable.Classes.Remove("BtnPrimary"); btnStable.Classes.Add("BtnSecondary");
-                btnBeta.Classes.Remove("BtnSecondary"); btnBeta.Classes.Add("BtnPrimary");
+                SetInactive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetActive(btnCustom);
+            }
+            else if (_optiShowingBeta)
+            {
+                SetInactive(btnStable);
+                SetActive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
             }
             else
             {
-                btnStable.Classes.Remove("BtnSecondary"); btnStable.Classes.Add("BtnPrimary");
-                btnBeta.Classes.Remove("BtnPrimary"); btnBeta.Classes.Add("BtnSecondary");
+                SetActive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
             }
         }
 
         private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
         {
-            if (!_optiShowingBeta) return;
+            if (!_optiShowingBeta && !_optiShowingCustom) return;
             _optiShowingBeta = false;
+            _optiShowingCustom = false;
             UpdateOptiChannelButtons();
             if (_cachedComponentService != null)
                 PopulateOptiVersionCombo(_cachedComponentService);
@@ -407,6 +445,17 @@ namespace OptiscalerClient.Views
         {
             if (_optiShowingBeta) return;
             _optiShowingBeta = true;
+            _optiShowingCustom = false;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
+        }
+
+        private void BtnOptiCustom_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_optiShowingCustom) return;
+            _optiShowingCustom = true;
+            _optiShowingBeta = false;
             UpdateOptiChannelButtons();
             if (_cachedComponentService != null)
                 PopulateOptiVersionCombo(_cachedComponentService);

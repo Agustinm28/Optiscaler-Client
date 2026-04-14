@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Momenteel geen versies gedownload.</x:String>
     <x:String x:Key="TxtToastSuccess">Succes</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Bevestig Verwijdering</x:String>
+    <x:String x:Key="TxtCustomVersions">Aangepaste OptiScaler-versies</x:String>
+    <x:String x:Key="TxtImportArchive">Archief importeren</x:String>
+    <x:String x:Key="TxtNoCustomVersions">Geen aangepaste versies geïmporteerd.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Importeer aangepaste OptiScaler-builds als 7z-, zip- of rar-archieven. Installatie/deïnstallatie kan mislukken als het archief bestanden bevat die niet door de app gevolgd kunnen worden. Voeg alleen de OptiScaler-releasebestanden toe.</x:String>
+    <x:String x:Key="TxtImporting">Importeren...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Weet u zeker dat u deze versie wilt verwijderen?</x:String>
     <x:String x:Key="TxtCancel">Annuleren</x:String>
     <x:String x:Key="TxtDeletePlain">Verwijder</x:String>
