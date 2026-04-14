@@ -253,7 +253,7 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtFeedbackFeatures">✨ Funktionswünsche: Verwenden Sie die Vorlage "Feature request", um neue Funktionen vorzuschlagen</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 Verbesserungen: Verwenden Sie die Vorlage "Improvement request" für bestehende Funktionen</x:String>
     <x:String x:Key="TxtFeedbackSystem">Geben Sie Ihr Betriebssystem, Ihre GPU und die App-Version an, um schneller Hilfe zu erhalten</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta-Versionen enthalten bereits Fakenvapi und NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Diese Version enthält bereits Fakenvapi und NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">FSR4 INT8-Standard</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Standard-FSR4-INT8-Modversion, die beim Öffnen eines Spiels vorausgewählt ist. RDNA-4-GPUs (RX-9000-Serie) verwenden automatisch Keine.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Standard-GPU</x:String>

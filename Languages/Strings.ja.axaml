@@ -253,7 +253,7 @@
     <x:String x:Key="TxtFeedbackFeatures">✨ 機能要望: 新機能を提案するには "Feature request" テンプレートを使用してください</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 改善: 既存の機能改善には "Improvement request" テンプレートを使用してください</x:String>
     <x:String x:Key="TxtFeedbackSystem">より早い対応のためにOS、GPU、アプリのバージョンを含めてください</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">ベータ版には既に Fakenvapi と NukemFG が含まれています</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">このバージョンには既に Fakenvapi と NukemFG が含まれています</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">デフォルト FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">ゲームを開く際に事前選択されるデフォルトの FSR4 INT8 モッドバージョン。RDNA 4 GPU（RX 9000シリーズ）は自動的に「なし」になります。</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">デフォルト GPU</x:String>

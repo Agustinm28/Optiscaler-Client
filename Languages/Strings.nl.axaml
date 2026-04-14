@@ -170,7 +170,7 @@
     <x:String x:Key="TxtAnimationsDesc">Activeer soepele overgangen en animaties in de hele interface</x:String>
     <x:String x:Key="TxtBetaVersions">Voorkeur voor laatste beta als standaard</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">Wanneer ingeschakeld, selecteert automatisch de laatste beta versie in plaats van de stabiele release.</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta versies bevatten al Fakenvapi en NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Deze versie bevat al Fakenvapi en NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">Standaard FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Standaard FSR4 INT8-modversie die vooraf wordt geselecteerd bij het openen van een spel. RDNA 4-GPU's (RX 9000-serie) gebruiken automatisch Geen.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Standaard GPU</x:String>

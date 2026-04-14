@@ -253,7 +253,7 @@
     <x:String x:Key="TxtFeedbackFeatures">✨ 功能請求：使用 "Feature request" 範本建議新功能</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 改進：針對現有功能的改進，請使用 "Improvement request" 範本</x:String>
     <x:String x:Key="TxtFeedbackSystem">為了更快處理，請包含您的作業系統、GPU 與應用版本</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta 版本已包含 Fakenvapi 與 NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">此版本已包含 Fakenvapi 與 NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">預設 FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">開啟遊戲時預先選取的預設 FSR4 INT8 模組版本。RDNA 4 GPU（RX 9000 系列）會自動使用「無」選項。</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">預設 GPU</x:String>

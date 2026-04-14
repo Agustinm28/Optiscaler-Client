@@ -168,7 +168,7 @@
     <x:String x:Key="TxtAnimationsDesc">Ativar transições suaves e animações em toda a interface</x:String>
     <x:String x:Key="TxtBetaVersions">Preferir último beta como padrão</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">Quando ativado, seleciona automaticamente a última versão beta em vez da versão estável.</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Versões beta já incluem Fakenvapi e NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Esta versão já inclui Fakenvapi e NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">Padrão FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Versão padrão do mod FSR4 INT8 pré-selecionada ao abrir um jogo. GPUs RDNA 4 (série RX 9000) usam Nenhum automaticamente.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">GPU padrão</x:String>

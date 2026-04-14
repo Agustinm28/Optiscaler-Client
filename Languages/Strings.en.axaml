@@ -191,7 +191,7 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtAnimationsDesc">Enable smooth transitions and animations throughout the interface</x:String>
     <x:String x:Key="TxtBetaVersions">Prefer latest beta as default</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">When enabled, automatically selects the latest beta version instead of the stable release.</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta versions already include Fakenvapi and NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">This version already includes Fakenvapi and NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">FSR4 INT8 Default</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Default FSR4 INT8 mod version pre-selected when opening a game. RDNA 4 GPUs (RX 9000 series) default to None automatically.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Default GPU</x:String>

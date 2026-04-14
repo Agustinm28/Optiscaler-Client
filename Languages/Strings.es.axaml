@@ -177,7 +177,7 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtAnimationsDesc">Activar transiciones suaves y animaciones en toda la interfaz</x:String>
     <x:String x:Key="TxtBetaVersions">Preferir última beta como predeterminada</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">Cuando está activado, selecciona automáticamente la última versión beta en lugar de la versión estable.</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Las versiones beta ya incluyen Fakenvapi y NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Esta versión ya incluye Fakenvapi y NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">Predeterminado FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Versión del mod FSR4 INT8 preseleccionada al abrir un juego. Las GPUs RDNA 4 (serie RX 9000) usan Ninguno automáticamente.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">GPU predeterminada</x:String>

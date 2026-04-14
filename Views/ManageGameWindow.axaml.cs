@@ -575,10 +575,10 @@ namespace OptiscalerClient.Views
             var chkNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
             var betaInfoPanel = this.FindControl<Border>("BetaInfoPanel");
 
-            // Show or hide beta info panel as before
+            // Show info panel for betas and stable >= 0.9 (both include Fakenvapi/NukemFG)
             if (betaInfoPanel != null)
             {
-                betaInfoPanel.IsVisible = isBeta;
+                betaInfoPanel.IsVisible = isBeta || includedInPackage;
             }
 
             if (includedInPackage)
