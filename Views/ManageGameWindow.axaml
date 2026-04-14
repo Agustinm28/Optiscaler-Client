@@ -375,7 +375,8 @@
                                 <StackPanel Grid.Row="0" Grid.Column="1">
                                     <TextBlock Text="FSR4 INT8"
                                                Foreground="{StaticResource BrTextSecondary}"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                               FontSize="{StaticResource FontSizeCaption}"
+                                               Margin="0,32,0,0"/>
                                     <ComboBox Name="CmbExtrasVersion"
                                               Margin="0,4,0,0"
                                               HorizontalAlignment="Stretch"
