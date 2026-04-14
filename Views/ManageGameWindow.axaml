@@ -292,12 +292,33 @@
                                   ColumnSpacing="12">
 
                                 <!-- Row 0, Col 0 : OptiScaler version -->
-                                <StackPanel Grid.Row="0" Grid.Column="0">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4">
                                     <TextBlock Text="{DynamicResource TxtVersionLbl}"
                                                Foreground="{StaticResource BrTextSecondary}"
                                                FontSize="{StaticResource FontSizeCaption}"/>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <Button Name="BtnOptiStable"
+                                                Grid.Column="0"
+                                                Content="Stable"
+                                                Classes="BtnPrimary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="0,0,2,0"
+                                                Click="BtnOptiStable_Click"/>
+                                        <Button Name="BtnOptiBeta"
+                                                Grid.Column="1"
+                                                Content="Beta"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                Click="BtnOptiBeta_Click"/>
+                                    </Grid>
                                     <ComboBox Name="CmbOptiVersion"
-                                              Margin="0,4,0,0"
                                               HorizontalAlignment="Stretch"
                                               Classes="BtnSelector"
                                               SelectedIndex="0"

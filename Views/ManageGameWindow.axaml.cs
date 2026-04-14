@@ -45,6 +45,9 @@ namespace OptiscalerClient.Views
         private readonly IGpuDetectionService _gpuService;
         private Window? _ownerWindow;
         private HashSet<string> _betaVersions = new();
+        private bool _optiShowingBeta;
+        private bool _optiTabInitialized;
+        private ComponentManagementService? _cachedComponentService;
         private string? _pendingCoverPath;
         private readonly string? _originalCoverPath;
         private const string NewProfileTag = "__NEW_PROFILE__";
@@ -268,15 +271,41 @@ namespace OptiscalerClient.Views
         /// </summary>
         private void PopulateVersionSelectors(ComponentManagementService componentService)
         {
+            _cachedComponentService = componentService;
+            _betaVersions = componentService.BetaVersions;
+
+            // Determine initial tab only on the first load
+            if (!_optiTabInitialized)
+            {
+                var configDefault = componentService.Config.DefaultOptiScalerVersion;
+                _optiShowingBeta = !string.IsNullOrEmpty(configDefault) && _betaVersions.Contains(configDefault);
+                _optiTabInitialized = true;
+            }
+
+            UpdateOptiChannelButtons();
+            PopulateOptiVersionCombo(componentService);
+
+            // ── Populate FSR4 INT8 Extras selector ────────────────────────────
+            PopulateExtrasComboBox(componentService);
+
+            // ── Populate OptiPatcher selector ─────────────────────────────────
+            PopulateOptiPatcherComboBox(componentService);
+        }
+
+        // ── OptiScaler tab selector ──────────────────────────────────────────
+
+        private void PopulateOptiVersionCombo(ComponentManagementService componentService)
+        {
             var allVersions = componentService.OptiScalerAvailableVersions;
             var betaVersions = componentService.BetaVersions;
+            var latestStable = componentService.LatestStableVersion;
             var latestBeta = componentService.LatestBetaVersion;
-            var showBetaVersions = componentService.Config.ShowBetaVersions;
+            string? latestInChannel = _optiShowingBeta ? latestBeta : latestStable;
+            string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
 
             var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
             if (cmbOptiVersion == null) return;
 
-            // Unregister before modifying to avoid spurious events
             cmbOptiVersion.SelectionChanged -= CmbOptiVersion_SelectionChanged;
             cmbOptiVersion.Items.Clear();
 
@@ -286,84 +315,55 @@ namespace OptiscalerClient.Views
                 cmbOptiVersion.SelectedIndex = 0;
                 cmbOptiVersion.IsEnabled = false;
                 cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
+                return;
+            }
 
-                // Still populate extras/patcher (they have their own "no versions" fallback)
-                PopulateExtrasComboBox(componentService);
-                PopulateOptiPatcherComboBox(componentService);
+            var versionsToShow = allVersions.Where(v => betaVersions.Contains(v) == _optiShowingBeta).ToList();
+
+            if (versionsToShow.Count == 0)
+            {
+                cmbOptiVersion.Items.Add(new ComboBoxItem { Content = "No versions available", Tag = "none" });
+                cmbOptiVersion.SelectedIndex = 0;
+                cmbOptiVersion.IsEnabled = false;
+                cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
                 return;
             }
 
             cmbOptiVersion.IsEnabled = true;
-            _betaVersions = betaVersions;
 
-            var stableVersions = allVersions.Where(v => !betaVersions.Contains(v)).ToList();
-            var otherBetas = allVersions.Where(v => betaVersions.Contains(v) && v != latestBeta).ToList();
-
-            int selectedIndex = 0;
-            int currentIndex = 0;
-
-            // Determine what is truly "latest" - only stable versions get LATEST badge
-            bool hasBeta = !string.IsNullOrEmpty(latestBeta);
-
-            // 1. Latest beta at top (if present) - NO LATEST badge for beta
-            if (hasBeta && latestBeta != null)
+            foreach (var ver in versionsToShow)
             {
-                cmbOptiVersion.Items.Add(BuildVersionItem(latestBeta, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            var latestStable = componentService.LatestStableVersion;
-
-            // 2. Stable versions — mark latest stable based on GitHub's API
-            bool isLatestStableMarked = false;
-            foreach (var ver in stableVersions)
-            {
-                bool shouldMarkAsLatest = false;
-
-                if (!string.IsNullOrEmpty(latestStable))
+                bool isLatest = string.Equals(ver, latestInChannel, StringComparison.OrdinalIgnoreCase);
+                ComboBoxItem cbi;
+                if (isLatest)
                 {
-                    shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
+                    var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+                    stack.Children.Add(new TextBlock { Text = ver, VerticalAlignment = VerticalAlignment.Center });
+                    stack.Children.Add(new Border
+                    {
+                        CornerRadius = new CornerRadius(4),
+                        Background = new SolidColorBrush(Color.Parse(latestBadgeColor)),
+                        Padding = new Thickness(5, 1),
+                        Child = new TextBlock { Text = "LATEST", FontSize = 10, Foreground = Brushes.White, FontWeight = FontWeight.Bold, VerticalAlignment = VerticalAlignment.Center }
+                    });
+                    cbi = new ComboBoxItem { Content = stack, Tag = ver };
                 }
                 else
                 {
-                    shouldMarkAsLatest = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
+                    cbi = new ComboBoxItem { Content = ver, Tag = ver };
                 }
-
-                if (shouldMarkAsLatest)
-                {
-                    isLatestStableMarked = true;
-                }
-
-                // Select default version based on user preference
-                if (showBetaVersions && hasBeta)
-                {
-                    // User prefers latest beta - select the latest beta (index 0)
-                    selectedIndex = 0;
-                }
-                else if (shouldMarkAsLatest)
-                {
-                    // User prefers stable - select the latest stable version
-                    selectedIndex = currentIndex;
-                }
-
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: shouldMarkAsLatest));
-                currentIndex++;
+                cmbOptiVersion.Items.Add(cbi);
             }
 
-            // 3. Remaining betas at end
-            foreach (var ver in otherBetas)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            // Override with user-configured default version if set
+            // Select version: try to match config default if it's in this channel, else select first (latest)
+            int selectedIndex = 0;
             var configDefault = componentService.Config.DefaultOptiScalerVersion;
-            if (!string.IsNullOrEmpty(configDefault))
+            if (!string.IsNullOrEmpty(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta)
             {
                 for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
                 {
-                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci && string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
+                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci &&
+                        string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
                     {
                         selectedIndex = i;
                         break;
@@ -372,18 +372,44 @@ namespace OptiscalerClient.Views
             }
 
             cmbOptiVersion.SelectedIndex = selectedIndex;
-
-            // Update checkbox states based on initial selection
             UpdateCheckboxStatesForVersion(cmbOptiVersion);
-
-            // Wire SelectionChanged here so it only fires on user interaction, not during init
             cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
+        }
 
-            // ── Populate FSR4 INT8 Extras selector ────────────────────────────
-            PopulateExtrasComboBox(componentService);
+        private void UpdateOptiChannelButtons()
+        {
+            var btnStable = this.FindControl<Button>("BtnOptiStable");
+            var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+            if (btnStable == null || btnBeta == null) return;
 
-            // ── Populate OptiPatcher selector ─────────────────────────────────
-            PopulateOptiPatcherComboBox(componentService);
+            if (_optiShowingBeta)
+            {
+                btnStable.Classes.Remove("BtnPrimary"); btnStable.Classes.Add("BtnSecondary");
+                btnBeta.Classes.Remove("BtnSecondary"); btnBeta.Classes.Add("BtnPrimary");
+            }
+            else
+            {
+                btnStable.Classes.Remove("BtnSecondary"); btnStable.Classes.Add("BtnPrimary");
+                btnBeta.Classes.Remove("BtnPrimary"); btnBeta.Classes.Add("BtnSecondary");
+            }
+        }
+
+        private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
+        {
+            if (!_optiShowingBeta) return;
+            _optiShowingBeta = false;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
+        }
+
+        private void BtnOptiBeta_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_optiShowingBeta) return;
+            _optiShowingBeta = true;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
         }
 
         /// <summary>

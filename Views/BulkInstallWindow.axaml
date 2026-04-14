@@ -165,6 +165,28 @@
                                                        Margin="0,-1,0,0"/>
                                         </Border>
                                     </StackPanel>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <Button Name="BtnOptiStable"
+                                                Grid.Column="0"
+                                                Content="Stable"
+                                                Classes="BtnPrimary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="0,0,2,0"
+                                                Click="BtnOptiStable_Click"/>
+                                        <Button Name="BtnOptiBeta"
+                                                Grid.Column="1"
+                                                Content="Beta"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                Click="BtnOptiBeta_Click"/>
+                                    </Grid>
                                     <ComboBox Name="CmbOptiVersion"
                                               HorizontalAlignment="Stretch"
                                               Classes="BtnSelector"

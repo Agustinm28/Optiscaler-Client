@@ -31,6 +31,8 @@ public partial class BulkInstallWindow : Window
     private string? _lastSelectedProfileName;
     private bool _isUpdatingProfiles = false;
     private const string NewProfileTag = "__new_profile__";
+    private bool _optiShowingBeta;
+    private bool _optiTabInitialized;
 
     public BulkInstallWindow()
     {
@@ -116,6 +118,8 @@ public partial class BulkInstallWindow : Window
             cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
         }
 
+
+
         // Initialize injection method selector
         var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
         if (cmbInjectionMethod != null)
@@ -158,7 +162,6 @@ public partial class BulkInstallWindow : Window
 
     private async Task LoadVersionsAsync()
     {
-        // Check if we need to fetch versions
         if (_componentService.OptiScalerAvailableVersions.Count == 0)
         {
             await _componentService.CheckForUpdatesAsync();
@@ -166,96 +169,133 @@ public partial class BulkInstallWindow : Window
 
         Dispatcher.UIThread.Post(() =>
         {
-            var allVersions = _componentService.OptiScalerAvailableVersions;
-            var betaVersions = _componentService.BetaVersions;
-            var latestBeta = _componentService.LatestBetaVersion;
-
-            var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
-            if (cmbOptiVersion == null) return;
-
-            cmbOptiVersion.Items.Clear();
-
-            if (allVersions.Count == 0)
+            // Determine initial tab on first load
+            if (!_optiTabInitialized)
             {
-                cmbOptiVersion.Items.Add("No versions available");
-                cmbOptiVersion.SelectedIndex = 0;
-                cmbOptiVersion.IsEnabled = false;
-                return;
+                var configDefault = _componentService.Config.DefaultOptiScalerVersion;
+                _optiShowingBeta = !string.IsNullOrEmpty(configDefault) &&
+                                   _componentService.BetaVersions.Contains(configDefault);
+                _optiTabInitialized = true;
             }
 
-            var stableVersions = allVersions.Where(v => !betaVersions.Contains(v)).ToList();
-            var otherBetas = allVersions.Where(v => betaVersions.Contains(v) && v != latestBeta).ToList();
-
-            int selectedIndex = 0;
-            int currentIndex = 0;
-
-            bool hasBeta = !string.IsNullOrEmpty(latestBeta);
-
-            // Add latest beta first - NO LATEST badge for beta
-            if (hasBeta && latestBeta != null)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(latestBeta, isBeta: true, isLatest: false));
-                selectedIndex = 0; // Select beta by default
-                currentIndex++;
-            }
-
-            var latestStable = _componentService.LatestStableVersion;
-
-            // Add stable versions
-            bool isLatestStableMarked = false;
-            foreach (var ver in stableVersions)
-            {
-                bool shouldMarkAsLatest = false;
-
-                if (!string.IsNullOrEmpty(latestStable))
-                {
-                    shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
-                }
-                else
-                {
-                    shouldMarkAsLatest = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
-                }
-
-                if (shouldMarkAsLatest)
-                {
-                    isLatestStableMarked = true;
-                    // If we didn't default to beta, default to this latest stable
-                    if (!hasBeta)
-                    {
-                        selectedIndex = currentIndex;
-                    }
-                }
-
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: shouldMarkAsLatest));
-                currentIndex++;
-            }
-
-            // Add other betas
-            foreach (var ver in otherBetas)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            // Override with user-configured default version if set
-            var configDefault = _componentService.Config.DefaultOptiScalerVersion;
-            if (!string.IsNullOrEmpty(configDefault))
-            {
-                for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
-                {
-                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci && string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
-                    {
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            cmbOptiVersion.SelectedIndex = selectedIndex;
-
-            // Refresh OptiPatcher list after versions are loaded
+            UpdateOptiChannelButtons();
+            PopulateOptiVersionCombo();
             PopulateOptiPatcherComboBox();
         });
+    }
+
+    private void PopulateOptiVersionCombo()
+    {
+        var allVersions = _componentService.OptiScalerAvailableVersions;
+        var betaVersions = _componentService.BetaVersions;
+        var latestStable = _componentService.LatestStableVersion;
+        var latestBeta = _componentService.LatestBetaVersion;
+        string? latestInChannel = _optiShowingBeta ? latestBeta : latestStable;
+        string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
+
+        var cmb = this.FindControl<ComboBox>("CmbOptiVersion");
+        if (cmb == null) return;
+
+        cmb.SelectionChanged -= CmbOptiVersion_SelectionChanged;
+        cmb.Items.Clear();
+
+        if (allVersions.Count == 0)
+        {
+            cmb.Items.Add("No versions available");
+            cmb.SelectedIndex = 0;
+            cmb.IsEnabled = false;
+            cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+            return;
+        }
+
+        var versionsToShow = allVersions.Where(v => betaVersions.Contains(v) == _optiShowingBeta).ToList();
+
+        if (versionsToShow.Count == 0)
+        {
+            cmb.Items.Add(new ComboBoxItem { Content = "No versions available", Tag = "none" });
+            cmb.SelectedIndex = 0;
+            cmb.IsEnabled = false;
+            cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+            return;
+        }
+
+        cmb.IsEnabled = true;
+
+        foreach (var ver in versionsToShow)
+        {
+            bool isLatest = string.Equals(ver, latestInChannel, StringComparison.OrdinalIgnoreCase);
+            ComboBoxItem cbi;
+            if (isLatest)
+            {
+                var stack = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+                stack.Children.Add(new TextBlock { Text = ver, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+                stack.Children.Add(new Border
+                {
+                    CornerRadius = new CornerRadius(4),
+                    Background = new SolidColorBrush(Color.Parse(latestBadgeColor)),
+                    Padding = new Thickness(5, 1),
+                    Child = new TextBlock { Text = "LATEST", FontSize = 10, Foreground = Brushes.White, FontWeight = FontWeight.Bold }
+                });
+                cbi = new ComboBoxItem { Content = stack, Tag = ver };
+            }
+            else
+            {
+                cbi = new ComboBoxItem { Content = ver, Tag = ver };
+            }
+            cmb.Items.Add(cbi);
+        }
+
+        int selectedIndex = 0;
+        var configDefault = _componentService.Config.DefaultOptiScalerVersion;
+        if (!string.IsNullOrEmpty(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta)
+        {
+            for (int i = 0; i < cmb.Items.Count; i++)
+            {
+                if (cmb.Items[i] is ComboBoxItem ci &&
+                    string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
+                {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectedIndex = selectedIndex;
+        cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+    }
+
+    private void UpdateOptiChannelButtons()
+    {
+        var btnStable = this.FindControl<Button>("BtnOptiStable");
+        var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+        if (btnStable == null || btnBeta == null) return;
+
+        if (_optiShowingBeta)
+        {
+            btnStable.Classes.Remove("BtnPrimary"); btnStable.Classes.Add("BtnSecondary");
+            btnBeta.Classes.Remove("BtnSecondary"); btnBeta.Classes.Add("BtnPrimary");
+        }
+        else
+        {
+            btnStable.Classes.Remove("BtnSecondary"); btnStable.Classes.Add("BtnPrimary");
+            btnBeta.Classes.Remove("BtnPrimary"); btnBeta.Classes.Add("BtnSecondary");
+        }
+    }
+
+    private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!_optiShowingBeta) return;
+        _optiShowingBeta = false;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
+    }
+
+    private void BtnOptiBeta_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_optiShowingBeta) return;
+        _optiShowingBeta = true;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
     }
 
     private static ComboBoxItem BuildVersionItem(string ver, bool isBeta, bool isLatest)

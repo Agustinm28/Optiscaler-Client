@@ -105,7 +105,7 @@ namespace OptiscalerClient.Views
                     stack.Children.Add(new Border
                     {
                         CornerRadius = new CornerRadius(4),
-                        Background = new SolidColorBrush(Color.Parse("#7C3AED")),
+                        Background = new SolidColorBrush(Color.Parse(showBeta ? "#D4A017" : "#7C3AED")),
                         Padding = new Thickness(5, 1),
                         Child = new TextBlock
                         {
