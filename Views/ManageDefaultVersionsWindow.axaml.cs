@@ -7,6 +7,7 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using OptiscalerClient.Helpers;
+using OptiscalerClient.Models;
 using System.Diagnostics;
 using OptiscalerClient.Services;
 
@@ -15,6 +16,7 @@ namespace OptiscalerClient.Views
     public partial class ManageDefaultVersionsWindow : Window
     {
         private readonly ComponentManagementService _componentService;
+        private readonly IGpuDetectionService? _gpuService;
         private bool _optiDefaultShowingBeta;
 
         public ManageDefaultVersionsWindow()
@@ -27,6 +29,9 @@ namespace OptiscalerClient.Views
         {
             InitializeComponent();
             _componentService = componentService;
+
+            if (OperatingSystem.IsWindows())
+                _gpuService = new WindowsGpuDetectionService();
 
             this.Opacity = 0;
 
@@ -243,19 +248,50 @@ namespace OptiscalerClient.Views
                 cmb.Items.Add(cbi);
             }
 
-            // Restore saved
+            // Determine selection: saved preference wins; if none, use GPU-based intelligent default
             var saved = _componentService.Config.DefaultExtrasVersion;
-            cmb.SelectedIndex = 0; // None
-            if (!string.IsNullOrEmpty(saved) && !saved.Equals("none", StringComparison.OrdinalIgnoreCase))
+
+            if (!string.IsNullOrEmpty(saved))
             {
-                for (int i = 1; i < cmb.Items.Count; i++)
+                // Saved preference exists — restore it exactly
+                if (saved.Equals("none", StringComparison.OrdinalIgnoreCase))
                 {
-                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == saved)
+                    cmb.SelectedIndex = 0;
+                }
+                else
+                {
+                    cmb.SelectedIndex = 0; // fallback to None if not found
+                    for (int i = 1; i < cmb.Items.Count; i++)
                     {
-                        cmb.SelectedIndex = i;
-                        break;
+                        if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == saved)
+                        {
+                            cmb.SelectedIndex = i;
+                            break;
+                        }
                     }
                 }
+            }
+            else
+            {
+                // No saved preference — pick intelligently based on GPU
+                bool isRdna4 = false;
+                if (OperatingSystem.IsWindows() && _gpuService != null)
+                {
+                    try
+                    {
+                        var gpu = GpuSelectionHelper.GetPreferredGpu(_gpuService, _componentService.Config.DefaultGpuId);
+                        isRdna4 = gpu != null && gpu.Vendor == GpuVendor.AMD &&
+                                  (gpu.Name.Contains(" 9", StringComparison.OrdinalIgnoreCase) ||
+                                   gpu.Name.Contains("RX 9", StringComparison.OrdinalIgnoreCase));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"[ManageDefaultVersions] GPU detection failed: {ex.Message}");
+                    }
+                }
+
+                // RDNA 4 → None (INT8 shader not needed); all others → latest version
+                cmb.SelectedIndex = isRdna4 ? 0 : (cmb.Items.Count > 1 ? 1 : 0);
             }
         }
 

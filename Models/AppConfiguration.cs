@@ -59,7 +59,6 @@ namespace OptiscalerClient.Models
         public string DefaultProfileName { get; set; } = OptiScalerProfile.BuiltInDefaultName;
         public bool AutoScan { get; set; } = true;
         public bool AnimationsEnabled { get; set; } = true;
-        public bool ShowBetaVersions { get; set; } = true;
         public bool PreferGridView { get; set; } = true;
         public string? DefaultGpuId { get; set; } = null;
         public bool HasShownInitialScanPrompt { get; set; } = false;

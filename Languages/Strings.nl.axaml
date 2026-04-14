@@ -475,6 +475,8 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtEditorSave">Profiel opslaan</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Games zonder upscaling-DLL's overslaan</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Negeer games zonder detecteerbare DLSS-, FSR- of XeSS-bibliotheken. Alleen games die compatibel zijn met OptiScaler worden toegevoegd.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Alleen ontbrekende omslagen vernieuwen</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Sla de volledige scan over en probeer alleen omslagen op te halen voor games die eerder niet konden worden gedownload. Handig na het instellen van een SteamGridDB API-sleutel.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Games organiseren</x:String>

@@ -476,6 +476,8 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtEditorSave">Save Profile</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Skip games without upscaling DLLs</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Ignore games that have no detectable DLSS, FSR, or XeSS libraries. Only games compatible with OptiScaler will be added.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Refresh missing covers only</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Skip the full scan and only retry cover art for games that couldn't be fetched before. Useful after setting up a SteamGridDB API key.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Organize games</x:String>

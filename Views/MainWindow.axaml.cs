@@ -229,7 +229,7 @@ namespace OptiscalerClient.Views
                         _componentService.Config.ScanDriveRoots = options.DriveRoots;
                         _componentService.Config.HasCompletedInitialScan = true;
                         _componentService.SaveConfiguration();
-                        await RunScanAsync();
+                        await RunScanAsync(options.SkipGamesWithoutDlls);
                     }
 
                     // Never auto-scan on startup when there are no cached games.
@@ -1266,11 +1266,6 @@ namespace OptiscalerClient.Views
             if (tglAnimations != null)
             {
                 tglAnimations.IsChecked = _componentService.Config.AnimationsEnabled;
-            }
-            var tglBetaVersions = this.FindControl<ToggleSwitch>("TglBetaVersions");
-            if (tglBetaVersions != null)
-            {
-                tglBetaVersions.IsChecked = _componentService.Config.ShowBetaVersions;
             }
             var txtSteamGridApiKey = this.FindControl<TextBox>("TxtSteamGridApiKey");
             if (txtSteamGridApiKey != null)
@@ -2360,16 +2355,6 @@ namespace OptiscalerClient.Views
                 _componentService.Config.AnimationsEnabled = tgl.IsChecked ?? true;
                 _componentService.SaveConfiguration();
                 UpdateAnimationsState(_componentService.Config.AnimationsEnabled);
-            }
-        }
-
-        private void TglBetaVersions_IsCheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (_isInitializingLanguage) return;
-            if (sender is ToggleSwitch tgl)
-            {
-                _componentService.Config.ShowBetaVersions = tgl.IsChecked ?? true;
-                _componentService.SaveConfiguration();
             }
         }
 
@@ -3966,7 +3951,7 @@ namespace OptiscalerClient.Views
                 _componentService.Config.HasCompletedInitialScan = true;
                 _componentService.SaveConfiguration();
 
-                await RunScanAsync();
+                await RunScanAsync(options.SkipGamesWithoutDlls);
             }
             catch (Exception ex) { DebugWindow.Log($"[MainWindow] Scan failed: {ex.Message}"); }
         }
@@ -4013,12 +3998,14 @@ namespace OptiscalerClient.Views
                 ApplyFilter(_txtSearch?.Text);
 
                 var found = missing.Count(g => !string.IsNullOrEmpty(g.CoverImageUrl));
-                if (_txtStatus != null)
-                    _txtStatus.Text = string.Format(GetResourceString("TxtCoverRefreshDoneFmt", "Cover refresh complete. Found {0}/{1} missing covers."), found, missing.Count);
                 ShowToast(string.Format(GetResourceString("TxtCoverRefreshToastFmt", "Cover refresh complete — {0}/{1} covers found."), found, missing.Count));
+                _ = HideToastAfterAsync(3500);
+                if (_txtStatus != null)
+                    _txtStatus.Text = GetResourceString("TxtReady", "Ready");
             }
             catch (Exception ex)
             {
+                HideToast();
                 await new ConfirmDialog(this, "Error", ex.Message).ShowDialog<object>(this);
                 if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtReady", "Ready");
             }
@@ -4028,7 +4015,7 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private async Task RunScanAsync()
+        private async Task RunScanAsync(bool skipGamesWithoutDlls = false)
         {
             if (_btnScan != null) _btnScan.IsEnabled = false;
             if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtScanningShort", "Scanning for games...");
@@ -4068,6 +4055,17 @@ namespace OptiscalerClient.Views
                 {
                     if (!_games.Any(g => g.InstallPath.Equals(scannedGame.InstallPath, StringComparison.OrdinalIgnoreCase)))
                     {
+                        // Skip games without detectable upscaling DLLs if the option is enabled
+                        if (skipGamesWithoutDlls &&
+                            string.IsNullOrEmpty(scannedGame.DlssVersion) &&
+                            string.IsNullOrEmpty(scannedGame.FsrVersion) &&
+                            string.IsNullOrEmpty(scannedGame.XessVersion) &&
+                            string.IsNullOrEmpty(scannedGame.DlssFrameGenVersion) &&
+                            !scannedGame.IsOptiscalerInstalled)
+                        {
+                            continue;
+                        }
+
                         if (existingGames.TryGetValue(scannedGame.InstallPath, out var existing) &&
                             !string.IsNullOrEmpty(existing.CoverImageUrl) &&
                             !existing.CoverImageUrl.StartsWith("http"))
@@ -4438,10 +4436,6 @@ namespace OptiscalerClient.Views
                         if (!string.IsNullOrEmpty(configuredDefault))
                         {
                             versionToInstall = configuredDefault;
-                        }
-                        else if (_componentService.Config.ShowBetaVersions)
-                        {
-                            versionToInstall = _componentService.LatestBetaVersion ?? "";
                         }
                         else
                         {

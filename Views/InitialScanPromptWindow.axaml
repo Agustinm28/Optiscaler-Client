@@ -55,7 +55,7 @@
 
                                 <!-- Refresh missing covers only -->
                                 <Border Background="{StaticResource BrBgCard}"
-                                        BorderBrush="{StaticResource BrAccent}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
                                         BorderThickness="1"
                                         CornerRadius="{StaticResource RadiusMedium}"
                                         Padding="16,12"
@@ -76,6 +76,31 @@
                                                       OnContent="" OffContent=""
                                                       IsChecked="False"
                                                       IsCheckedChanged="TglRefreshCoversOnly_IsCheckedChanged"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Skip games without upscaling DLLs -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,12"
+                                        Margin="0,0,0,20">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="{DynamicResource TxtSkipNoDllsTitle}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{StaticResource BrTextPrimary}"/>
+                                            <TextBlock Text="{DynamicResource TxtSkipNoDllsDesc}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,4,16,0"
+                                                       FontSize="{StaticResource FontSizeCaption}"/>
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      Name="TglSkipNoDlls"
+                                                      OnContent="" OffContent=""
+                                                      IsChecked="False"/>
                                     </Grid>
                                 </Border>
 
@@ -139,6 +164,41 @@
                                             <ToggleSwitch Grid.Column="1" Name="TglUbisoft" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
                                     </StackPanel>
+                                </Border>
+
+                                <!-- Custom Folders -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,24,0,12">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{DynamicResource TxtCustomFolders}"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               Foreground="{StaticResource BrTextPrimary}"
+                                               VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1"
+                                            Name="BtnAddFolder"
+                                            Content="{DynamicResource TxtAddFolder}"
+                                            Classes="BtnBase"
+                                            Padding="12,6"
+                                            FontSize="12"
+                                            Click="BtnAddFolder_Click"/>
+                                </Grid>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,12"
+                                        MinHeight="80">
+                                    <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Name="PnlCustomFolders" Spacing="8">
+                                            <TextBlock Name="TxtNoCustomFolders"
+                                                       Text="{DynamicResource TxtNoCustomFolders}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,12"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
                                 </Border>
 
                                 </StackPanel> <!-- /PnlScanOptions -->

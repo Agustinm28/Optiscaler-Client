@@ -475,6 +475,8 @@
     <x:String x:Key="TxtEditorSave">プロフィールを保存</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">アップスケーリングDLLのないゲームをスキップ</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">DLSS、FSR、またはXeSSライブラリが検出されないゲームを無視します。OptiScalerと互換性のあるゲームのみが追加されます。</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">不足しているカバーのみ更新</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">フルスキャンをスキップし、以前に取得できなかったゲームのカバー画像の再取得のみを試みます。SteamGridDB APIキーを設定した後に役立ちます。</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">ゲームを整理</x:String>

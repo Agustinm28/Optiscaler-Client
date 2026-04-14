@@ -475,6 +475,8 @@
     <x:String x:Key="TxtEditorSave">프로필 저장</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">업스케일링 DLL이 없는 게임 건너뛰기</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">감지 가능한 DLSS, FSR 또는 XeSS 라이브러리가 없는 게임을 무시합니다. OptiScaler와 호환되는 게임만 추가됩니다.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">누락된 커버만 새로 고침</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">전체 검색을 건너뛰고 이전에 가져오지 못한 게임의 커버 이미지만 다시 시도합니다. SteamGridDB API 키를 설정한 후 유용합니다.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">게임 정리</x:String>

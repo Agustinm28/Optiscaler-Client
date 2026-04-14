@@ -475,6 +475,8 @@ Ta wersja nie jest dostępna do pobrania. Sprawdź połączenie internetowe i sp
     <x:String x:Key="TxtEditorSave">Zapisz profil</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Pomiń gry bez bibliotek DLL upscalingu</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Ignoruj gry, które nie mają wykrywalnych bibliotek DLSS, FSR lub XeSS. Dodane zostaną tylko gry kompatybilne z OptiScaler.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Odswierz tylko brakujace okladki</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Pomija pelne skanowanie i ponawia tylko pobieranie okladek dla gier, ktore nie zostaly pobrane wczesniej. Przydatne po skonfigurowaniu klucza API SteamGridDB.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Organizuj gry</x:String>

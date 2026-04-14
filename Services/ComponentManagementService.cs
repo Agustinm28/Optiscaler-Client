@@ -689,17 +689,8 @@ namespace OptiscalerClient.Services
                     }
                 }
 
-                // Select default version based on user preference
-                if (_config.ShowBetaVersions && _cachedLatestBetaVersion != null)
-                {
-                    // User prefers latest beta as default
-                    _remoteVersions.OptiScalerVersion = _cachedLatestBetaVersion;
-                }
-                else
-                {
-                    // Default to latest stable version from GitHub
-                    _remoteVersions.OptiScalerVersion = _cachedLatestStableVersion ?? OptiScalerAvailableVersions.FirstOrDefault();
-                }
+                // Default to latest stable version from GitHub
+                _remoteVersions.OptiScalerVersion = _cachedLatestStableVersion ?? OptiScalerAvailableVersions.FirstOrDefault();
                 _remoteVersions.FakenvapiVersion = _cachedFakenvapiVersion;
                 _remoteVersions.NukemFGVersion = _cachedNukemFGVersion;
 

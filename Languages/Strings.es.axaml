@@ -476,6 +476,8 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtEditorSave">Guardar perfil</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Omitir juegos sin DLLs de escalado</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Ignora juegos que no tienen bibliotecas detectables de DLSS, FSR o XeSS. Solo se agregarán juegos compatibles con OptiScaler.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Actualizar solo portadas faltantes</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Omite el escaneo completo y reintenta obtener las portadas de los juegos que no pudieron descargarse antes. Util despues de configurar una clave de API de SteamGridDB.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Organizar juegos</x:String>

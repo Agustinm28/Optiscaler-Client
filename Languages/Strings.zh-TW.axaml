@@ -475,6 +475,8 @@
     <x:String x:Key="TxtEditorSave">儲存配置檔</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">跳過無升級DLL的遊戲</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">忽略未偵測到DLSS、FSR或XeSS程式庫的遊戲。僅會新增與OptiScaler相容的遊戲。</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">僅重新整理缺失封面</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">跳過完整掃描，僅重試之前無法取得封面的遊戲。在設定 SteamGridDB API 金鑰後非常有用。</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">整理遊戲</x:String>

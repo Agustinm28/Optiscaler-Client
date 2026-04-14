@@ -475,6 +475,8 @@ Cette version n'est pas disponible en téléchargement. Vérifiez votre connexio
     <x:String x:Key="TxtEditorSave">Enregistrer le profil</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Ignorer les jeux sans DLL d'upscaling</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Ignorer les jeux sans bibliothèques DLSS, FSR ou XeSS détectables. Seuls les jeux compatibles avec OptiScaler seront ajoutés.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Actualiser uniquement les pochettes manquantes</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Ignore le scan complet et reessaie uniquement de recuperer les pochettes des jeux qui n'ont pas pu etre telechargees auparavant. Utile apres avoir configure une cle API SteamGridDB.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Organiser les jeux</x:String>

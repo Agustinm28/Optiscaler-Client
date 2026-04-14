@@ -475,6 +475,8 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtEditorSave">Profili kaydet</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Ölçekleme DLL'leri olmayan oyunları atla</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Algılanabilir DLSS, FSR veya XeSS kütüphaneleri olmayan oyunları yok say. Yalnızca OptiScaler ile uyumlu oyunlar eklenecektir.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Yalnizca eksik kapaklari yenile</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Tam taramayi atlar ve yalnizca daha once alinamayan oyunlarin kapak gorsellerini yeniden dener. SteamGridDB API anahtari ayarlandiktan sonra kullanislidir.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Oyunlari duzenle</x:String>

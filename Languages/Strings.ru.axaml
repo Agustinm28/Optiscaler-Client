@@ -475,6 +475,8 @@
     <x:String x:Key="TxtEditorSave">Сохранить профиль</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Пропускать игры без DLL масштабирования</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Игнорировать игры без обнаруживаемых библиотек DLSS, FSR или XeSS. Будут добавлены только игры, совместимые с OptiScaler.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Обновить только отсутствующие обложки</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Пропустить полное сканирование и повторить попытку загрузки обложек только для игр, которые не удалось загрузить ранее. Полезно после настройки ключа API SteamGridDB.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Организовать игры</x:String>

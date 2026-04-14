@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using OptiscalerClient.Helpers;
 using OptiscalerClient.Models;
 using OptiscalerClient.Services;
@@ -19,12 +20,14 @@ namespace OptiscalerClient.Views
         public ScanSourcesConfig ScanSources { get; }
         public List<string> DriveRoots { get; }
         public bool RefreshCoversOnly { get; }
+        public bool SkipGamesWithoutDlls { get; }
 
-        public InitialScanOptions(ScanSourcesConfig scanSources, List<string> driveRoots, bool refreshCoversOnly = false)
+        public InitialScanOptions(ScanSourcesConfig scanSources, List<string> driveRoots, bool refreshCoversOnly = false, bool skipGamesWithoutDlls = false)
         {
             ScanSources = scanSources;
             DriveRoots = driveRoots;
             RefreshCoversOnly = refreshCoversOnly;
+            SkipGamesWithoutDlls = skipGamesWithoutDlls;
         }
     }
 
@@ -32,6 +35,7 @@ namespace OptiscalerClient.Views
     {
         private readonly ComponentManagementService _componentService;
         private readonly List<DriveToggle> _driveToggles = new();
+        private readonly List<string> _customFolders = new();
 
         public InitialScanPromptWindow()
         {
@@ -66,6 +70,7 @@ namespace OptiscalerClient.Views
             ApplyTitleText(isFirstTime);
             LoadCurrentSettings();
             PopulateDrives();
+            LoadCustomFolders();
         }
 
         private void InitializeComponent()
@@ -90,6 +95,109 @@ namespace OptiscalerClient.Views
             if (tglXbox != null) tglXbox.IsChecked = config.ScanXbox;
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
+        }
+
+        private void LoadCustomFolders()
+        {
+            _customFolders.Clear();
+            _customFolders.AddRange(_componentService.Config.ScanSources.CustomFolders);
+            RefreshCustomFoldersList();
+        }
+
+        private void RefreshCustomFoldersList()
+        {
+            var pnlCustomFolders = this.FindControl<StackPanel>("PnlCustomFolders");
+            var txtNoCustomFolders = this.FindControl<TextBlock>("TxtNoCustomFolders");
+            if (pnlCustomFolders == null) return;
+
+            pnlCustomFolders.Children.Clear();
+
+            if (_customFolders.Count == 0)
+            {
+                if (txtNoCustomFolders != null)
+                    pnlCustomFolders.Children.Add(txtNoCustomFolders);
+                return;
+            }
+
+            foreach (var folder in _customFolders)
+                pnlCustomFolders.Children.Add(CreateFolderCard(folder));
+        }
+
+        private Border CreateFolderCard(string folderPath)
+        {
+            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*, Auto") };
+
+            var txtPath = new TextBlock
+            {
+                Text = folderPath,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                Foreground = Application.Current?.FindResource("BrTextPrimary") as IBrush ?? Brushes.White,
+                TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                Margin = new Thickness(0, 0, 12, 0)
+            };
+
+            var btnRemove = new Button
+            {
+                Content = Application.Current?.FindResource("TxtRemove") as string ?? "Remove",
+                Classes = { "BtnSecondary" },
+                Padding = new Thickness(12, 4),
+                FontSize = 11,
+                Tag = folderPath
+            };
+            btnRemove.Click += BtnRemoveFolder_Click;
+
+            grid.Children.Add(txtPath);
+            Grid.SetColumn(txtPath, 0);
+            grid.Children.Add(btnRemove);
+            Grid.SetColumn(btnRemove, 1);
+
+            return new Border
+            {
+                Background = Application.Current?.FindResource("BrBgSurface") as IBrush ?? Brushes.Transparent,
+                BorderBrush = Application.Current?.FindResource("BrBorderSubtle") as IBrush ?? Brushes.DimGray,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(12, 8),
+                Child = grid
+            };
+        }
+
+        private async void BtnAddFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    Title = "Select Game Folder",
+                    AllowMultiple = false
+                });
+
+                if (folders != null && folders.Count > 0)
+                {
+                    var selectedPath = folders[0].Path.IsAbsoluteUri
+                        ? folders[0].Path.LocalPath
+                        : folders[0].TryGetLocalPath();
+
+                    if (string.IsNullOrEmpty(selectedPath) || !Directory.Exists(selectedPath))
+                        return;
+
+                    if (!_customFolders.Contains(selectedPath))
+                    {
+                        _customFolders.Add(selectedPath);
+                        RefreshCustomFoldersList();
+                    }
+                }
+            }
+            catch (Exception ex) { DebugWindow.Log($"[ScanPrompt] Add folder failed: {ex.Message}"); }
+        }
+
+        private void BtnRemoveFolder_Click(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string folderPath)
+            {
+                _customFolders.Remove(folderPath);
+                RefreshCustomFoldersList();
+            }
         }
 
         private void ApplyTitleText(bool isFirstTime)
@@ -188,6 +296,9 @@ namespace OptiscalerClient.Views
             var pnl = this.FindControl<StackPanel>("PnlScanOptions");
             if (pnl != null)
                 pnl.IsEnabled = !isCoversOnly;
+            var tglSkipNoDlls = this.FindControl<ToggleSwitch>("TglSkipNoDlls");
+            if (tglSkipNoDlls != null)
+                tglSkipNoDlls.IsEnabled = !isCoversOnly;
         }
 
         private void BtnStartScan_Click(object? sender, RoutedEventArgs e)
@@ -207,8 +318,12 @@ namespace OptiscalerClient.Views
                 ScanXbox = tglXbox?.IsChecked ?? true,
                 ScanEA = tglEA?.IsChecked ?? true,
                 ScanUbisoft = tglUbisoft?.IsChecked ?? true,
-                CustomFolders = _componentService.Config.ScanSources.CustomFolders.ToList()
+                CustomFolders = _customFolders.ToList()
             };
+
+            // Sync custom folders back to config so ManageScanSourcesWindow sees them
+            _componentService.Config.ScanSources.CustomFolders = _customFolders.ToList();
+            _componentService.SaveConfiguration();
 
             var selectedDrives = _driveToggles
                 .Where(d => d.Toggle.IsChecked ?? false)
@@ -216,8 +331,9 @@ namespace OptiscalerClient.Views
                 .ToList();
 
             var refreshCoversOnly = this.FindControl<ToggleSwitch>("TglRefreshCoversOnly")?.IsChecked ?? false;
+            var skipNoDlls = this.FindControl<ToggleSwitch>("TglSkipNoDlls")?.IsChecked ?? false;
 
-            Close(new InitialScanOptions(sources, selectedDrives, refreshCoversOnly));
+            Close(new InitialScanOptions(sources, selectedDrives, refreshCoversOnly, skipNoDlls));
         }
 
         private void BtnClose_Click(object? sender, RoutedEventArgs e)
