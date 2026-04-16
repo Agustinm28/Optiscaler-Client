@@ -75,6 +75,18 @@ namespace OptiscalerClient.Views
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
 
+            var isWindows = OperatingSystem.IsWindows();
+            var gridEpic = this.FindControl<Grid>("GridEpic");
+            var gridGOG = this.FindControl<Grid>("GridGOG");
+            var gridXbox = this.FindControl<Grid>("GridXbox");
+            var gridEA = this.FindControl<Grid>("GridEA");
+            var gridUbisoft = this.FindControl<Grid>("GridUbisoft");
+            if (gridEpic != null) gridEpic.IsVisible = isWindows;
+            if (gridGOG != null) gridGOG.IsVisible = isWindows;
+            if (gridXbox != null) gridXbox.IsVisible = isWindows;
+            if (gridEA != null) gridEA.IsVisible = isWindows;
+            if (gridUbisoft != null) gridUbisoft.IsVisible = isWindows;
+
             _customFolders.Clear();
             _customFolders.AddRange(config.CustomFolders);
             RefreshCustomFoldersList();
