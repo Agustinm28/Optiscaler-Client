@@ -1,0 +1,193 @@
+{
+  "Layout": {
+    "CardMinWidth": 260,
+    "CardMaxWidth": 820,
+    "ColumnGap": 16,
+    "MaxColumns": 2,
+    "Breakpoints": [
+      { "MinWidth": 0, "Columns": 1 },
+      { "MinWidth": 700, "Columns": 2 }
+    ]
+  },
+  "Sections": [
+    {
+      "Name": "Basic",
+      "Rows": 2,
+      "Columns": 2,
+      "Settings": [
+        {
+          "Key": "DefaultUpscaler",
+          "Label": "Default Upscaler (DX11 / Vulkan)",
+          "Tooltip": "Choose a sensible default upscaler to be applied to DX11 and Vulkan games.",
+          "Options": [
+            { "Value": "auto", "Label": "Auto (recommended)" },
+            { "Value": "fsr22", "Label": "FSR 2.2.1" },
+            { "Value": "fsr31_12", "Label": "FSR 3.1/4 (DX11/Vulkan)" },
+            { "Value": "xess", "Label": "XeSS" },
+            { "Value": "dlss", "Label": "DLSS" }
+          ],
+          "Row": 0,
+          "Column": 0,
+          "AppliesTo": ["Dx11Upscaler", "VulkanUpscaler"]
+        },
+        {
+          "Key": "Dx12Upscaler",
+          "Label": "Default Upscaler (DX12)",
+          "Tooltip": "Choose a sensible default upscaler to be applied to DX12 games.",
+          "Options": [
+            { "Value": "auto", "Label": "Auto (recommended)" },
+            { "Value": "xess", "Label": "XeSS" },
+            { "Value": "fsr22", "Label": "FSR 2.2.1" },
+            { "Value": "fsr31", "Label": "FSR 3.1/4 (DX12)" },
+            { "Value": "dlss", "Label": "DLSS" }
+          ],
+          "Row": 0,
+          "Column": 1
+        },
+        {
+          "Key": "ShortcutKey",
+          "Label": "Menu Shortcut Key",
+          "Tooltip": "Key to open the OptiScaler in-game menu. Click to change.",
+          "ControlType": "keybind",
+          "Row": 1,
+          "Column": 0
+        },
+        {
+          "Key": "DisableOverlays",
+          "Label": "Disable Overlays",
+          "Tooltip": "Disable Steam/Epic overlays to improve compatibility and performance.",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Yes" },
+            { "Value": "false", "Label": "No" }
+          ],
+          "Row": 1,
+          "Column": 1
+        }
+      ]
+    },
+    {
+      "Name": "Performance",
+      "Rows": 2,
+      "Columns": 2,
+      "Settings": [
+        {
+          "Key": "ShowFps",
+          "Label": "Show FPS Counter",
+          "Tooltip": "Display FPS counter in overlay",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 0,
+          "Column": 0
+        },
+        {
+          "Key": "FpsOverlayType",
+          "Label": "FPS Overlay Type",
+          "Tooltip": "FPS display style. 0=Just FPS | 1=Simple | 2=Detailed | 3=Detailed + Graph | 4=Full | 5=Full + Graph | 6=Reflex timings",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "0", "Label": "0" },
+            { "Value": "1", "Label": "1" },
+            { "Value": "2", "Label": "2" },
+            { "Value": "3", "Label": "3" },
+            { "Value": "4", "Label": "4" },
+            { "Value": "5", "Label": "5" },
+            { "Value": "6", "Label": "6" }
+          ],
+          "Row": 0,
+          "Column": 1
+        },
+        {
+          "Key": "FramerateLimit",
+          "Label": "Framerate Limit",
+          "Tooltip": "Frame rate limit that uses Reflex, therefore the game has to support Reflex and have it enabled. AMD users can use Fakenvapi to get this feature working. Default (auto) is 0.0 (disabled)",
+          "ControlType": "text",
+          "Row": 1,
+          "Column": 0
+        }
+      ]
+    },
+    {
+      "Name": "Sharpness",
+      "Rows": 1,
+      "Columns": 2,
+      "Settings": [
+        {
+          "Key": "OverrideSharpness",
+          "Label": "Override Sharpness",
+          "Tooltip": "Override DLSS Sharpness parameter with fixed Sharpness value",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 0,
+          "Column": 0
+        },
+        {
+          "Key": "Sharpness",
+          "Label": "Sharpness",
+          "Tooltip": "Strength of Sharpening, value range between 0.0 and 1.0 (while using upper limit is RCAS 1.3). Default (auto) is 0.3",
+          "ControlType": "text",
+          "Row": 0,
+          "Column": 1
+        }
+      ]
+    },
+    {
+      "Name": "Plugins",
+      "Rows": 3,
+      "Columns": 2,
+      "Settings": [
+        {
+          "Key": "Path",
+          "Label": "Plugins Path",
+          "Tooltip": "Path that will be searched for same filename plugins (dxgi.dll, winmm.dll, etc.). Default is .\\plugins",
+          "ControlType": "folderpath",
+          "Row": 0,
+          "Column": 0,
+          "ColumnSpan": 2
+        },
+        {
+          "Key": "LoadAsiPlugins",
+          "Label": "Load ASI Plugins",
+          "Tooltip": "Lets OptiScaler load *.asi files in plugins folder",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 1,
+          "Column": 0
+        },
+        {
+          "Key": "LoadSpecialK",
+          "Label": "Load SpecialK",
+          "Tooltip": "Loads SpecialK64.dll from game's exe folder. Please create an empty SpecialK.dxgi file next to SpecialK64.dll to set SpecialK's working mode. BECAUSE OF STABILITY ISSUES, WILL NOT BE LOADED WHEN OPTIFG IS ENABLED",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 1,
+          "Column": 1
+        },
+        {
+          "Key": "LoadReshade",
+          "Label": "Load ReShade",
+          "Tooltip": "Loads Reshade64.dll from game's exe folder. Rename Reshade dll to ReShade64.dll, put next to OptiScaler and set to true",
+          "Options": [
+            { "Value": "auto", "Label": "Auto" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 2,
+          "Column": 0
+        }
+      ]
+    }
+  ]
+}

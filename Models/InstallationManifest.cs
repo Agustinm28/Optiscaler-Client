@@ -1,7 +1,23 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OptiscalerClient.Models
 {
+    public class ManifestFileRecord
+    {
+        public string RelativePath { get; set; } = string.Empty;
+        public string? BackupRelativePath { get; set; }
+        public bool ExistedBefore { get; set; }
+        public string? PreInstallSha256 { get; set; }
+        public string? PostInstallSha256 { get; set; }
+    }
+
+    public class KeyFileSnapshot
+    {
+        public string RelativePath { get; set; } = string.Empty;
+        public bool Existed { get; set; }
+        public string? Sha256 { get; set; }
+    }
+
     /// <summary>
     /// Manifest that tracks all files installed by OptiScaler for a specific game.
     /// This allows complete uninstallation without leaving residual files.
@@ -11,7 +27,12 @@ namespace OptiscalerClient.Models
         /// <summary>
         /// Version of the manifest format (for future compatibility)
         /// </summary>
-        public int ManifestVersion { get; set; } = 1;
+        public int ManifestVersion { get; set; } = 2;
+
+        public string OperationId { get; set; } = string.Empty;
+        public string OperationStatus { get; set; } = "committed";
+        public string StartedAtUtc { get; set; } = string.Empty;
+        public string FinishedAtUtc { get; set; } = string.Empty;
 
         /// <summary>
         /// OptiScaler version that was installed
@@ -35,20 +56,37 @@ namespace OptiscalerClient.Models
         /// </summary>
         public string? InstalledGameDirectory { get; set; }
 
+        public bool IncludesOptiscaler { get; set; } = true;
+        public bool IncludesFakenvapi { get; set; }
+        public bool IncludesNukemFG { get; set; }
+        public bool IncludesExtras { get; set; }
+        public bool IncludesOptiPatcher { get; set; }
+
+        /// <summary>
+        /// Name of the OptiScaler profile that was applied during installation
+        /// </summary>
+        public string? AppliedProfileName { get; set; }
+
+        public List<string> ExpectedFinalMarkers { get; set; } = new();
+
         /// <summary>
         /// List of all files that were installed (relative paths from game directory)
         /// </summary>
-        public List<string> InstalledFiles { get; set; } = new List<string>();
+        public List<string> InstalledFiles { get; set; } = new();
 
         /// <summary>
         /// List of files that were backed up (existed before installation)
         /// </summary>
-        public List<string> BackedUpFiles { get; set; } = new List<string>();
+        public List<string> BackedUpFiles { get; set; } = new();
 
         /// <summary>
         /// List of directories that were created during installation (relative paths from game directory)
         /// These will be deleted during uninstallation if they are empty
         /// </summary>
-        public List<string> InstalledDirectories { get; set; } = new List<string>();
+        public List<string> InstalledDirectories { get; set; } = new();
+
+        public List<ManifestFileRecord> FilesCreated { get; set; } = new();
+        public List<ManifestFileRecord> FilesOverwritten { get; set; } = new();
+        public List<KeyFileSnapshot> PreInstallKeyFiles { get; set; } = new();
     }
 }

@@ -1,0 +1,595 @@
+{
+  "pages": [
+    {
+      "id": "about",
+      "title": "About & Feedback",
+      "titleKey": "TxtHelpPageAbout",
+      "icon": "\uE946",
+      "sections": [
+        {
+          "type": "disclaimer",
+          "title": "Disclaimer ⚠️",
+          "titleKey": "TxtHelpDisclaimerTitle",
+          "content": "This is not an official OptiScaler project. I am not affiliated with the OptiScaler team. This is a personal project developed without any commercial purpose. Anyone is free to try and use this software at their own risk.\n\nCredits: A Special thanks to the OptiScaler team; this tool is only possible thanks to their incredible work on the original mod.",
+          "contentKey": "TxtHelpDisclaimerContent",
+          "backgroundColor": "#FFFBF5",
+          "textColor": "#FF8A65"
+        },
+        {
+          "type": "app-info",
+          "title": "Application Info"
+        },
+        {
+          "type": "external-resources",
+          "title": "External Resources"
+        },
+        {
+          "type": "system-info",
+          "title": "System",
+          "titleKey": "TxtHelpSystemTitle"
+        },
+        {
+          "type": "disclaimer",
+          "title": "License & Copyright",
+          "titleKey": "TxtHelpLicenseTitle",
+          "content": "Copyright 2026 Agustín Montaña (Agustinm28)\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses.",
+          "contentKey": "TxtHelpLicenseContent"
+        },
+        {
+          "type": "feedback",
+          "title": "Feedback"
+        }
+      ]
+    },
+    {
+      "id": "getting-started",
+      "title": "Getting Started",
+      "titleKey": "TxtHelpPageGettingStarted",
+      "icon": "\uE8F4",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Welcome to OptiScaler Client",
+          "titleKey": "TxtHelpGSWelcomeTitle",
+          "content": "OptiScaler Client is a modern, high-performance desktop utility designed to simplify the installation, management, and update of the OptiScaler mod across your entire game library.",
+          "contentKey": "TxtHelpGSWelcomeContent"
+        },
+        {
+          "type": "text",
+          "content": "This guide is designed to help you navigate and understand the program's core features. It serves as a comprehensive help center for any questions you may have, and includes step-by-step tutorials to get you started.",
+          "contentKey": "TxtHelpGSIntroContent"
+        },
+        {
+          "type": "steps",
+          "title": "Quick Start",
+          "titleKey": "TxtHelpGSQuickStart",
+          "items": [
+            {
+              "label": "Step 1: Scan for Games",
+              "labelKey": "TxtHelpGSStep1Label",
+              "text": "Click the 'Scan' button in the main window to automatically detect games on your system from Steam, Epic Games, and other platforms.",
+              "textKey": "TxtHelpGSStep1Text"
+            },
+            {
+              "label": "Step 2: Select a Game",
+              "labelKey": "TxtHelpGSStep2Label",
+              "text": "Browse your game library and click 'Manage' on any game you want to enhance with upscaling technology.",
+              "textKey": "TxtHelpGSStep2Text"
+            },
+            {
+              "label": "Step 3: Configure & Install",
+              "labelKey": "TxtHelpGSStep3Label",
+              "text": "Before installing, feel free to adjust the options to your liking. Once you're ready, click 'Auto Install' in the game management window to apply your custom settings automatically.",
+              "textKey": "TxtHelpGSStep3Text"
+            },
+            {
+              "label": "Step 4: Enjoy!",
+              "labelKey": "TxtHelpGSStep4Label",
+              "text": "Everything is ready! You can now launch the game directly and enjoy.",
+              "textKey": "TxtHelpGSStep4Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "features",
+      "title": "Features",
+      "titleKey": "TxtHelpPageFeatures",
+      "icon": "\uE734",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "What OptiScaler Client Offers",
+          "titleKey": "TxtHelpFeatOffersTitle",
+          "fontSize": 16,
+          "content": "OptiScaler Client provides comprehensive management for Optiscaler.",
+          "contentKey": "TxtHelpFeatOffersContent"
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Automatic Game Detection",
+              "labelKey": "TxtHelpFeatDetectionLabel",
+              "text": "Scans Steam, Epic Games, GOG, and other platforms to find your installed games.",
+              "textKey": "TxtHelpFeatDetectionText"
+            },
+            {
+              "label": "One-Click Installation",
+              "labelKey": "TxtHelpFeatInstallLabel",
+              "text": "Quick install feature deploys OptiScaler with optimal settings in seconds.",
+              "textKey": "TxtHelpFeatInstallText"
+            },
+            {
+              "label": "Profile Management",
+              "labelKey": "TxtHelpFeatProfilesLabel",
+              "text": "Create and manage custom profiles for different games and scenarios.",
+              "textKey": "TxtHelpFeatProfilesText"
+            },
+            {
+              "label": "Bulk Operations",
+              "labelKey": "TxtHelpFeatBulkLabel",
+              "text": "Install or update OptiScaler across multiple games simultaneously.",
+              "textKey": "TxtHelpFeatBulkText"
+            },
+            {
+              "label": "Version Control",
+              "labelKey": "TxtHelpFeatVersionLabel",
+              "text": "Easily switch between different versions of OptiScaler, Fakenvapi, and NukemFG.",
+              "textKey": "TxtHelpFeatVersionText"
+            },
+            {
+              "label": "Metadata Integration",
+              "labelKey": "TxtHelpFeatMetadataLabel",
+              "text": "Automatic cover art and game information from SteamGridDB.",
+              "textKey": "TxtHelpFeatMetadataText"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "main-window",
+      "title": "Main Window",
+      "titleKey": "TxtHelpPageMainWindow",
+      "icon": "\uE80F",
+      "category": "Guides",
+      "categoryKey": "TxtHelpCategoryGuides",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Game Library Overview",
+          "titleKey": "TxtHelpMWTitle",
+          "fontSize": 16,
+          "content": "The main window is your central hub for managing all your games. Here you can view your entire game library, scan for new games, and access game management features.",
+          "contentKey": "TxtHelpMWContent"
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Game List 🎮",
+              "labelKey": "TxtHelpMWGameListLabel",
+              "text": "Displays all detected games with cover art, title, and installation status.",
+              "textKey": "TxtHelpMWGameListText"
+            },
+            {
+              "label": "Manage Button ⚙️",
+              "labelKey": "TxtHelpMWManageBtnLabel",
+              "text": "Opens the Game Management Window for the selected game, where you can install, configure, and manage OptiScaler.",
+              "textKey": "TxtHelpMWManageBtnText"
+            },
+            {
+              "label": "Quick Install Button ✦",
+              "labelKey": "TxtHelpMWQuickInstallLabel",
+              "text": "Quickly install OptiScaler with optimal settings for the selected game.",
+              "textKey": "TxtHelpMWQuickInstallText"
+            },
+            {
+              "label": "Scan Button 🔍",
+              "labelKey": "TxtHelpMWScanLabel",
+              "text": "Automatically detects games from Steam, Epic Games, GOG, EA, Ubisoft, Xbox, and Battle.net. Here you can select which sources you want to scan and even which discs.",
+              "textKey": "TxtHelpMWScanText"
+            },
+            {
+              "label": "Add Manual Button ➕",
+              "labelKey": "TxtHelpMWAddManualLabel",
+              "text": "Allows you to manually add games that weren't automatically detected. Useful for standalone games or custom installations.",
+              "textKey": "TxtHelpMWAddManualText"
+            },
+            {
+              "label": "Bulk Install ⚡",
+              "labelKey": "TxtHelpMWBulkLabel",
+              "text": "Open the bulk installation window, allowing you to install OptiScaler on multiple games at once.",
+              "textKey": "TxtHelpMWBulkText"
+            },
+            {
+              "label": "Search & Filter 🔍",
+              "labelKey": "TxtHelpMWSearchLabel",
+              "text": "Quickly find games using the search bar.",
+              "textKey": "TxtHelpMWSearchText"
+            },
+            {
+              "label": "Grid & List mode buttons 📊",
+              "labelKey": "TxtHelpMWViewLabel",
+              "text": "Switch between grid and list view modes to organize your game library as you prefer.",
+              "textKey": "TxtHelpMWViewText"
+            },
+            {
+              "label": "Organize games ✏️",
+              "labelKey": "TxtHelpMWOrganizeLabel",
+              "text": "In this mode you can reorder and hide/show the games in the game list to your liking.",
+              "textKey": "TxtHelpMWOrganizeText"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "game-management",
+      "title": "Game Management",
+      "titleKey": "TxtHelpPageGameManagement",
+      "icon": "\uE7FC",
+      "category": "Guides",
+      "categoryKey": "TxtHelpCategoryGuides",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Managing Individual Games",
+          "titleKey": "TxtHelpGMTitle",
+          "fontSize": 16,
+          "content": "The Game Management Window provides complete control over OptiScaler installation and configuration for a specific game.",
+          "contentKey": "TxtHelpGMContent"
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Game Information 🎮",
+              "labelKey": "TxtHelpGMInfoLabel",
+              "text": "View game details including title, executable path, platform, and current OptiScaler installation status.",
+              "textKey": "TxtHelpGMInfoText"
+            },
+            {
+              "label": "Open folder 📁",
+              "labelKey": "TxtHelpGMFolderLabel",
+              "text": "Open the game's installation folder in File Explorer.",
+              "textKey": "TxtHelpGMFolderText"
+            },
+            {
+              "label": "Edit cover and game name 🎨",
+              "labelKey": "TxtHelpGMCoverLabel",
+              "text": "Edit the game's cover image and name.",
+              "textKey": "TxtHelpGMCoverText"
+            },
+            {
+              "label": "Auto Install ✦",
+              "labelKey": "TxtHelpGMAutoInstallLabel",
+              "text": "It attempts to automatically find the game's executable to install OptiScaler, using an algorithm that considers different scenarios and makes it quite robust, but it's not perfect.",
+              "textKey": "TxtHelpGMAutoInstallText"
+            },
+            {
+              "label": "Manual Install ✦",
+              "labelKey": "TxtHelpGMManualInstallLabel",
+              "text": "Allows you to manually select the game's executable file to install OptiScaler. It is recommended to use this option if the automated installation fails to find the executable.",
+              "textKey": "TxtHelpGMManualInstallText"
+            },
+            {
+              "label": "Uninstall 🗑️",
+              "labelKey": "TxtHelpGMUninstallLabel",
+              "text": "Completely remove OptiScaler from the game, restoring original files and configurations from backup.",
+              "textKey": "TxtHelpGMUninstallText"
+            },
+            {
+              "label": "Profile Selection 🎯",
+              "labelKey": "TxtHelpGMProfileLabel",
+              "text": "Choose from pre-configured Optiscaler profiles or create custom profiles tailored to specific games or performance needs.",
+              "textKey": "TxtHelpGMProfileText"
+            },
+            {
+              "label": "OptiScaler Version 📦",
+              "labelKey": "TxtHelpGMVersionLabel",
+              "text": "Select which version of OptiScaler to install. You can switch between stable releases and beta builds.",
+              "textKey": "TxtHelpGMVersionText"
+            },
+            {
+              "label": "Fakenvapi & NukemFG 📦",
+              "labelKey": "TxtHelpGMFakeNvapiLabel",
+              "text": "Optional components that enhance compatibility with certain games. These fields are not required for beta versions of optiscaler that already include these files.",
+              "textKey": "TxtHelpGMFakeNvapiText"
+            },
+            {
+              "label": "Injection method 🚀",
+              "labelKey": "TxtHelpGMInjectionLabel",
+              "text": "Choose how OptiScaler injects into the game process. For most cases, the default option (dxgi.dll) is sufficient, but if optiscaler is not detected correctly, feel free to try others.",
+              "textKey": "TxtHelpGMInjectionText"
+            },
+            {
+              "label": "FSR 4 INT8 ⚡",
+              "labelKey": "TxtHelpGMFsr4Label",
+              "text": "Selector that allows injecting the INT 8 version of FSR 4 for non RDNA 4 GPUs.",
+              "textKey": "TxtHelpGMFsr4Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "profiles",
+      "title": "Profile System",
+      "titleKey": "TxtHelpPageProfiles",
+      "icon": "\uE8B7",
+      "category": "Guides",
+      "categoryKey": "TxtHelpCategoryGuides",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Creating and Managing Profiles",
+          "titleKey": "TxtHelpProfTitle",
+          "content": "Profiles allow you to save and manage your OptiScaler configurations (.ini files) so you can easily deploy them into new installations. This is the most efficient way to maintain consistent settings or apply specialized tweaks across your game library.",
+          "contentKey": "TxtHelpProfContent",
+          "fontSize": 16
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Profile Management Window 📎",
+              "labelKey": "TxtHelpProfMgmtLabel",
+              "text": "Accessible from the sidebar, this section allows you to manage current profiles, as well as search, create, duplicate, edit, or delete them.",
+              "textKey": "TxtHelpProfMgmtText",
+              "items": [
+                {
+                  "title": "Default profile",
+                  "titleKey": "TxtHelpProfDefaultTitle",
+                  "text": "Sets which profile will be selected by default when managing a game or using Quick Install.",
+                  "textKey": "TxtHelpProfDefaultText",
+                  "type": "bullet-point"
+                }
+              ]
+            },
+            {
+              "label": "Profile Editor 📝",
+              "labelKey": "TxtHelpProfEditorLabel",
+              "text": "Configure all OptiScaler (.ini) settings including upscaling method, quality presets, DLL options, and advanced parameters. The sections that can be seen in that window are:",
+              "textKey": "TxtHelpProfEditorText",
+              "items": [
+                {
+                  "title": "Profile name",
+                  "titleKey": "TxtHelpProfNameTitle",
+                  "text": "Sets the display name for your profile.",
+                  "textKey": "TxtHelpProfNameText",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "Description",
+                  "titleKey": "TxtHelpProfDescTitle",
+                  "text": "Sets a description for your profile.",
+                  "textKey": "TxtHelpProfDescText",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "Mode",
+                  "titleKey": "TxtHelpProfModeTitle",
+                  "text": "Choose between Easy and Advanced modes. Easy mode limits settings to the essentials for a quick and simple setup, ideal for beginners. Advanced mode allows full editing of the .ini file, offering total control and maximum customization for power users.",
+                  "textKey": "TxtHelpProfModeText",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "Navigation section",
+                  "titleKey": "TxtHelpProfNavTitle",
+                  "text": "Allows you to navigate through the different sections of the profile editor.",
+                  "textKey": "TxtHelpProfNavText",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "Search bar",
+                  "titleKey": "TxtHelpProfSearchTitle",
+                  "text": "Allows you to search for specific settings within the profile editor.",
+                  "textKey": "TxtHelpProfSearchText",
+                  "type": "bullet-point"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Settings & Configuration",
+      "titleKey": "TxtHelpPageSettings",
+      "icon": "\uE713",
+      "category": "Guides",
+      "categoryKey": "TxtHelpCategoryGuides",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Application Settings",
+          "titleKey": "TxtHelpSetTitle",
+          "fontSize": 16,
+          "content": "Configure OptiScaler Client behavior, scan sources, metadata services, and advanced options.",
+          "contentKey": "TxtHelpSetContent"
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Local Cache Management",
+              "labelKey": "TxtHelpSetCacheLabel",
+              "text": "Allows you to view and delete cached versions of OptiScaler and FSR INT8.",
+              "textKey": "TxtHelpSetCacheText"
+            },
+            {
+              "label": "Profile Management",
+              "labelKey": "TxtHelpSetProfileLabel",
+              "text": "It allows you to manage different profiles. See the 'Profile System' page for more information.",
+              "textKey": "TxtHelpSetProfileText"
+            },
+            {
+              "label": "Scan Sources",
+              "labelKey": "TxtHelpSetScanLabel",
+              "text": "Allows you to manage which sources are scanned when clicking 'Scan', including platforms like Steam and Epic, as well as custom folders and other locations.",
+              "textKey": "TxtHelpSetScanText"
+            },
+            {
+              "label": "FSR INT8 Default",
+              "labelKey": "TxtHelpSetFsr4Label",
+              "text": "Allows you to select the default FSR INT8 version for the injection section when managing a game or using Quick Install. It is recommended to set this to 'None' for users with AMD 9000-series graphics cards.",
+              "textKey": "TxtHelpSetFsr4Text"
+            },
+            {
+              "label": "Default GPU Selection",
+              "labelKey": "TxtHelpSetGpuLabel",
+              "text": "Choose which GPU to use when multiple GPUs are detected in your system.",
+              "textKey": "TxtHelpSetGpuText"
+            },
+            {
+              "label": "Auto scan on startup",
+              "labelKey": "TxtHelpSetAutoscanLabel",
+              "text": "Automatically scan for games when the application starts.",
+              "textKey": "TxtHelpSetAutoscanText"
+            },
+            {
+              "label": "Prefer latest beta as default",
+              "labelKey": "TxtHelpSetBetaLabel",
+              "text": "When enabled, OptiScaler Client will prefer to download and use the latest beta versions of components when available.",
+              "textKey": "TxtHelpSetBetaText"
+            },
+            {
+              "label": "Enable animations",
+              "labelKey": "TxtHelpSetAnimLabel",
+              "text": "When enabled, OptiScaler Client will show animations and transitions for a more polished user experience.",
+              "textKey": "TxtHelpSetAnimText"
+            },
+            {
+              "label": "SteamGridDB API Key",
+              "labelKey": "TxtHelpSetSteamGridLabel",
+              "text": "Used to improve cover art fetching when they cannot be retrieved by default. This parameter is entirely optional.",
+              "textKey": "TxtHelpSetSteamGridText"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bulk-operations",
+      "title": "Bulk Operations",
+      "titleKey": "TxtHelpPageBulkOperations",
+      "icon": "\uE8F1",
+      "category": "Guides",
+      "categoryKey": "TxtHelpCategoryGuides",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Managing Multiple Games",
+          "titleKey": "TxtHelpBulkTitle",
+          "fontSize": 16,
+          "content": "The Bulk Install Window allows you to install or update OptiScaler across multiple games simultaneously, saving time and ensuring consistency.",
+          "contentKey": "TxtHelpBulkContent"
+        },
+        {
+          "type": "list",
+          "items": [
+            {
+              "label": "Game Selection",
+              "labelKey": "TxtHelpBulkGameSelLabel",
+              "text": "Choose which games to include in the bulk operation. Select all or manually pick individual games.",
+              "textKey": "TxtHelpBulkGameSelText"
+            },
+            {
+              "label": "Unified Configuration",
+              "labelKey": "TxtHelpBulkConfigLabel",
+              "text": "Apply the same profile, OptiScaler version, and settings to all selected games at once.",
+              "textKey": "TxtHelpBulkConfigText"
+            },
+            {
+              "label": "Progress Tracking",
+              "labelKey": "TxtHelpBulkProgressLabel",
+              "text": "Monitor installation progress for each game. View success/failure status and detailed logs for troubleshooting.",
+              "textKey": "TxtHelpBulkProgressText"
+            },
+            {
+              "label": "Error Handling",
+              "labelKey": "TxtHelpBulkErrorLabel",
+              "text": "Continue processing remaining games even if some installations fail. Review errors after completion.",
+              "textKey": "TxtHelpBulkErrorText"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "troubleshooting",
+      "title": "FAQ & Troubleshooting",
+      "titleKey": "TxtHelpPageTroubleshooting",
+      "icon": "\uE9D9",
+      "fontSize": 14,
+      "sections": [
+        {
+          "type": "text",
+          "title": "Common Issues",
+          "titleKey": "TxtHelpFaqTitle",
+          "fontSize": 16,
+          "content": "If you encounter problems, check these common solutions first.",
+          "contentKey": "TxtHelpFaqContent"
+        },
+        {
+          "type": "faq",
+          "items": [
+            {
+              "label": "What is OptiScaler?",
+              "labelKey": "TxtHelpFaqWhatLabel",
+              "text": "OptiScaler is a mod that allows you to use different upscaling technologies (DLSS, FSR, XeSS) in games, even if they don't natively support them.",
+              "textKey": "TxtHelpFaqWhatText"
+            },
+            {
+              "label": "Is this app safe to use?",
+              "labelKey": "TxtHelpFaqSafeLabel",
+              "text": "Yes, the app is completely safe. You can scan it on VirusTotal to confirm there are no threats, and since the project is open-source, the code is available for anyone to review if they wish.",
+              "textKey": "TxtHelpFaqSafeText"
+            },
+            {
+              "label": "Game not detected",
+              "labelKey": "TxtHelpFaqNotDetLabel",
+              "text": "Make sure the game is installed and try adding it manually using 'Add Manual' button. You can also check scan sources in Settings.",
+              "textKey": "TxtHelpFaqNotDetText"
+            },
+            {
+              "label": "Installation failed",
+              "labelKey": "TxtHelpFaqInstFailLabel",
+              "text": "Ensure you have write permissions to the game directory. Try running the application as administrator if needed.",
+              "textKey": "TxtHelpFaqInstFailText"
+            },
+            {
+              "label": "Game crashes after installation",
+              "labelKey": "TxtHelpFaqCrashLabel",
+              "text": "Try a different OptiScaler version or profile. Some games may require specific configurations.",
+              "textKey": "TxtHelpFaqCrashText"
+            },
+            {
+              "label": "Upscaling not working in-game",
+              "labelKey": "TxtHelpFaqUpscLabel",
+              "text": "Check that the game supports DLSS/FSR/XeSS natively. OptiScaler replaces existing upscaling implementations.",
+              "textKey": "TxtHelpFaqUpscText"
+            },
+            {
+              "label": "Optiscaler.dll or nvngx.dll not found and other errors.",
+              "labelKey": "TxtHelpFaqDllLabel",
+              "text": "Use the button to clear the cache from the settings; that should solve most problems.",
+              "textKey": "TxtHelpFaqDllText"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

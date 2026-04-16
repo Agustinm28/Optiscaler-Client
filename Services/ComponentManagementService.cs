@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using SharpCompress.Archives;
@@ -32,11 +33,16 @@ namespace OptiscalerClient.Services
     /// </summary>
     public class ComponentManagementService
     {
+        private static readonly object _downloadLock = new();
+        private static readonly System.Collections.Generic.HashSet<string> _activeOptiDownloads = new(StringComparer.OrdinalIgnoreCase);
+        private static readonly object _configLock = new();
+        private static AppConfiguration? _sharedConfig;
         private readonly string _baseDir;
         private readonly string _cacheDir;
         private readonly string _versionFile;
         private readonly string _configFile;
         private readonly string _releasesCacheFile;
+        private static readonly HttpClient _sharedHttpClient = CreateHttpClient();
         private readonly HttpClient _httpClient;
 
         public AppConfiguration Config => _config;
@@ -57,6 +63,10 @@ namespace OptiscalerClient.Services
         private static ExtrasReleasesCache _extrasCache = new();
         private static System.Collections.Generic.List<string>? _cachedExtrasVersions = null;
         private static string? _cachedLatestExtrasVersion = null;
+        // Persistent local cache of OptiPatcher release metadata
+        private static OptiPatcherReleasesCache _optiPatcherCache = new();
+        private static System.Collections.Generic.List<string>? _cachedOptiPatcherVersions = null;
+        private static string? _cachedLatestOptiPatcherVersion = null;
 
         public System.Collections.Generic.List<string> OptiScalerAvailableVersions
             => _cachedOptiScalerVersions ?? GetDownloadedOptiScalerVersions();
@@ -72,6 +82,12 @@ namespace OptiscalerClient.Services
 
         public System.Collections.Generic.List<string> ExtrasDownloadedVersions
             => GetDownloadedExtrasVersions();
+
+        /// <summary>All available OptiPatcher versions from the remote cache.</summary>
+        public System.Collections.Generic.List<string> OptiPatcherAvailableVersions
+            => _cachedOptiPatcherVersions ?? new System.Collections.Generic.List<string>();
+        /// <summary>The latest OptiPatcher version tag, or null if none fetched yet.</summary>
+        public string? LatestOptiPatcherVersion => _cachedLatestOptiPatcherVersion;
 
         public string? OptiScalerVersion => _localVersions.OptiScalerVersion;
         public string? FakenvapiVersion => _localVersions.FakenvapiVersion;
@@ -100,59 +116,143 @@ namespace OptiscalerClient.Services
 
             Directory.CreateDirectory(_cacheDir);
 
-            _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClient");
+            _httpClient = _sharedHttpClient;
 
             LoadConfiguration();
             LoadLocalVersions();
             LoadReleasesCache();
             LoadExtrasCache();
+            LoadOptiPatcherCache();
+        }
+
+        private static HttpClient CreateHttpClient()
+        {
+            var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClient");
+            return client;
         }
 
         private void LoadConfiguration()
         {
             try
             {
-                // Check local directory first (portable/dev friendly)
-                var localConfig = Path.Combine(AppContext.BaseDirectory, "config.json");
-                if (File.Exists(localConfig))
+                lock (_configLock)
                 {
-                    var json = File.ReadAllText(localConfig);
-                    _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
-                }
-                else if (File.Exists(_configFile))
-                {
-                    var json = File.ReadAllText(_configFile);
-                    _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
-                }
-                else
-                {
-                    // Create default config
-                    _config = new AppConfiguration();
-                    var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
-                    File.WriteAllText(_configFile, json);
+                    if (_sharedConfig != null)
+                    {
+                        _config = _sharedConfig;
+                        return;
+                    }
+
+                    // PRIORITY 1: Load from AppData (persistent user settings)
+                    if (File.Exists(_configFile))
+                    {
+                        var json = File.ReadAllText(_configFile);
+                        _config = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration) ?? new();
+                        System.Diagnostics.Debug.WriteLine($"[Config] Loaded from AppData: {_configFile}");
+
+                        // If core repos are empty (e.g. config was generated with blank defaults),
+                        // merge them from the install-dir template so the app stays functional.
+                        // Also re-merge if any individual repo is missing (e.g. OptiPatcher added in a later version).
+                        bool needsMerge = string.IsNullOrEmpty(_config.OptiScaler.RepoOwner)
+                                       || string.IsNullOrEmpty(_config.OptiPatcher.RepoOwner);
+                        if (needsMerge)
+                        {
+                            MergeReposFromTemplate(_config);
+                            try
+                            {
+                                var normalized = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
+                                File.WriteAllText(_configFile, normalized);
+                            }
+                            catch (Exception ex)
+                            {
+                                DebugWindow.Log($"[Config] Failed to save normalized config: {ex.Message}");
+                            }
+                        }
+                    }
+                    // No AppData config exists yet — seed from the install-dir config.json.
+                    // That file is the developer-maintained template with repo configs,
+                    // scan exclusions, etc. User preferences edited later are saved back
+                    // to AppData and the install-dir file is never read again.
+                    else
+                    {
+                        _config = new AppConfiguration();
+                        MergeReposFromTemplate(_config);
+
+                        // Persist to AppData — this is the only time the install-dir file is read.
+                        try
+                        {
+                            var normalized = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
+                            File.WriteAllText(_configFile, normalized);
+                        }
+                        catch (Exception ex)
+                        {
+                            DebugWindow.Log($"[Config] Failed to persist initial config: {ex.Message}");
+                        }
+                    }
+
+                    _sharedConfig = _config;
                 }
             }
-            catch { /* Use defaults */ }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Config] Failed to load configuration, using defaults: {ex.Message}");
+            }
         }
 
-        public void SaveConfiguration()
+        /// <summary>
+        /// Reads the install-dir config.json (if present) and copies any non-empty
+        /// RepositoryConfig values into <paramref name="target"/>. User preferences
+        /// (language, debug, window state, etc.) already in target are left untouched.
+        /// </summary>
+        private static void MergeReposFromTemplate(AppConfiguration target)
         {
             try
             {
-                var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
+                var currentDirConfig = Path.Combine(Environment.CurrentDirectory, "config.json");
+                var baseDirConfig    = Path.Combine(AppContext.BaseDirectory, "config.json");
+                var templatePath     = File.Exists(currentDirConfig) ? currentDirConfig
+                                     : File.Exists(baseDirConfig)    ? baseDirConfig
+                                     : null;
 
-                var localConfig = Path.Combine(AppContext.BaseDirectory, "config.json");
-                if (File.Exists(localConfig))
+                if (templatePath == null) return;
+
+                var json     = File.ReadAllText(templatePath);
+                var template = JsonSerializer.Deserialize(json, OptimizerContext.Default.AppConfiguration);
+                if (template == null) return;
+
+                if (!string.IsNullOrEmpty(template.App.RepoOwner))            target.App            = template.App;
+                if (!string.IsNullOrEmpty(template.OptiScaler.RepoOwner))     target.OptiScaler     = template.OptiScaler;
+                if (!string.IsNullOrEmpty(template.OptiScalerBetas.RepoOwner))target.OptiScalerBetas= template.OptiScalerBetas;
+                if (!string.IsNullOrEmpty(template.OptiScalerExtras.RepoOwner))target.OptiScalerExtras = template.OptiScalerExtras;
+                if (!string.IsNullOrEmpty(template.Fakenvapi.RepoOwner))      target.Fakenvapi      = template.Fakenvapi;
+                if (!string.IsNullOrEmpty(template.NukemFG.RepoOwner))        target.NukemFG        = template.NukemFG;
+                if (!string.IsNullOrEmpty(template.OptiPatcher.RepoOwner))    target.OptiPatcher    = template.OptiPatcher;
+
+                if (target.ScanExclusions.Count == 0 && template.ScanExclusions.Count > 0)
+                    target.ScanExclusions = template.ScanExclusions;
+            }
+            catch (Exception ex)
+        {
+            DebugWindow.Log($"[Config] Failed to merge repos from template: {ex.Message}");
+        }
+        }
+
+        public void SaveConfiguration()
+        {            try
+            {
+                lock (_configLock)
                 {
-                    File.WriteAllText(localConfig, json);
-                }
-                else
-                {
+                    var json = JsonSerializer.Serialize(_config, OptimizerContext.Default.AppConfiguration);
                     File.WriteAllText(_configFile, json);
+                    System.Diagnostics.Debug.WriteLine($"[Config] Saved to: {_configFile}");
+                    System.Diagnostics.Debug.WriteLine($"[Config] WindowMaximized: {_config.WindowMaximized}, PreferGridView: {_config.PreferGridView}");
                 }
             }
-            catch { /* Ignore save errors */ }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Config] Save error: {ex.Message}");
+            }
         }
 
         private void LoadLocalVersions()
@@ -164,7 +264,7 @@ namespace OptiscalerClient.Services
                     var json = File.ReadAllText(_versionFile);
                     _localVersions = JsonSerializer.Deserialize(json, OptimizerContext.Default.ComponentVersions) ?? new();
                 }
-                catch { /* Corrupt file */ }
+                catch (Exception ex) { DebugWindow.Log($"[Config] Corrupt versions file: {ex.Message}"); }
             }
         }
 
@@ -175,7 +275,7 @@ namespace OptiscalerClient.Services
                 var json = JsonSerializer.Serialize(_localVersions, OptimizerContext.Default.ComponentVersions);
                 File.WriteAllText(_versionFile, json);
             }
-            catch { /* Ignore save errors */ }
+            catch (Exception ex) { DebugWindow.Log($"[Config] Failed to save local versions: {ex.Message}"); }
         }
 
         private void LoadReleasesCache()
@@ -319,28 +419,168 @@ namespace OptiscalerClient.Services
 
             var all = _releasesCache.Releases;
 
+            Version parse(string v)
+            {
+                if (string.IsNullOrEmpty(v)) return new Version(0, 0);
+                var clean = new string(v.TakeWhile(c => char.IsDigit(c) || c == '.').ToArray()).TrimEnd('.');
+                if (!string.IsNullOrEmpty(clean) && Version.TryParse(clean, out var parsed)) return parsed;
+                return new Version(0, 0);
+            }
+
+            int parseSuffixValue(string v)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(v, @"\d+$");
+                if (match.Success && int.TryParse(match.Value, out int val)) return val;
+                return 0;
+            }
+
+            var stablesList = all.Where(r => !r.IsBeta)
+                                 .OrderByDescending(r => parse(r.Version))
+                                 .ThenByDescending(r => parseSuffixValue(r.Version))
+                                 .ThenByDescending(r => r.Version, StringComparer.OrdinalIgnoreCase)
+                                 .ToList();
+
+            var betasList = all.Where(r => r.IsBeta)
+                               .OrderByDescending(r => parse(r.Version))
+                               .ThenByDescending(r => parseSuffixValue(r.Version))
+                               .ThenByDescending(r => r.Version, StringComparer.OrdinalIgnoreCase)
+                               .ToList();
+
             _cachedBetaVersions = new System.Collections.Generic.HashSet<string>(
-                all.Where(r => r.IsBeta).Select(r => r.Version),
-                StringComparer.OrdinalIgnoreCase);
+                betasList.Select(r => r.Version), StringComparer.OrdinalIgnoreCase);
 
             _cachedLatestBetaVersion = all.FirstOrDefault(r => r.IsLatestBeta)?.Version
-                ?? all.FirstOrDefault(r => r.IsBeta)?.Version;
+                ?? betasList.FirstOrDefault()?.Version;
 
             _cachedLatestStableVersion = all.FirstOrDefault(r => r.IsLatestStable)?.Version
-                ?? all.FirstOrDefault(r => !r.IsBeta)?.Version;
+                ?? stablesList.FirstOrDefault()?.Version;
 
-            // Stable versions first (latest stable at top), then betas
-            var stables = all.Where(r => !r.IsBeta).Select(r => r.Version).ToList();
-            var betas = all.Where(r => r.IsBeta).Select(r => r.Version).ToList();
+            // Stable versions first (highest to lowest), then betas (highest to lowest)
             var merged = new System.Collections.Generic.List<string>();
-            merged.AddRange(stables);
-            merged.AddRange(betas);
+            merged.AddRange(stablesList.Select(r => r.Version));
+            merged.AddRange(betasList.Select(r => r.Version));
 
             if (merged.Count > 0)
                 _cachedOptiScalerVersions = merged.Distinct().ToList();
 
-            DebugWindow.Log($"[ReleasesCache] Rebuilt in-memory cache: {stables.Count} stable + {betas.Count} beta versions");
+            DebugWindow.Log($"[ReleasesCache] Rebuilt in-memory cache: {stablesList.Count} stable + {betasList.Count} beta versions");
         }
+
+        // ── Download helpers ─────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Executes an HTTP GET with per-attempt timeout and exponential-backoff retries on
+        /// transient network errors. Does NOT retry on HTTP error status codes (e.g. 404).
+        /// </summary>
+        private static async Task<HttpResponseMessage> GetWithRetryAsync(
+            HttpClient client, string url,
+            int maxRetries = 3, int timeoutSeconds = 30,
+            CancellationToken cancellationToken = default)
+        {
+            int[] backoff = { 1000, 3000, 7000 };
+            Exception? lastEx = null;
+            for (int attempt = 0; attempt <= maxRetries; attempt++)
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds));
+                try
+                {
+                    var resp = await client.GetAsync(url, cts.Token);
+                    if ((int)resp.StatusCode == 403)
+                        throw new GitHubRateLimitException();
+                    return resp;
+                }
+                catch (GitHubRateLimitException)
+                {
+                    throw; // propagate immediately, no retry
+                }
+                catch (Exception ex) when (ex is HttpRequestException
+                    || (ex is OperationCanceledException && !cancellationToken.IsCancellationRequested))
+                {
+                    lastEx = ex is OperationCanceledException
+                        ? new TimeoutException($"Request timed out after {timeoutSeconds}s (attempt {attempt + 1})")
+                        : ex;
+                    DebugWindow.Log($"[HTTP] Attempt {attempt + 1}/{maxRetries + 1} failed for {url}: {lastEx.Message}");
+                }
+                if (attempt < maxRetries)
+                    await Task.Delay(backoff[Math.Min(attempt, backoff.Length - 1)], cancellationToken);
+            }
+            throw lastEx!;
+        }
+
+        /// <summary>
+        /// Validates that an archive entry path stays inside <paramref name="destinationDir"/>
+        /// (path traversal prevention). Returns the safe full destination path.
+        /// </summary>
+        private static string SafeDestinationPath(string destinationDir, string entryPath)
+        {
+            if (string.IsNullOrEmpty(entryPath))
+                throw new InvalidOperationException("Archive entry has an empty path.");
+            var fullDest = Path.GetFullPath(Path.Combine(destinationDir, entryPath));
+            var root = Path.GetFullPath(destinationDir);
+            if (!fullDest.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(fullDest, root, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException(
+                    $"Archive entry '{entryPath}' would extract outside destination directory.");
+            return fullDest;
+        }
+
+        /// <summary>
+        /// Streams a file from <paramref name="url"/> directly to <paramref name="destPath"/> using
+        /// a 64 KB buffer. Applies a per-attempt timeout and retries with exponential backoff.
+        /// Partial files are deleted before each retry.
+        /// </summary>
+        private static async Task StreamToFileAsync(
+            HttpClient client, string url, string destPath,
+            IProgress<double>? progress = null, long estimatedBytes = 20 * 1024 * 1024,
+            int maxRetries = 3, int timeoutSeconds = 120,
+            CancellationToken cancellationToken = default)
+        {
+            int[] backoff = { 2000, 5000, 10000 };
+            Exception? lastEx = null;
+            for (int attempt = 0; attempt <= maxRetries; attempt++)
+            {
+                if (attempt > 0)
+                {
+                    DebugWindow.Log($"[Download] Retry {attempt}/{maxRetries} for {Path.GetFileName(url)}");
+                    try { if (File.Exists(destPath)) File.Delete(destPath); } catch { }
+                }
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds));
+                try
+                {
+                    using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                    response.EnsureSuccessStatusCode();
+                    var totalBytes = response.Content.Headers.ContentLength ?? estimatedBytes;
+                    long totalRead = 0;
+                    using var fs = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536);
+                    using var stream = await response.Content.ReadAsStreamAsync(cts.Token);
+                    var buffer = new byte[65536];
+                    int read;
+                    while ((read = await stream.ReadAsync(buffer.AsMemory(), cts.Token)) > 0)
+                    {
+                        await fs.WriteAsync(buffer.AsMemory(0, read), cts.Token);
+                        totalRead += read;
+                        progress?.Report((double)totalRead / totalBytes * 100.0);
+                    }
+                    progress?.Report(100.0);
+                    return;
+                }
+                catch (Exception ex) when (ex is HttpRequestException
+                    || (ex is OperationCanceledException && !cancellationToken.IsCancellationRequested))
+                {
+                    lastEx = ex is OperationCanceledException
+                        ? new TimeoutException($"Download timed out after {timeoutSeconds}s (attempt {attempt + 1})")
+                        : ex;
+                    DebugWindow.Log($"[Download] Attempt {attempt + 1}/{maxRetries + 1} failed: {lastEx.Message}");
+                }
+                if (attempt < maxRetries)
+                    await Task.Delay(backoff[Math.Min(attempt, backoff.Length - 1)], cancellationToken);
+            }
+            throw lastEx!;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
 
         public async Task CheckForUpdatesAsync()
         {
@@ -349,7 +589,7 @@ namespace OptiscalerClient.Services
             {
                 // To avoid spamming GitHub API (rate limits), only check every 15 minutes max per session.
                 // Also re-fetch if extras versions were never loaded yet.
-                if (_cachedOptiScalerVersions == null || _cachedExtrasVersions == null ||
+                if (_cachedOptiScalerVersions == null || _cachedExtrasVersions == null || _cachedOptiPatcherVersions == null ||
                     (DateTime.Now - _lastApiCheckTime).TotalMinutes > 15)
                 {
                     DebugWindow.Log($"[ComponentCheck] Fetching updates from GitHub API (Rates: {(DateTime.Now - _lastApiCheckTime).ToString(@"hh\:mm\:ss")} since last check)");
@@ -361,8 +601,9 @@ namespace OptiscalerClient.Services
                         var fakeTask = CheckComponentUpdateAsync("Fakenvapi", _config.Fakenvapi);
                         var nukemTask = CheckComponentUpdateAsync("NukemFG", _config.NukemFG);
                         var extrasTask = FetchExtrasReleasesAsync();
+                        var optiPatcherTask = FetchOptiPatcherReleasesAsync();
 
-                        await Task.WhenAll(optiVersionsTask, optiBetasTask, fakeTask, nukemTask, extrasTask);
+                        await Task.WhenAll(optiVersionsTask, optiBetasTask, fakeTask, nukemTask, extrasTask, optiPatcherTask);
 
                         var stableEntries = await optiVersionsTask;
                         var betaEntries = await optiBetasTask;
@@ -405,6 +646,33 @@ namespace OptiscalerClient.Services
 
                         _cachedFakenvapiVersion = await fakeTask ?? _cachedFakenvapiVersion;
                         _cachedNukemFGVersion = await nukemTask ?? _cachedNukemFGVersion;
+
+                        var newOptiPatcher = await optiPatcherTask;
+                        if (newOptiPatcher.Count > 0)
+                        {
+                            var existingOp = new System.Collections.Generic.HashSet<string>(
+                                _optiPatcherCache.Releases.Select(r => r.Version), StringComparer.OrdinalIgnoreCase);
+                            foreach (var e in _optiPatcherCache.Releases) e.IsLatest = false;
+                            foreach (var entry in newOptiPatcher)
+                            {
+                                if (!existingOp.Contains(entry.Version))
+                                    _optiPatcherCache.Releases.Add(entry);
+                                else
+                                {
+                                    var ex = _optiPatcherCache.Releases.FirstOrDefault(
+                                        r => string.Equals(r.Version, entry.Version, StringComparison.OrdinalIgnoreCase));
+                                    if (ex != null)
+                                    {
+                                        if (string.IsNullOrEmpty(ex.DownloadUrl)) ex.DownloadUrl = entry.DownloadUrl;
+                                        ex.IsLatest = entry.IsLatest;
+                                    }
+                                }
+                            }
+                            _optiPatcherCache.LastUpdated = DateTime.Now;
+                            SaveOptiPatcherCache();
+                            RebuildInMemoryOptiPatcherCache();
+                        }
+
                         _lastApiCheckTime = DateTime.Now;
                     }
                     catch (Exception apiEx)
@@ -415,6 +683,9 @@ namespace OptiscalerClient.Services
                         // Still rebuild from cache in case it was just loaded
                         RebuildInMemoryCacheFromReleases();
                         RebuildInMemoryExtrasCache();
+                        RebuildInMemoryOptiPatcherCache();
+                        // Rate limit must propagate so the UI can show a warning dialog
+                        if (apiEx is GitHubRateLimitException) throw;
                     }
                 }
 
@@ -455,7 +726,7 @@ namespace OptiscalerClient.Services
             try
             {
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                var response = await _httpClient.GetAsync(url);
+                var response = await GetWithRetryAsync(_httpClient, url);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -497,9 +768,31 @@ namespace OptiscalerClient.Services
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
                 DebugWindow.Log($"[FetchVersions] GET {url}");
-                var response = await _httpClient.GetAsync(url);
+                var response = await GetWithRetryAsync(_httpClient, url);
                 DebugWindow.Log($"[FetchVersions] {repoLabel} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
+
+                string? actualLatestTag = null;
+                if (!isBeta)
+                {
+                    try
+                    {
+                        var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
+                        var latestResponse = await GetWithRetryAsync(_httpClient, latestUrl);
+                        if (latestResponse.IsSuccessStatusCode)
+                        {
+                            var latestJson = await latestResponse.Content.ReadAsStringAsync();
+                            using var latestDoc = JsonDocument.Parse(latestJson);
+                            if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
+                            {
+                                actualLatestTag = tag.GetString();
+                                if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                                    actualLatestTag = actualLatestTag.Substring(1);
+                            }
+                        }
+                    }
+                    catch (Exception ex) { DebugWindow.Log($"[FetchVersions] Failed to resolve latest tag: {ex.Message}"); }
+                }
 
                 var json = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(json);
@@ -547,7 +840,15 @@ namespace OptiscalerClient.Services
                     }
                     else
                     {
-                        if (!latestStableMarked && !isPrerelease)
+                        if (!string.IsNullOrEmpty(actualLatestTag))
+                        {
+                            if (string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase))
+                            {
+                                isThisLatestStable = true;
+                                latestStableMarked = true;
+                            }
+                        }
+                        else if (!latestStableMarked && !isPrerelease)
                         {
                             isThisLatestStable = true;
                             latestStableMarked = true;
@@ -591,7 +892,7 @@ namespace OptiscalerClient.Services
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
                 DebugWindow.Log($"[FetchVersions] GET {url}");
-                var response = await _httpClient.GetAsync(url);
+                var response = await GetWithRetryAsync(_httpClient, url);
                 DebugWindow.Log($"[FetchVersions] {repoLabel} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -647,7 +948,7 @@ namespace OptiscalerClient.Services
                 }
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
-                var response = await _httpClient.GetAsync(url);
+                var response = await GetWithRetryAsync(_httpClient, url);
                 DebugWindow.Log($"[ExtrasVersions] GET {url} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -761,7 +1062,7 @@ namespace OptiscalerClient.Services
                     try
                     {
                         var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
-                        var response = await _httpClient.GetAsync(apiUrl);
+                        var response = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
                         if (!response.IsSuccessStatusCode) continue;
 
                         var json = await response.Content.ReadAsStringAsync();
@@ -783,7 +1084,7 @@ namespace OptiscalerClient.Services
                         }
                         if (!string.IsNullOrEmpty(downloadUrl)) break;
                     }
-                    catch { /* try next */ }
+                    catch (Exception ex) { DebugWindow.Log($"[ExtrasDownload] API lookup attempt failed: {ex.Message}"); }
                 }
             }
 
@@ -795,51 +1096,283 @@ namespace OptiscalerClient.Services
             var tempZip = Path.Combine(Path.GetTempPath(), $"Extras_{version}_{Guid.NewGuid()}.zip");
             DebugWindow.Log($"[ExtrasDownload] Downloading {downloadUrl}");
 
-            // Stream download with progress
-            using (var dlResponse = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
+            try
             {
-                dlResponse.EnsureSuccessStatusCode();
-                var totalBytes = dlResponse.Content.Headers.ContentLength ?? 5 * 1024 * 1024;
-                long totalRead = 0;
+                // Stream download with retry and per-attempt timeout
+                await StreamToFileAsync(_httpClient, downloadUrl, tempZip, progress, 20 * 1024 * 1024);
 
-                using var fs = new FileStream(tempZip, FileMode.Create, FileAccess.Write, FileShare.None, 65536);
-                using var cs = await dlResponse.Content.ReadAsStreamAsync();
-                var buffer = new byte[65536];
-                int read;
-                while ((read = await cs.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                // Extract only the target DLL with path validation (off the UI thread)
+                DebugWindow.Log($"[ExtrasDownload] Extracting from {Path.GetFileName(tempZip)}");
+                await Task.Run(() =>
                 {
-                    await fs.WriteAsync(buffer, 0, read);
-                    totalRead += read;
-                    progress?.Report((double)totalRead / totalBytes * 100);
-                }
-            }
-            progress?.Report(100);
-
-            // Extract only the target DLL
-            DebugWindow.Log($"[ExtrasDownload] Extracting from {Path.GetFileName(tempZip)}");
-            using (var archive = SharpCompress.Archives.ArchiveFactory.Open(tempZip))
-            {
-                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
-                {
-                    if (Path.GetFileName(entry.Key ?? "").Equals("amd_fidelityfx_upscaler_dx12.dll",
-                        StringComparison.OrdinalIgnoreCase))
+                    using var archive = SharpCompress.Archives.ArchiveFactory.Open(tempZip);
+                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                     {
-                        var dest = Path.Combine(extractDir, "amd_fidelityfx_upscaler_dx12.dll");
-                        using var entryStream = entry.OpenEntryStream();
-                        using var outStream = File.Create(dest);
-                        entryStream.CopyTo(outStream, 81920);
-                        DebugWindow.Log($"[ExtrasDownload] Extracted DLL to {dest}");
-                        break;
+                        if (Path.GetFileName(entry.Key ?? "").Equals("amd_fidelityfx_upscaler_dx12.dll",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            var dest = SafeDestinationPath(extractDir, "amd_fidelityfx_upscaler_dx12.dll");
+                            using var entryStream = entry.OpenEntryStream();
+                            using var outStream = File.Create(dest);
+                            entryStream.CopyTo(outStream, 81920);
+                            DebugWindow.Log($"[ExtrasDownload] Extracted DLL to {dest}");
+                            break;
+                        }
                     }
-                }
+                });
             }
-
-            File.Delete(tempZip);
+            finally
+            {
+                try { if (File.Exists(tempZip)) File.Delete(tempZip); } catch { }
+            }
 
             if (!File.Exists(dllPath))
                 throw new Exception("amd_fidelityfx_upscaler_dx12.dll not found inside the downloaded archive.");
 
             return dllPath;
+        }
+
+        // ── OptiPatcher cache ─────────────────────────────────────────────────────
+
+        private void LoadOptiPatcherCache()
+        {
+            if (_optiPatcherCache.Releases.Count > 0) return;
+            var file = Path.Combine(_baseDir, "optipatcher_cache.json");
+            if (!File.Exists(file)) return;
+            try
+            {
+                var json = File.ReadAllText(file);
+                var loaded = JsonSerializer.Deserialize(json, OptimizerContext.Default.OptiPatcherReleasesCache);
+                if (loaded != null)
+                {
+                    _optiPatcherCache = loaded;
+                    RebuildInMemoryOptiPatcherCache();
+                    DebugWindow.Log($"[OptiPatcherCache] Loaded {_optiPatcherCache.Releases.Count} entries from local cache.");
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[OptiPatcherCache] Failed to load: {ex.Message}");
+            }
+        }
+
+        private void SaveOptiPatcherCache()
+        {
+            try
+            {
+                var file = Path.Combine(_baseDir, "optipatcher_cache.json");
+                var json = JsonSerializer.Serialize(_optiPatcherCache, OptimizerContext.Default.OptiPatcherReleasesCache);
+                File.WriteAllText(file, json);
+                DebugWindow.Log($"[OptiPatcherCache] Saved {_optiPatcherCache.Releases.Count} entries.");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[OptiPatcherCache] Failed to save: {ex.Message}");
+            }
+        }
+
+        private void RebuildInMemoryOptiPatcherCache()
+        {
+            if (_optiPatcherCache.Releases == null || _optiPatcherCache.Releases.Count == 0)
+            {
+                _cachedOptiPatcherVersions = new System.Collections.Generic.List<string>();
+                return;
+            }
+            _cachedLatestOptiPatcherVersion = _optiPatcherCache.Releases.FirstOrDefault(r => r.IsLatest)?.Version
+                ?? _optiPatcherCache.Releases.FirstOrDefault()?.Version;
+            _cachedOptiPatcherVersions = _optiPatcherCache.Releases.Select(r => r.Version).Distinct().ToList();
+            DebugWindow.Log($"[OptiPatcherCache] Rebuilt in-memory: {_cachedOptiPatcherVersions.Count} version(s), latest={_cachedLatestOptiPatcherVersion}");
+        }
+
+        /// <summary>
+        /// Fetches all releases from the OptiPatcher repo. Looks for the OptiPatcher.asi asset.
+        /// </summary>
+        private async Task<System.Collections.Generic.List<OptiPatcherReleaseEntry>> FetchOptiPatcherReleasesAsync()
+        {
+            var entries = new System.Collections.Generic.List<OptiPatcherReleaseEntry>();
+            var config = _config.OptiPatcher;
+            var repoLabel = $"{config.RepoOwner}/{config.RepoName}";
+
+            try
+            {
+                if (string.IsNullOrEmpty(config.RepoOwner) || string.IsNullOrEmpty(config.RepoName))
+                {
+                    DebugWindow.Log($"[OptiPatcherVersions] Skipping {repoLabel}: empty config");
+                    return entries;
+                }
+
+                // First, resolve the actual latest tag from GitHub
+                string? actualLatestTag = null;
+                try
+                {
+                    var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
+                    var latestResp = await GetWithRetryAsync(_httpClient, latestUrl, maxRetries: 2, timeoutSeconds: 15);
+                    if (latestResp.IsSuccessStatusCode)
+                    {
+                        var latestJson = await latestResp.Content.ReadAsStringAsync();
+                        using var latestDoc = JsonDocument.Parse(latestJson);
+                        if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
+                        {
+                            actualLatestTag = tag.GetString();
+                            if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                                actualLatestTag = actualLatestTag.Substring(1);
+                        }
+                    }
+                }
+                catch (Exception ex) { DebugWindow.Log($"[OptiPatcherVersions] Failed to resolve latest tag: {ex.Message}"); }
+
+                var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
+                var response = await GetWithRetryAsync(_httpClient, url);
+                DebugWindow.Log($"[OptiPatcherVersions] GET {url} → HTTP {(int)response.StatusCode}");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                bool latestMarked = false;
+
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    DebugWindow.Log($"[OptiPatcherVersions] ERROR: Expected JSON array, got {doc.RootElement.ValueKind}");
+                    return entries;
+                }
+
+                foreach (var element in doc.RootElement.EnumerateArray())
+                {
+                    if (!element.TryGetProperty("tag_name", out var tagName)) continue;
+                    var version = tagName.GetString();
+                    if (string.IsNullOrEmpty(version)) continue;
+
+                    if (version.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                        version = version.Substring(1);
+
+                    // Look for OptiPatcher.asi asset
+                    string? downloadUrl = null;
+                    if (element.TryGetProperty("assets", out var assets))
+                    {
+                        foreach (var asset in assets.EnumerateArray())
+                        {
+                            if (asset.TryGetProperty("browser_download_url", out var urlProp) &&
+                                asset.TryGetProperty("name", out var nameProp))
+                            {
+                                var assetName = nameProp.GetString() ?? "";
+                                var assetUrl  = urlProp.GetString();
+                                if (assetUrl != null &&
+                                    assetName.EndsWith(".asi", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    downloadUrl = assetUrl;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Mark as latest: use actualLatestTag if available, otherwise first in list
+                    bool isLatest;
+                    if (!string.IsNullOrEmpty(actualLatestTag))
+                        isLatest = string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase);
+                    else
+                        isLatest = !latestMarked;
+
+                    entries.Add(new OptiPatcherReleaseEntry
+                    {
+                        Version = version,
+                        DownloadUrl = downloadUrl,
+                        IsLatest = isLatest,
+                    });
+                    latestMarked = true;
+                }
+
+                DebugWindow.Log($"[OptiPatcherVersions] {repoLabel} → {entries.Count} release(s)");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[OptiPatcherVersions] {repoLabel} → ERROR: {ex.Message}");
+                // Do NOT rethrow — return empty list so CheckForUpdatesAsync continues
+            }
+
+            return entries;
+        }
+
+        /// <summary>
+        /// Returns the cache directory for a specific OptiPatcher version.
+        /// </summary>
+        public string GetOptiPatcherCachePath(string version)
+            => Path.Combine(_cacheDir, "OptiPatcher", version);
+
+        /// <summary>
+        /// Returns true if OptiPatcher.asi for the given version is already cached.
+        /// </summary>
+        public bool IsOptiPatcherCached(string version)
+            => File.Exists(Path.Combine(GetOptiPatcherCachePath(version), "OptiPatcher.asi"));
+
+        /// <summary>
+        /// Downloads OptiPatcher.asi for the given version into the per-version cache folder.
+        /// Returns the full path to the cached OptiPatcher.asi file.
+        /// </summary>
+        public async Task<string> DownloadOptiPatcherAsync(string version, IProgress<double>? progress = null)
+        {
+            var cacheDir = GetOptiPatcherCachePath(version);
+            var asiPath  = Path.Combine(cacheDir, "OptiPatcher.asi");
+
+            if (File.Exists(asiPath))
+            {
+                DebugWindow.Log($"[OptiPatcherDownload] OptiPatcher v{version} already cached at {asiPath}");
+                return asiPath;
+            }
+
+            // Resolve download URL (cache first, then API)
+            string? downloadUrl = _optiPatcherCache.Releases
+                .FirstOrDefault(r => string.Equals(r.Version, version, StringComparison.OrdinalIgnoreCase))
+                ?.DownloadUrl;
+
+            if (string.IsNullOrEmpty(downloadUrl))
+            {
+                var config = _config.OptiPatcher;
+                foreach (var prefix in new[] { "v", "" })
+                {
+                    try
+                    {
+                        var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
+                        var response = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
+                        if (!response.IsSuccessStatusCode) continue;
+
+                        var json = await response.Content.ReadAsStringAsync();
+                        using var doc = JsonDocument.Parse(json);
+                        if (doc.RootElement.TryGetProperty("assets", out var assets))
+                        {
+                            foreach (var asset in assets.EnumerateArray())
+                            {
+                                if (asset.TryGetProperty("browser_download_url", out var urlProp) &&
+                                    asset.TryGetProperty("name", out var nameProp))
+                                {
+                                    var assetName = nameProp.GetString() ?? "";
+                                    var assetUrl  = urlProp.GetString();
+                                    if (assetUrl != null && assetName.EndsWith(".asi", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        downloadUrl = assetUrl;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(downloadUrl)) break;
+                    }
+                    catch (Exception ex) { DebugWindow.Log($"[OptiPatcherDownload] API lookup attempt failed: {ex.Message}"); }
+                }
+            }
+
+            if (string.IsNullOrEmpty(downloadUrl))
+                throw new VersionUnavailableException(version, "No OptiPatcher.asi asset found for this version.");
+
+            Directory.CreateDirectory(cacheDir);
+
+            DebugWindow.Log($"[OptiPatcherDownload] Downloading {downloadUrl}");
+            await StreamToFileAsync(_httpClient, downloadUrl, asiPath, progress, 5 * 1024 * 1024);
+
+            if (!File.Exists(asiPath))
+                throw new Exception("OptiPatcher.asi was not downloaded correctly.");
+
+            return asiPath;
         }
 
         private bool IsUpdateAvailable(string? localVersion, string? remoteVersion)
@@ -910,6 +1443,15 @@ namespace OptiscalerClient.Services
                 return extractPath; // Already downloaded
             }
 
+            lock (_downloadLock)
+            {
+                if (_activeOptiDownloads.Contains(version))
+                {
+                    throw new VersionUnavailableException(version, "Download already in progress for this version.");
+                }
+                _activeOptiDownloads.Add(version);
+            }
+
             LastError = null;
             DebugWindow.Log($"[Download] Starting download of OptiScaler v{version}");
             DebugWindow.Log($"[Download] Cache path: {extractPath}");
@@ -932,14 +1474,14 @@ namespace OptiscalerClient.Services
                     // Try stable repo with v prefix
                     var url = $"https://api.github.com/repos/{_config.OptiScaler.RepoOwner}/{_config.OptiScaler.RepoName}/releases/tags/v{version}";
                     DebugWindow.Log($"[Download] Trying stable repo (with v prefix): {url}");
-                    response = await _httpClient.GetAsync(url);
+                    response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
 
                     if (!response.IsSuccessStatusCode)
                     {
                         // Try stable repo without v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScaler.RepoOwner}/{_config.OptiScaler.RepoName}/releases/tags/{version}";
                         DebugWindow.Log($"[Download] Trying stable repo (without v prefix): {url}");
-                        response = await _httpClient.GetAsync(url);
+                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                     }
 
                     if (!response.IsSuccessStatusCode)
@@ -947,7 +1489,7 @@ namespace OptiscalerClient.Services
                         // Try beta repo with v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScalerBetas.RepoOwner}/{_config.OptiScalerBetas.RepoName}/releases/tags/v{version}";
                         DebugWindow.Log($"[Download] Trying beta repo (with v prefix): {url}");
-                        response = await _httpClient.GetAsync(url);
+                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                         repoSource = " (beta repo)";
                     }
 
@@ -956,7 +1498,7 @@ namespace OptiscalerClient.Services
                         // Try beta repo without v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScalerBetas.RepoOwner}/{_config.OptiScalerBetas.RepoName}/releases/tags/{version}";
                         DebugWindow.Log($"[Download] Trying beta repo (without v prefix): {url}");
-                        response = await _httpClient.GetAsync(url);
+                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                         repoSource = " (beta repo)";
                     }
 
@@ -1025,87 +1567,44 @@ namespace OptiscalerClient.Services
                 Directory.CreateDirectory(extractPath);
                 DebugWindow.Log($"[Download] Created cache directory: {extractPath}");
 
-                // Download with optional progress simulation or reading stream. 
-                // We'll read the stream for progress:
-                DebugWindow.Log($"[Download] Starting file download from: {Path.GetFileName(downloadUrl)}");
-                using var dlResponse = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
-                dlResponse.EnsureSuccessStatusCode();
-
-                var totalBytes = dlResponse.Content.Headers.ContentLength ?? 10 * 1024 * 1024; // fallback 10MB
                 var tempZip = Path.Combine(Path.GetTempPath(), $"OptiScaler_{version}_{Guid.NewGuid()}.zip");
-                DebugWindow.Log($"[Download] Download size: {totalBytes:N0} bytes, temp file: {Path.GetFileName(tempZip)}");
+                DebugWindow.Log($"[Download] Streaming from: {Path.GetFileName(downloadUrl)}");
 
-                long totalRead = 0;
-                using (var fs = new FileStream(tempZip, FileMode.Create, FileAccess.Write, FileShare.None, 65536)) // 64KB buffer
-                using (var cs = await dlResponse.Content.ReadAsStreamAsync())
+                try
                 {
-                    var buffer = new byte[65536]; // 64KB buffer for faster download
-                    var isMoreToRead = true;
-                    var lastProgressLog = DateTime.MinValue;
+                    // Stream download with retry and per-attempt timeout
+                    await StreamToFileAsync(_httpClient, downloadUrl, tempZip, progress);
 
-                    do
+                    // Extract with path traversal validation (off the UI thread)
+                    DebugWindow.Log($"[Extract] Starting extraction of {Path.GetFileName(tempZip)} to {extractPath}");
+                    var extractStartTime = DateTime.Now;
+                    var fileCount = 0;
+
+                    await Task.Run(() =>
                     {
-                        var read = await cs.ReadAsync(buffer, 0, buffer.Length);
-                        if (read == 0)
+                        using var archive = ArchiveFactory.Open(tempZip);
+                        var entries = archive.Entries.Where(e => !e.IsDirectory).ToList();
+                        foreach (var entry in entries)
                         {
-                            isMoreToRead = false;
+                            var destPath = SafeDestinationPath(extractPath, entry.Key ?? string.Empty);
+                            var destDir = Path.GetDirectoryName(destPath);
+                            if (destDir != null && !Directory.Exists(destDir))
+                                Directory.CreateDirectory(destDir);
+                            using var entryStream = entry.OpenEntryStream();
+                            using var fileStream = File.Create(destPath);
+                            entryStream.CopyTo(fileStream, 81920);
+                            fileCount++;
                         }
-                        else
-                        {
-                            await fs.WriteAsync(buffer, 0, read);
-                            totalRead += read;
-                            var progressPercent = (double)totalRead / totalBytes * 100;
-                            progress?.Report(progressPercent);
+                    });
 
-                            // Log progress every 10 seconds
-                            if (DateTime.Now - lastProgressLog > TimeSpan.FromSeconds(10))
-                            {
-                                DebugWindow.Log($"[Download] Progress: {progressPercent:F1}% ({totalRead:N0}/{totalBytes:N0} bytes)");
-                                lastProgressLog = DateTime.Now;
-                            }
-                        }
-                    }
-                    while (isMoreToRead);
+                    var extractDuration = DateTime.Now - extractStartTime;
+                    DebugWindow.Log($"[Extract] Extraction completed: {fileCount} files in {extractDuration.TotalSeconds:F1}s");
                 }
-
-                DebugWindow.Log($"[Download] Download completed: {totalRead:N0} bytes downloaded");
-
-                // Ensure 100% is reached
-                progress?.Report(100);
-
-                // Extract
-                DebugWindow.Log($"[Extract] Starting extraction of {Path.GetFileName(tempZip)} to {extractPath}");
-                var extractStartTime = DateTime.Now;
-                var fileCount = 0;
-
-                using (var archive = ArchiveFactory.Open(tempZip))
+                finally
                 {
-                    var entries = archive.Entries.Where(e => !e.IsDirectory).ToList();
-
-                    foreach (var entry in entries)
-                    {
-                        var entryKey = entry.Key ?? string.Empty;
-                        var destPath = Path.Combine(extractPath, entryKey);
-                        var destDir = Path.GetDirectoryName(destPath);
-
-                        if (destDir != null && !Directory.Exists(destDir))
-                            Directory.CreateDirectory(destDir);
-
-                        using (var entryStream = entry.OpenEntryStream())
-                        using (var fileStream = File.Create(destPath))
-                        {
-                            entryStream.CopyTo(fileStream, 81920); // 80KB buffer for faster extraction
-                        }
-
-                        fileCount++;
-                    }
+                    try { if (File.Exists(tempZip)) File.Delete(tempZip); } catch { }
+                    DebugWindow.Log($"[Download] Temp file cleaned up: {Path.GetFileName(tempZip)}");
                 }
-
-                var extractDuration = DateTime.Now - extractStartTime;
-                DebugWindow.Log($"[Extract] Extraction completed: {fileCount} files extracted in {extractDuration.TotalSeconds:F1} seconds");
-
-                File.Delete(tempZip);
-                DebugWindow.Log($"[Download] Temporary file deleted: {Path.GetFileName(tempZip)}");
 
                 _localVersions.OptiScalerVersion = version; // update the locally assumed latest for other components
                 SaveLocalVersions();
@@ -1123,6 +1622,22 @@ namespace OptiscalerClient.Services
                     DebugWindow.Log($"[Download] Cleaned up cache directory due to error: {extractPath}");
                 }
                 throw;
+            }
+            finally
+            {
+                lock (_downloadLock)
+                {
+                    _activeOptiDownloads.Remove(version);
+                }
+            }
+        }
+
+        public static bool IsOptiScalerDownloadActive(string version)
+        {
+            if (string.IsNullOrWhiteSpace(version)) return false;
+            lock (_downloadLock)
+            {
+                return _activeOptiDownloads.Contains(version);
             }
         }
 
@@ -1201,9 +1716,9 @@ namespace OptiscalerClient.Services
             LastError = null;
             try
             {
-                // Get release info
+                // Get release info (with retry)
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                var response = await _httpClient.GetAsync(url);
+                var response = await GetWithRetryAsync(_httpClient, url);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -1218,7 +1733,9 @@ namespace OptiscalerClient.Services
                         if (asset.TryGetProperty("browser_download_url", out var urlProp))
                         {
                             var assetUrl = urlProp.GetString();
-                            if (assetUrl != null && (assetUrl.EndsWith(".zip") || assetUrl.EndsWith(".7z")))
+                            if (assetUrl != null &&
+                                (assetUrl.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
+                                 assetUrl.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)))
                             {
                                 downloadUrl = assetUrl;
                                 break;
@@ -1227,42 +1744,40 @@ namespace OptiscalerClient.Services
                     }
                 }
 
-                // Fallback to zipball_url if no assets found (e.g., NukemFG)
+                // Fallback to zipball_url if no assets found
                 if (downloadUrl == null && doc.RootElement.TryGetProperty("zipball_url", out var zipballProp))
-                {
                     downloadUrl = zipballProp.GetString();
-                }
 
                 if (downloadUrl == null)
                     throw new Exception($"No downloadable asset found for {componentName}. Check if the repository has releases with downloadable files.");
 
-                // Download
+                var tempZip = Path.Combine(Path.GetTempPath(), $"{componentName}_{Guid.NewGuid()}.zip");
+                var extractPath = Path.Combine(_cacheDir, cacheSubDir);
                 try
                 {
-                    var zipData = await _httpClient.GetByteArrayAsync(downloadUrl);
-                    var tempZip = Path.Combine(Path.GetTempPath(), $"{componentName}_{Guid.NewGuid()}.zip");
-                    await File.WriteAllBytesAsync(tempZip, zipData);
+                    // Stream download with retry and per-attempt timeout
+                    DebugWindow.Log($"[Download] Streaming {componentName} from {Path.GetFileName(downloadUrl)}");
+                    await StreamToFileAsync(_httpClient, downloadUrl, tempZip);
 
-                    // Extract
-                    var extractPath = Path.Combine(_cacheDir, cacheSubDir);
+                    // Extract with path traversal validation
                     if (Directory.Exists(extractPath))
                         Directory.Delete(extractPath, true);
-
                     Directory.CreateDirectory(extractPath);
 
-                    using (var archive = ArchiveFactory.Open(tempZip))
+                    await Task.Run(() =>
                     {
+                        using var archive = ArchiveFactory.Open(tempZip);
                         foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
                         {
-                            entry.WriteToDirectory(extractPath, new ExtractionOptions
-                            {
-                                ExtractFullPath = true,
-                                Overwrite = true
-                            });
+                            var destPath = SafeDestinationPath(extractPath, entry.Key ?? string.Empty);
+                            var destDir = Path.GetDirectoryName(destPath);
+                            if (destDir != null && !Directory.Exists(destDir))
+                                Directory.CreateDirectory(destDir);
+                            using var entryStream = entry.OpenEntryStream();
+                            using var fileStream = File.Create(destPath);
+                            entryStream.CopyTo(fileStream, 81920);
                         }
-                    }
-
-                    File.Delete(tempZip);
+                    });
                 }
                 catch (HttpRequestException httpEx)
                 {
@@ -1271,6 +1786,10 @@ namespace OptiscalerClient.Services
                 catch (IOException ioEx)
                 {
                     throw new Exception($"Failed to extract {componentName}: {ioEx.Message}", ioEx);
+                }
+                finally
+                {
+                    try { if (File.Exists(tempZip)) File.Delete(tempZip); } catch { }
                 }
             }
             catch (Exception ex)

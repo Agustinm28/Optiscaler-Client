@@ -29,7 +29,7 @@ public class GamePersistenceService
         // Guardamos en AppData para ser correctos con los permisos de usuario
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var folder = Path.Combine(appData, "OptiscalerClient");
-        
+
         if (!Directory.Exists(folder))
         {
             Directory.CreateDirectory(folder);
@@ -56,8 +56,9 @@ public class GamePersistenceService
             var json = File.ReadAllText(_filePath);
             return JsonSerializer.Deserialize(json, OptimizerContext.Default.ListGame) ?? new List<Game>();
         }
-        catch
+        catch (Exception ex)
         {
+            System.Diagnostics.Debug.WriteLine($"[GamePersistence] Failed to load games: {ex.Message}");
             return new List<Game>();
         }
     }

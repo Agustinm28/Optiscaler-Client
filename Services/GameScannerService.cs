@@ -16,6 +16,7 @@
 
 using OptiscalerClient.Models;
 using OptiscalerClient.Views;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace OptiscalerClient.Services;
@@ -50,103 +51,55 @@ public class GameScannerService
         _exclusions = new ExclusionService(configPath);
     }
 
-    public async Task<List<Game>> ScanAllGamesAsync(ScanSourcesConfig? scanConfig = null)
+    public async Task<List<Game>> ScanAllGamesAsync(ScanSourcesConfig? scanConfig = null, IReadOnlyCollection<string>? allowedDriveRoots = null)
     {
-        return await Task.Run(() =>
+        return await Task.Run(async () =>
         {
-            var games = new List<Game>();
-            var analyzer = new GameAnalyzerService();
             DebugWindow.Log("[Scanner] Executing global game scan across all platforms...");
+            GameAnalyzerService.LoadCacheFromDisk();
 
-            // Use default config if none provided
             if (scanConfig == null)
-            {
                 scanConfig = new ScanSourcesConfig();
-            }
 
-            void ProcessGames(IEnumerable<Game> scannedGames)
+            bool IsDriveAllowed(Game game)
             {
-                foreach (var game in scannedGames)
+                if (allowedDriveRoots == null || allowedDriveRoots.Count == 0)
+                    return true;
+                try
                 {
-                    if (_exclusions.IsExcluded(game)) continue;
-                    analyzer.AnalyzeGame(game);
-                    games.Add(game);
+                    var root = Path.GetPathRoot(game.InstallPath);
+                    if (string.IsNullOrEmpty(root)) return false;
+                    return allowedDriveRoots.Contains(root, StringComparer.OrdinalIgnoreCase);
                 }
+                catch { return false; }
             }
 
-            // Scan platform sources based on config
+            // ── 1. Parallel platform scanner discovery ───────────────────────────
+            var platformTasks = new List<Task<List<Game>>>();
+
             if (scanConfig.ScanSteam)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning Steam library...");
-                    ProcessGames(_steamScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] Steam scan error: {ex.Message}"); }
-            }
-
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning Steam library..."); return _steamScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] Steam scan error: {ex.Message}"); return new List<Game>(); } }));
             if (scanConfig.ScanEpic && _epicScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning Epic Games library...");
-                    ProcessGames(_epicScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] Epic scan error: {ex.Message}"); }
-            }
-
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning Epic Games library..."); return _epicScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] Epic scan error: {ex.Message}"); return new List<Game>(); } }));
             if (scanConfig.ScanGOG && _gogScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning GOG library...");
-                    ProcessGames(_gogScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] GOG scan error: {ex.Message}"); }
-            }
-
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning GOG library..."); return _gogScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] GOG scan error: {ex.Message}"); return new List<Game>(); } }));
             if (scanConfig.ScanXbox && _xboxScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning Xbox library (MS Store)...");
-                    ProcessGames(_xboxScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] Xbox scan error: {ex.Message}"); }
-            }
-
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning Xbox library (MS Store)..."); return _xboxScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] Xbox scan error: {ex.Message}"); return new List<Game>(); } }));
             if (scanConfig.ScanEA && _eaScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning EA App library...");
-                    ProcessGames(_eaScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] EA scan error: {ex.Message}"); }
-            }
-
-            // Always scan Battle.net (no config switch yet)
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning EA App library..."); return _eaScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] EA scan error: {ex.Message}"); return new List<Game>(); } }));
             if (_battleNetScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning Battle.net library...");
-                    ProcessGames(_battleNetScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] Battle.net scan error: {ex.Message}"); }
-            }
-
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning Battle.net library..."); return _battleNetScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] Battle.net scan error: {ex.Message}"); return new List<Game>(); } }));
             if (scanConfig.ScanUbisoft && _ubisoftScanner != null)
-            {
-                try
-                {
-                    DebugWindow.Log("[Scanner] Scanning Ubisoft Connect library...");
-                    ProcessGames(_ubisoftScanner.Scan());
-                }
-                catch (Exception ex) { DebugWindow.Log($"[Scanner] Ubisoft scan error: {ex.Message}"); }
-            }
+                platformTasks.Add(Task.Run(() => { try { DebugWindow.Log("[Scanner] Scanning Ubisoft Connect library..."); return _ubisoftScanner.Scan(); } catch (Exception ex) { DebugWindow.Log($"[Scanner] Ubisoft scan error: {ex.Message}"); return new List<Game>(); } }));
 
-            // Scan custom folders
+            var platformResults = await Task.WhenAll(platformTasks);
+
+            // ── 2. Merge, filter, and add custom folder games ───────────────────
+            var allScannedGames = platformResults
+                .SelectMany(batch => batch)
+                .Where(g => !_exclusions.IsExcluded(g) && IsDriveAllowed(g))
+                .ToList();
+
             if (scanConfig.CustomFolders != null && scanConfig.CustomFolders.Count > 0)
             {
                 DebugWindow.Log($"[Scanner] Scanning {scanConfig.CustomFolders.Count} custom folder(s)...");
@@ -156,7 +109,7 @@ public class GameScannerService
                     {
                         var customGames = ScanCustomFolder(customFolder);
                         DebugWindow.Log($"[Scanner] Found {customGames.Count} games in '{customFolder}'");
-                        ProcessGames(customGames);
+                        allScannedGames.AddRange(customGames.Where(g => !_exclusions.IsExcluded(g) && IsDriveAllowed(g)));
                     }
                     catch (Exception ex)
                     {
@@ -165,8 +118,18 @@ public class GameScannerService
                 }
             }
 
-            DebugWindow.Log($"[Scanner] Scan completed. Found {games.Count} valid games.");
+            // ── 3. Parallel game analysis (up to 4 concurrent) ─────────────────
+            var analyzer = new GameAnalyzerService();
+            var games = new ConcurrentBag<Game>();
+            Parallel.ForEach(allScannedGames, new ParallelOptions { MaxDegreeOfParallelism = 4 }, game =>
+            {
+                analyzer.AnalyzeGame(game);
+                games.Add(game);
+            });
 
+            GameAnalyzerService.FlushCacheToDisk();
+
+            DebugWindow.Log($"[Scanner] Scan completed. Found {games.Count} valid games.");
             return games.OrderBy(g => g.Platform).ThenBy(g => g.Name).ToList();
         });
     }
@@ -191,16 +154,21 @@ public class GameScannerService
                 try
                 {
                     // Find all .exe files in this game folder (recursive, but limited depth)
-                    var exeFiles = Directory.GetFiles(gameFolder, "*.exe", SearchOption.AllDirectories);
+                    var exeFiles = Directory.GetFiles(gameFolder, "*.exe", new EnumerationOptions
+                    {
+                        RecurseSubdirectories = true,
+                        MaxRecursionDepth = 3,
+                        IgnoreInaccessible = true
+                    });
 
                     foreach (var exePath in exeFiles)
                     {
                         // Use the game folder name as the game name
                         var gameName = Path.GetFileName(gameFolder);
-                        
+
                         // Skip common non-game executables
                         var exeName = Path.GetFileNameWithoutExtension(exePath).ToLower();
-                        if (exeName.Contains("unins") || exeName.Contains("setup") || 
+                        if (exeName.Contains("unins") || exeName.Contains("setup") ||
                             exeName.Contains("installer") || exeName.Contains("crash") ||
                             exeName.Contains("launcher") && !exeName.Contains("game"))
                         {
@@ -218,7 +186,7 @@ public class GameScannerService
 
                         games.Add(game);
                         DebugWindow.Log($"[Scanner] Found custom game: {gameName} ({Path.GetFileName(exePath)})");
-                        
+
                         // Only take the first valid exe per game folder to avoid duplicates
                         break;
                     }

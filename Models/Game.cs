@@ -56,4 +56,8 @@ public class Game
     public bool IsOptiscalerInstalled { get; set; }
     public string? OptiscalerVersion { get; set; }
     public string? Fsr4ExtraVersion { get; set; }
+
+    // UI customization (not set by scanner)
+    public bool IsHidden { get; set; } = false;
+    public int DisplayOrder { get; set; } = 0;
 }

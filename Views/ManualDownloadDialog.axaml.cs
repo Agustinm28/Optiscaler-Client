@@ -51,7 +51,7 @@ namespace OptiscalerClient.Views
 
             // 100% Flicker-free startup strategy:
             this.Opacity = 0;
-            
+
             // Re-bind TitleBar dragging
             var titleBar = this.FindControl<Border>("TitleBar");
             if (titleBar != null)
@@ -112,45 +112,49 @@ namespace OptiscalerClient.Views
                     UseShellExecute = true
                 });
             }
-            catch { }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[ManualDownload] Failed to open NexusMods URL: {ex.Message}"); }
         }
 
         private async void BtnBrowse_Click(object sender, RoutedEventArgs e)
         {
-            var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            try
             {
-                Title = $"Select {_requiredFileName}",
-                AllowMultiple = false,
-                FileTypeFilter = new[]
+                var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
                 {
-                    new FilePickerFileType("NukemFG DLL") { Patterns = new[] { RequiredDllName } },
-                    new FilePickerFileType("ZIP Archive") { Patterns = new[] { "*.zip" } },
-                    new FilePickerFileType("All files") { Patterns = new[] { "*.*" } }
-                }
-            });
+                    Title = $"Select {_requiredFileName}",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        new FilePickerFileType("NukemFG DLL") { Patterns = new[] { RequiredDllName } },
+                        new FilePickerFileType("ZIP Archive") { Patterns = new[] { "*.zip" } },
+                        new FilePickerFileType("All files") { Patterns = new[] { "*.*" } }
+                    }
+                });
 
-            if (files != null && files.Count > 0)
-            {
-                var selectedPath = files[0].Path.LocalPath;
+                if (files != null && files.Count > 0)
+                {
+                    var selectedPath = files[0].Path.LocalPath;
 
-                if (ValidateSelection(selectedPath, out string? errorMsg))
-                {
-                    var txtSelectedPath = this.FindControl<TextBox>("TxtSelectedPath");
-                    if (txtSelectedPath != null) txtSelectedPath.Text = selectedPath;
-                    
-                    SelectedPath = selectedPath;
-                    var btnConfirm = this.FindControl<Button>("BtnConfirm");
-                    if (btnConfirm != null) btnConfirm.IsEnabled = true;
-                }
-                else
-                {
-                    var title = GetResourceString("TxtError", "Error");
-                    await new ConfirmDialog(this, title, errorMsg ?? "Unknown error").ShowDialog<object>(this);
-                    
-                    var btnConfirm = this.FindControl<Button>("BtnConfirm");
-                    if (btnConfirm != null) btnConfirm.IsEnabled = false;
+                    if (ValidateSelection(selectedPath, out string? errorMsg))
+                    {
+                        var txtSelectedPath = this.FindControl<TextBox>("TxtSelectedPath");
+                        if (txtSelectedPath != null) txtSelectedPath.Text = selectedPath;
+
+                        SelectedPath = selectedPath;
+                        var btnConfirm = this.FindControl<Button>("BtnConfirm");
+                        if (btnConfirm != null) btnConfirm.IsEnabled = true;
+                    }
+                    else
+                    {
+                        var title = GetResourceString("TxtError", "Error");
+                        await new ConfirmDialog(this, title, errorMsg ?? "Unknown error").ShowDialog<object>(this);
+
+                        var btnConfirm = this.FindControl<Button>("BtnConfirm");
+                        if (btnConfirm != null) btnConfirm.IsEnabled = false;
+                    }
                 }
             }
+            catch (Exception ex) { DebugWindow.Log($"[ManualDownload] Browse failed: {ex.Message}"); }
         }
 
         private bool ValidateSelection(string path, out string? errorMsg)

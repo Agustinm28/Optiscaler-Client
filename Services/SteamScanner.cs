@@ -44,7 +44,10 @@ public class SteamScanner : IGameScanner
                     }
                 }
             }
-            catch { /* Ignore errors accessing folders */ }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Steam] Error scanning library '{libraryPath}': {ex.Message}");
+            }
         }
 
         return games;
@@ -67,8 +70,9 @@ public class SteamScanner : IGameScanner
             using var key = baseKey.OpenSubKey(REGISTRY_PATH);
             return key?.GetValue("InstallPath") as string;
         }
-        catch
+        catch (Exception ex)
         {
+            DebugWindow.Log($"[Steam] Error reading registry: {ex.Message}");
             return null;
         }
     }
@@ -86,33 +90,44 @@ public class SteamScanner : IGameScanner
         return candidates.FirstOrDefault(p => Directory.Exists(Path.Combine(p, "steamapps")));
     }
 
+    private static string CanonicalPath(string path)
+    {
+        try { return new DirectoryInfo(path).ResolveLinkTarget(true)?.FullName ?? Path.GetFullPath(path); }
+        catch { return Path.GetFullPath(path); }
+    }
+
     private List<string> GetLibraryFolders(string steamPath)
     {
-        var folders = new List<string> { steamPath }; // Default library is always the install path
-        var vdfPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var folders = new List<string>();
 
+        var canonical = CanonicalPath(steamPath);
+        seen.Add(canonical);
+        folders.Add(canonical);
+
+        var vdfPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
         if (!File.Exists(vdfPath)) return folders;
 
         try
         {
             var content = File.ReadAllText(vdfPath);
-            // Regex to find "path" "..."
             var matches = Regex.Matches(content, "\"path\"\\s+\"([^\"]+)\"");
 
             foreach (Match match in matches)
             {
                 if (match.Success && match.Groups.Count > 1)
                 {
-                    // Unescape backslashes (VDF escapes them as \\ on Windows)
                     var path = match.Groups[1].Value.Replace("\\\\", "\\");
-                    if (!folders.Contains(path, StringComparer.Ordinal))
-                    {
-                        folders.Add(path);
-                    }
+                    var canon = CanonicalPath(path);
+                    if (seen.Add(canon))
+                        folders.Add(canon);
                 }
             }
         }
-        catch { }
+        catch (Exception ex)
+        {
+            DebugWindow.Log($"[Steam] Error reading libraryfolders.vdf: {ex.Message}");
+        }
 
         return folders;
     }
@@ -150,8 +165,9 @@ public class SteamScanner : IGameScanner
                 Platform = GamePlatform.Steam
             };
         }
-        catch
+        catch (Exception ex)
         {
+            DebugWindow.Log($"[Steam] Error parsing manifest '{manifestPath}': {ex.Message}");
             return null;
         }
     }

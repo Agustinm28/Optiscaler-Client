@@ -1,4 +1,4 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
@@ -37,6 +37,17 @@
     <x:String x:Key="TxtTipUpdateNukem">Yeni NukemFG sürümü mevcut. Güncellenmiş DLL'yi sağlamak için tıklayın.</x:String>
     <x:String x:Key="TxtDefaultGpu">GPU algılanıyor…</x:String>
     <x:String x:Key="TxtManageGame">Yönet</x:String>
+    <x:String x:Key="TxtQuickInstall">✦ Hızlı Kurulum</x:String>
+    <x:String x:Key="TxtQuickUninstall">🗑️ Hızlı Kaldırma</x:String>
+    <x:String x:Key="TxtInitialScanTitle">İlk tarama</x:String>
+    <x:String x:Key="TxtInitialScanDesc">Oyunları taramadan önce taranacak sürücüleri ve kaynakları seçin. Bu pencereyi kapatıp daha sonra tarama yapabilirsiniz.</x:String>
+    <x:String x:Key="TxtScanSetupTitle">Tarama ayarları</x:String>
+    <x:String x:Key="TxtScanSetupDesc">Taranacak sürücüleri ve kaynakları seçin. Bu pencereyi kapatıp daha sonra tarama yapabilirsiniz.</x:String>
+    <x:String x:Key="TxtInitialScanDrives">Taranacak sürücüler</x:String>
+    <x:String x:Key="TxtInitialScanSources">Taranacak kaynaklar</x:String>
+    <x:String x:Key="TxtInitialScanStart">Taramayı başlat</x:String>
+    <x:String x:Key="TxtInitialScanClose">Kapat</x:String>
+    <x:String x:Key="TxtInitialScanNoDrives">Sürücü bulunamadı.</x:String>
     <x:String x:Key="TxtStatusReady">Hazır</x:String>
     <x:String x:Key="TxtScanningTitle">Oyunlar taranıyor...</x:String>
     <x:String x:Key="TxtScanningDesc">Tüm platformlarda oyunlar aranıyor...</x:String>
@@ -121,7 +132,7 @@
     <x:String x:Key="TxtBtnLater">Sonra</x:String>
 
     <!-- Help View Strings -->
-    <x:String x:Key="TxtAboutTitle">Hakkında</x:String>
+    <x:String x:Key="TxtAboutTitle">Yardım</x:String>
     <x:String x:Key="TxtFeedbackTitle">Geri Bildirim</x:String>
     <x:String x:Key="TxtFeedbackDesc">Özellik istemek veya hata bildirmek isterseniz, lütfen GitHub deposunda bir issue açın.</x:String>
     <x:String x:Key="TxtBuildDateLbl">Son Derleme Tarihi</x:String>
@@ -142,6 +153,8 @@
     <x:String x:Key="TxtLoadedGamesFormat">{0} oyun yüklendi.</x:String>
     <x:String x:Key="TxtScanningShort">Oyunlar taranıyor...</x:String>
     <x:String x:Key="TxtScanCompleteFormat">Tarama tamamlandı. Toplam oyun: {0}</x:String>
+    <x:String x:Key="TxtFetchingCoversFormat">Kapaklar yükleniyor: {0}/{1}...</x:String>
+    <x:String x:Key="TxtCoversCompleteFmt">Kapaklar yüklendi. Toplam oyun: {0}</x:String>
     <x:String x:Key="TxtErrorFormat">Hata: {0}</x:String>
     <x:String x:Key="TxtSelectExe">Oyun Yürütülebilir Dosyasını Seç</x:String>
     <x:String x:Key="TxtGameDuplicate">Bu oyun zaten listede.</x:String>
@@ -195,4 +208,295 @@
     <x:String x:Key="TxtNoGames">Oyun Yok</x:String>
     <x:String x:Key="TxtNoGamesFound">Oyun bulunamadı. Lütfen önce oyunları tarayın.</x:String>
 
-</ResourceDictionary>
+
+    <!-- SteamGridDB -->
+    <x:String x:Key="TxtSteamGridGuideStep1Title">1. Open the SteamGridDB API page</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyDesc">Kapak eşleştirme doğruluğunu artırmak için kullanılır. Opsiyonel, ancak önerilir.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Title">2. API anahtarınızı oluşturun</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Desc">https://www.steamgriddb.com/profile/preferences/api adresine gidin ve oturum açın.</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Desc">Anahtarı kaydettikten sonra, kapakların daha iyi doğrulukla yenilenebilmesi için yeni bir tarama çalıştırın.</x:String>
+    <x:String x:Key="TxtSteamGridGetApiKey">API anahtarını al</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep2Desc">O sayfada yeni bir API anahtarı oluşturun ve kopyalayın.</x:String>
+    <x:String x:Key="TxtSteamGridGuideOpenPage">Sayfayı aç</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep4Title">4. Oyunlarınızı tekrar tarayın</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeader">Get your SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideTitle">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridGuideHeaderDesc">Oyun kapak algılamasını iyileştirmek için hızlı rehber.</x:String>
+    <x:String x:Key="TxtSteamGridApiKey">SteamGridDB API Key</x:String>
+    <x:String x:Key="TxtSteamGridApiKeyPlaceholder">Paste your SteamGridDB API key here</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Title">3. Ayarlara yapıştırın</x:String>
+    <x:String x:Key="TxtSteamGridGuideStep3Desc">Return to the app and paste the key into the SteamGridDB API Key field.</x:String>
+
+    <x:String x:Key="TxtSteamGridGuideStep1Prefix">Şu adrese gidin </x:String>
+    <x:String x:Key="TxtSteamGridGuideStep1Suffix"> ve oturum açın.</x:String>
+
+    <x:String x:Key="TxtViewGrid">Izgara görünümü</x:String>
+    <x:String x:Key="TxtViewList">Liste görünümü</x:String>
+    <x:String x:Key="TxtLoadingResources">Kaynaklar yükleniyor...</x:String>
+    <x:String x:Key="TxtLoadingResourcesDesc">Fetching version data from GitHub</x:String>
+    <x:String x:Key="TxtEditImage">Görseli düzenle</x:String>
+    <x:String x:Key="TxtCoverUpdateTitle">Kapak güncelle</x:String>
+    <x:String x:Key="TxtCoverUpdateDesc">Oyun için özel bir görsel seçin.</x:String>
+    <x:String x:Key="TxtPreviewUnavailable">Önizleme mevcut değil</x:String>
+    <x:String x:Key="TxtCoverRestoreTooltip">Oyunun varsayılan kapak görselini geri yükle</x:String>
+    <x:String x:Key="TxtRestore">Geri Yükle</x:String>
+    <x:String x:Key="TxtApply">Uygula</x:String>
+    <x:String x:Key="TxtNoImageSelected">Seçili görsel yok</x:String>
+    <x:String x:Key="TxtDownloadInProgressFormat">v{0} için bir indirme zaten devam ediyor.</x:String>
+    <x:String x:Key="TxtDownloadingExtrasFormat">FSR4 INT8 v{0} indiriliyor... {1}%</x:String>
+    <x:String x:Key="TxtVersionUnavailable">OptiScaler v{0} şu anda kurulamaz.
+
+Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekrar deneyin.</x:String>
+    <x:String x:Key="TxtAppInfoTitle">Uygulama</x:String>
+    <x:String x:Key="TxtExternalResourcesTitle">Harici kaynaklar</x:String>
+    <x:String x:Key="TxtFeedbackBugs">🐛 Hata raporları: yeniden üretme adımlarını içeren "Bug or Error report" şablonunu kullanın</x:String>
+    <x:String x:Key="TxtFeedbackFeatures">✨ Özellik istekleri: yeni özellik önermek için "Feature request" şablonunu kullanın</x:String>
+    <x:String x:Key="TxtFeedbackImprovements">🔧 İyileştirmeler: mevcut özellikler için "Improvement request" şablonunu kullanın</x:String>
+    <x:String x:Key="TxtFeedbackSystem">Daha hızlı çözüm için OS, GPU ve uygulama sürümünüzü ekleyin</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Beta sürümleri zaten Fakenvapi ve NukemFG içerir</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultTitle">Varsayılan FSR4 INT8</x:String>
+    <x:String x:Key="TxtFsr4Int8DefaultDesc">Oyun açılırken önceden seçilen varsayılan FSR4 INT8 mod sürümü. RDNA 4 GPU'lar (RX 9000 serisi) otomatik olarak Hiçbirini kullanır.</x:String>
+    <x:String x:Key="TxtDefaultGpuTitle">Varsayılan GPU</x:String>
+    <x:String x:Key="TxtDefaultGpuDesc">Varsayılan değerler ve GPU'ya özgü kılavuz için kullanılır.</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionTitle">Varsayılan OptiScaler Sürümü</x:String>
+    <x:String x:Key="TxtDefaultOptiVersionDesc">Yönet penceresi açılırken veya Hızlı Yükleme kullanılırken önceden seçilen sürüm. 'Otomatik' en son önerilen sürümü seçer.</x:String>
+    <x:String x:Key="TxtDefaultVersionsTitle">Varsayılan Sürümler</x:String>
+    <x:String x:Key="TxtDefaultVersionsDesc">Oyun yönetimi ve Hızlı Yükleme için varsayılan bileşen sürümlerini yönetin</x:String>
+    <x:String x:Key="TxtManageDefaultVersions">Varsayılan Sürümleri Yönet</x:String>
+    <x:String x:Key="TxtManageDefaultVersionsDesc">Oyun yönetim penceresi açılırken veya Hızlı Yükleme kullanılırken önceden seçilen bileşen sürümlerini yapılandırın.</x:String>
+    <x:String x:Key="TxtOptiPatcherDefaultTitle">Varsayılan OptiPatcher Sürümü</x:String>
+        <x:String x:Key="TxtOptiPatcherDefaultDesc">Yönetim penceresi açılırken veya Hızlı Yükleme kullanılırken önceden seçilen OptiPatcher sürümü. Yüklemeyi atlamak için 'Yok' seçin.</x:String>
+        <x:String x:Key="TxtOptiPatcherSupportLinkText">Uyumlu oyunlar listesini görüntüle</x:String>
+        <x:String x:Key="TxtClearAppCacheTitle">Uygulama Önbelleğini Temizle</x:String>
+    <x:String x:Key="TxtClearAppCacheDesc">Taranan oyunları, kapak resimleri ve önbelleğe alınmış sürüm verilerini kaldırır. Uygulama bir sonraki başlatılmada yeniden tarar.</x:String>
+    <x:String x:Key="TxtClearCacheBtn">Önbelleği Temizle</x:String>
+    <x:String x:Key="TxtClearAppCacheDialogMsg">Uyarı: Bu işlem taranan tüm oyunları, kapak resimlerini ve önbelleğe alınmış OptiScaler sürüm verilerini kalıcı olarak siler.&#x0a;&#x0a;Temizleme sonrası uygulama kapanacaktır. Bir sonraki başlatılmada kütüphane yeniden taranacak ve sürüm bilgileri yeniden indirilecektir.</x:String>
+    <x:String x:Key="TxtWarning">Uyarı</x:String>
+    <x:String x:Key="TxtNoVersionsFound">Kurulum için kullanılabilir OptiScaler sürümü bulunamadı.</x:String>
+    <!-- Help Window -->
+    <x:String x:Key="TxtHelpTitle">Yardım</x:String>
+    <x:String x:Key="TxtHelpCategoryGuides">Kılavuzlar</x:String>
+    <x:String x:Key="TxtHelpPageAbout">Hakkında &amp; Geri Bildirim</x:String>
+    <x:String x:Key="TxtHelpPageGettingStarted">Başlarken</x:String>
+    <x:String x:Key="TxtHelpPageFeatures">Özellikler</x:String>
+    <x:String x:Key="TxtHelpPageMainWindow">Ana Pencere</x:String>
+    <x:String x:Key="TxtHelpPageGameManagement">Oyun Yönetimi</x:String>
+    <x:String x:Key="TxtHelpPageProfiles">Profil Sistemi</x:String>
+    <x:String x:Key="TxtHelpPageSettings">Ayarlar &amp; Yapılandırma</x:String>
+    <x:String x:Key="TxtHelpPageBulkOperations">Toplu İşlemler</x:String>
+    <x:String x:Key="TxtHelpPageTroubleshooting">SSS &amp; Sorun Giderme</x:String>
+    <x:String x:Key="TxtHelpDisclaimerTitle">Yasal Uyarı ⚠️</x:String>
+    <x:String x:Key="TxtHelpDisclaimerContent">Bu resmi bir OptiScaler projesi değildir. OptiScaler ekibiyle hiçbir bağlantım yoktur. Bu, herhangi bir ticari amaç güdülmeden geliştirilen kişisel bir projedir. Herkes bu yazılımı kendi sorumluluğunda kullanmakta özgürdür.&#x0a;&#x0a;Katkılar: OptiScaler ekibine özel teşekkürler; bu araç yalnızca orijinal mod üzerindeki inanılmaz çalışmaları sayesinde mümkündür.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later lisansı altında lisanslanmıştır. Bu özgür yazılımdır: belirli koşullar altında değiştirip yeniden dağıtabilirsiniz. Ayrıntılar için LICENSE dosyasına bakın.&#x0a;&#x0a;Üçüncü taraf bileşenler (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) kendi lisanslarına tabidir.</x:String>
+    <x:String x:Key="TxtHelpSystemTitle">Sistem</x:String>
+    <x:String x:Key="TxtHelpLicenseTitle">Lisans &amp; Telif Hakkı</x:String>
+
+
+    <!-- Help - Getting Started -->
+    <x:String x:Key="TxtHelpGSWelcomeTitle">OptiScaler Client'a Hoş Geldiniz</x:String>
+    <x:String x:Key="TxtHelpGSWelcomeContent">OptiScaler Client, tüm oyun kütüphanenizde OptiScaler modunun kurulumunu, yönetimini ve güncellemesini kolaylaştırmak için tasarlanmış modern, yüksek performanslı bir masaüstü yardımcı programıdır.</x:String>
+    <x:String x:Key="TxtHelpGSIntroContent">Bu kılavuz, programın temel özelliklerini anlamanıza yardımcı olmak için tasarlanmıştır. Kapsamlı bir yardım merkezi olarak hizmet eder ve adım adım öğreticiler içerir.</x:String>
+    <x:String x:Key="TxtHelpGSQuickStart">Hızlı Başlangıç</x:String>
+    <x:String x:Key="TxtHelpGSStep1Label">Adım 1: Oyunları Tara</x:String>
+    <x:String x:Key="TxtHelpGSStep1Text">Steam, Epic Games ve diğer platformlardan oyunları otomatik algılamak için ana penceredeki 'Tara' düğmesine tıklayın.</x:String>
+    <x:String x:Key="TxtHelpGSStep2Label">Adım 2: Oyun Seç</x:String>
+    <x:String x:Key="TxtHelpGSStep2Text">Oyun kütüphanenize göz atın ve yükseltme teknolojisiyle geliştirmek istediğiniz oyunda 'Yönet'e tıklayın.</x:String>
+    <x:String x:Key="TxtHelpGSStep3Label">Adım 3: Yapılandır &amp; Yükle</x:String>
+    <x:String x:Key="TxtHelpGSStep3Text">Yüklemeden önce seçenekleri ayarlayın. Hazır olduğunuzda oyun yönetim penceresinde 'Otomatik Yükle'ye tıklayın.</x:String>
+    <x:String x:Key="TxtHelpGSStep4Label">Adım 4: Keyfini Çıkarın!</x:String>
+    <x:String x:Key="TxtHelpGSStep4Text">Her şey hazır! Artık oyunu doğrudan başlatabilir ve keyfini çıkarabilirsiniz.</x:String>
+
+
+    <!-- Help - Features -->
+    <x:String x:Key="TxtHelpFeatOffersTitle">OptiScaler Client'ın Sunduğu Özellikler</x:String>
+    <x:String x:Key="TxtHelpFeatOffersContent">OptiScaler Client, OptiScaler için kapsamlı yönetim sağlar.</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionLabel">Otomatik Oyun Algılama</x:String>
+    <x:String x:Key="TxtHelpFeatDetectionText">Yüklü oyunlarınızı bulmak için Steam, Epic Games, GOG ve diğer platformları tarar.</x:String>
+    <x:String x:Key="TxtHelpFeatInstallLabel">Tek Tıkla Kurulum</x:String>
+    <x:String x:Key="TxtHelpFeatInstallText">Hızlı kurulum özelliği, OptiScaler'ı saniyeler içinde optimum ayarlarla dağıtır.</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesLabel">Profil Yönetimi</x:String>
+    <x:String x:Key="TxtHelpFeatProfilesText">Farklı oyunlar ve senaryolar için özel profiller oluşturun ve yönetin.</x:String>
+    <x:String x:Key="TxtHelpFeatBulkLabel">Toplu İşlemler</x:String>
+    <x:String x:Key="TxtHelpFeatBulkText">Birden fazla oyuna aynı anda OptiScaler yükleyin veya güncelleyin.</x:String>
+    <x:String x:Key="TxtHelpFeatVersionLabel">Sürüm Kontrolü</x:String>
+    <x:String x:Key="TxtHelpFeatVersionText">OptiScaler, Fakenvapi ve NukemFG'nin farklı sürümleri arasında kolayca geçiş yapın.</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataLabel">Meta Veri Entegrasyonu</x:String>
+    <x:String x:Key="TxtHelpFeatMetadataText">SteamGridDB'den otomatik kapak görselleri ve oyun bilgileri.</x:String>
+
+
+    <!-- Help - Main Window + Game Management -->
+    <x:String x:Key="TxtHelpMWTitle">Oyun Kütüphanesi Genel Bakış</x:String>
+    <x:String x:Key="TxtHelpMWContent">Ana pencere, tüm oyunlarınızı yönetmek için merkezi merkezinizdir. Kütüphanenizi görüntüleyebilir, yeni oyunları tarayabilir ve yönetim özelliklerine erişebilirsiniz.</x:String>
+    <x:String x:Key="TxtHelpMWGameListLabel">Oyun Listesi 🎮</x:String>
+    <x:String x:Key="TxtHelpMWGameListText">Tespit edilen tüm oyunları kapak görseli, başlık ve kurulum durumuyla gösterir.</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnLabel">Yönet Düğmesi ⚙️</x:String>
+    <x:String x:Key="TxtHelpMWManageBtnText">Seçilen oyun için yönetim penceresini açarak OptiScaler'ı kurmanızı, yapılandırmanızı ve yönetmenizi sağlar.</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallLabel">Hızlı Kurulum Düğmesi ✦</x:String>
+    <x:String x:Key="TxtHelpMWQuickInstallText">Seçilen oyun için optimal ayarlarla OptiScaler'ı hızlıca yükler.</x:String>
+    <x:String x:Key="TxtHelpMWScanLabel">Tara Düğmesi 🔍</x:String>
+    <x:String x:Key="TxtHelpMWScanText">Steam, Epic Games, GOG, EA, Ubisoft, Xbox ve Battle.net'ten oyunları otomatik olarak algılar. Taranacak kaynakları ve diskleri seçebilirsiniz.</x:String>
+    <x:String x:Key="TxtHelpMWAddManualLabel">Manuel Ekle Düğmesi ➕</x:String>
+    <x:String x:Key="TxtHelpMWAddManualText">Otomatik olarak algılanmayan oyunları manuel olarak eklemenize olanak tanır. Bağımsız oyunlar veya özel kurulumlar için kullanışlıdır.</x:String>
+    <x:String x:Key="TxtHelpMWBulkLabel">Toplu Kurulum ⚡</x:String>
+    <x:String x:Key="TxtHelpMWBulkText">Toplu kurulum penceresini açarak birden fazla oyuna aynı anda OptiScaler yüklemenizi sağlar.</x:String>
+    <x:String x:Key="TxtHelpMWSearchLabel">Ara &amp; Filtrele 🔍</x:String>
+    <x:String x:Key="TxtHelpMWSearchText">Arama çubuğunu kullanarak oyunları hızlıca bulun.</x:String>
+    <x:String x:Key="TxtHelpMWViewLabel">Izgara &amp; Liste modu düğmeleri 📊</x:String>
+    <x:String x:Key="TxtHelpMWViewText">Kütüphanenizi tercihlerinize göre düzenlemek için ızgara ve liste görünümü arasında geçiş yapın.</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeLabel">Oyunları düzenle ✏️</x:String>
+    <x:String x:Key="TxtHelpMWOrganizeText">Bu modda oyun listesindeki oyunları yeniden sıralayabilir ve gizleyebilir/gösterebilirsiniz.</x:String>
+    <x:String x:Key="TxtHelpGMTitle">Bireysel Oyunları Yönetme</x:String>
+    <x:String x:Key="TxtHelpGMContent">Oyun yönetimi penceresi, belirli bir oyun için OptiScaler kurulumu ve yapılandırması üzerinde tam kontrol sağlar.</x:String>
+    <x:String x:Key="TxtHelpGMInfoLabel">Oyun Bilgileri 🎮</x:String>
+    <x:String x:Key="TxtHelpGMInfoText">Başlık, çalıştırılabilir yol, platform ve mevcut OptiScaler kurulum durumu dahil oyun ayrıntılarını görüntüler.</x:String>
+    <x:String x:Key="TxtHelpGMFolderLabel">Klasörü aç 📁</x:String>
+    <x:String x:Key="TxtHelpGMFolderText">Oyunun kurulum klasörünü Dosya Gezgini'nde açar.</x:String>
+    <x:String x:Key="TxtHelpGMCoverLabel">Kapak ve oyun adını düzenle 🎨</x:String>
+    <x:String x:Key="TxtHelpGMCoverText">Oyunun kapak görselini ve adını düzenleyin.</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallLabel">Otomatik Kur ✦</x:String>
+    <x:String x:Key="TxtHelpGMAutoInstallText">OptiScaler'ı kurmak için oyunun çalıştırılabilir dosyasını otomatik olarak bulmaya çalışır. Güçlü bir algoritma kullanır ancak mükemmel değildir.</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallLabel">Manuel Kur ✦</x:String>
+    <x:String x:Key="TxtHelpGMManualInstallText">Oyunun çalıştırılabilir dosyasını manuel olarak seçmenize olanak tanır. Otomatik kurulum başarısız olursa önerilir.</x:String>
+    <x:String x:Key="TxtHelpGMUninstallLabel">Kaldır 🗑️</x:String>
+    <x:String x:Key="TxtHelpGMUninstallText">Yedekten orijinal dosyaları ve yapılandırmaları geri yükleyerek OptiScaler'ı oyundan tamamen kaldırır.</x:String>
+    <x:String x:Key="TxtHelpGMProfileLabel">Profil Seçimi 🎯</x:String>
+    <x:String x:Key="TxtHelpGMProfileText">Önceden yapılandırılmış profillerden seçin veya belirli oyunlar ya da performans ihtiyaçlarına göre özel profiller oluşturun.</x:String>
+    <x:String x:Key="TxtHelpGMVersionLabel">OptiScaler Sürümü 📦</x:String>
+    <x:String x:Key="TxtHelpGMVersionText">Yüklenecek OptiScaler sürümünü seçin. Kararlı sürümler ve beta derlemeleri arasında geçiş yapabilirsiniz.</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiLabel">Fakenvapi &amp; NukemFG 📦</x:String>
+    <x:String x:Key="TxtHelpGMFakeNvapiText">Belirli oyunlarla uyumluluğu artıran isteğe bağlı bileşenler. Bu dosyaları zaten içeren OptiScaler betaları için gerekli değildir.</x:String>
+    <x:String x:Key="TxtHelpGMInjectionLabel">Enjeksiyon yöntemi 🚀</x:String>
+    <x:String x:Key="TxtHelpGMInjectionText">OptiScaler'ın oyun sürecine nasıl enjekte edileceğini seçin. Çoğu durumda varsayılan seçenek (dxgi.dll) yeterlidir.</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Label">FSR 4 INT8 ⚡</x:String>
+    <x:String x:Key="TxtHelpGMFsr4Text">RDNA 4 dışı GPU'lar için FSR 4'ün INT 8 sürümünü enjekte etmeye olanak tanıyan seçici.</x:String>
+
+
+    <!-- Help - Profiles / Settings / Bulk / FAQ -->
+    <x:String x:Key="TxtHelpProfTitle">Profil Oluşturma ve Yönetme</x:String>
+    <x:String x:Key="TxtHelpProfContent">Profiller, OptiScaler yapılandırmalarınızı (.ini dosyaları) kaydetmenize ve yönetmenize olanak tanır; böylece yeni kurulumlara kolayca uygulayabilirsiniz. Bu, oyun kütüphanenizde tutarlı ayarlar korumak veya özel düzenlemeler uygulamak için en verimli yoldur.</x:String>
+    <x:String x:Key="TxtHelpProfMgmtLabel">Profil Yönetim Penceresi 📎</x:String>
+    <x:String x:Key="TxtHelpProfMgmtText">Kenar çubuğundan erişilebilir. Bu bölümde mevcut profiller yönetilebilir; aranabilir, oluşturulabilir, çoğaltılabilir, düzenlenebilir veya silinebilir.</x:String>
+    <x:String x:Key="TxtHelpProfEditorLabel">Profil Düzenleyici 📝</x:String>
+    <x:String x:Key="TxtHelpProfEditorText">Ölçeklendirme yöntemi, kalite ön ayarları, DLL seçenekleri ve gelişmiş parametreler dahil tüm OptiScaler (.ini) ayarlarını yapılandırın. Bu pencerede görülebilecek bölümler:</x:String>
+    <x:String x:Key="TxtHelpSetTitle">Uygulama Ayarları</x:String>
+    <x:String x:Key="TxtHelpSetContent">OptiScaler İstemcisi davranışını, tarama kaynaklarını, meta veri hizmetlerini ve gelişmiş seçenekleri yapılandırın.</x:String>
+    <x:String x:Key="TxtHelpSetCacheLabel">Yerel Önbellek Yönetimi</x:String>
+    <x:String x:Key="TxtHelpSetCacheText">OptiScaler ve FSR INT8'in önbelleğe alınmış sürümlerini görüntülemenize ve silmenize olanak tanır.</x:String>
+    <x:String x:Key="TxtHelpSetProfileLabel">Profil Yönetimi</x:String>
+    <x:String x:Key="TxtHelpSetProfileText">Farklı profilleri yönetmenizi sağlar. Daha fazla bilgi için 'Profil Sistemi' sayfasına bakın.</x:String>
+    <x:String x:Key="TxtHelpSetScanLabel">Tarama Kaynakları</x:String>
+    <x:String x:Key="TxtHelpSetScanText">'Tara' düğmesine tıklandığında hangi kaynakların taranacağını yönetin: Steam, Epic gibi platformlar ve özel klasörler dahil.</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Label">Varsayılan FSR INT8</x:String>
+    <x:String x:Key="TxtHelpSetFsr4Text">Enjeksiyon bölümü için varsayılan FSR INT8 sürümünü seçin. AMD 9000 serisi GPU kullanıcılarının 'Hiçbiri' seçmesi önerilir.</x:String>
+    <x:String x:Key="TxtHelpSetGpuLabel">Varsayılan GPU Seçimi</x:String>
+    <x:String x:Key="TxtHelpSetGpuText">Sistemde birden fazla GPU algılandığında hangisinin kullanılacağını seçin.</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanLabel">Başlangıçta otomatik tara</x:String>
+    <x:String x:Key="TxtHelpSetAutoscanText">Uygulama başlatıldığında otomatik olarak oyunları arar.</x:String>
+    <x:String x:Key="TxtHelpSetBetaLabel">Varsayılan olarak en son betayı tercih et</x:String>
+    <x:String x:Key="TxtHelpSetBetaText">Etkinleştirildiğinde OptiScaler İstemcisi, mevcut olduğunda bileşenlerin en son beta sürümlerini indirmeyi ve kullanmayı tercih eder.</x:String>
+    <x:String x:Key="TxtHelpSetAnimLabel">Animasyonları etkinleştir</x:String>
+    <x:String x:Key="TxtHelpSetAnimText">Etkinleştirildiğinde OptiScaler İstemcisi, daha şık bir kullanıcı deneyimi için animasyonlar ve geçişler gösterir.</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridLabel">SteamGridDB API Anahtarı</x:String>
+    <x:String x:Key="TxtHelpSetSteamGridText">Varsayılan olarak alınamayan kapak resimlerinin getirilmesini iyileştirmek için kullanılır. Bu parametre tamamen isteğe bağlıdır.</x:String>
+    <x:String x:Key="TxtHelpBulkTitle">Birden Fazla Oyunu Yönetme</x:String>
+    <x:String x:Key="TxtHelpBulkContent">Toplu Yükleme Penceresi, birden fazla oyuna aynı anda OptiScaler yüklemenize veya güncellemenize olanak tanır; zaman kazandırır ve tutarlılığı sağlar.</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelLabel">Oyun Seçimi</x:String>
+    <x:String x:Key="TxtHelpBulkGameSelText">Toplu işleme dahil edilecek oyunları seçin. Tümünü seçin veya tek tek manuel olarak seçin.</x:String>
+    <x:String x:Key="TxtHelpBulkConfigLabel">Birleşik Yapılandırma</x:String>
+    <x:String x:Key="TxtHelpBulkConfigText">Aynı profili, OptiScaler sürümünü ve ayarları seçili tüm oyunlara aynı anda uygulayın.</x:String>
+    <x:String x:Key="TxtHelpBulkProgressLabel">İlerleme Takibi</x:String>
+    <x:String x:Key="TxtHelpBulkProgressText">Her oyunun yükleme ilerlemesini izleyin. Başarı/başarısızlık durumu ve ayrıntılı günlükleri görüntüleyin.</x:String>
+    <x:String x:Key="TxtHelpBulkErrorLabel">Hata İşleme</x:String>
+    <x:String x:Key="TxtHelpBulkErrorText">Bazı yüklemeler başarısız olsa bile kalan oyunları işlemeye devam edin. Tamamlandıktan sonra hataları inceleyin.</x:String>
+    <x:String x:Key="TxtHelpFaqTitle">Yaygın Sorunlar</x:String>
+    <x:String x:Key="TxtHelpFaqContent">Sorunla karşılaşırsanız önce bu yaygın çözümlere bakın.</x:String>
+    <x:String x:Key="TxtHelpFaqWhatLabel">OptiScaler nedir?</x:String>
+    <x:String x:Key="TxtHelpFaqWhatText">OptiScaler, native olarak desteklenmese bile oyunlarda farklı yükseltme teknolojilerini (DLSS, FSR, XeSS) kullanmayı sağlayan bir moddur.</x:String>
+    <x:String x:Key="TxtHelpFaqSafeLabel">Bu uygulama güvenli mi?</x:String>
+    <x:String x:Key="TxtHelpFaqSafeText">Evet, uygulama tamamen güvenlidir. VirusTotal'da tarayarak tehdit olmadığını doğrulayabilir ve açık kaynak olduğundan kodu herkes inceleyebilir.</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetLabel">Oyun algılanmadı</x:String>
+    <x:String x:Key="TxtHelpFaqNotDetText">Oyunun kurulu olduğundan emin olun ve 'Manuel Ekle' düğmesiyle manuel eklemeyi deneyin. Ayarlardaki tarama kaynaklarını da kontrol edebilirsiniz.</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailLabel">Yükleme başarısız</x:String>
+    <x:String x:Key="TxtHelpFaqInstFailText">Oyun dizinine yazma izniniz olduğundan emin olun. Gerekirse uygulamayı yönetici olarak çalıştırmayı deneyin.</x:String>
+    <x:String x:Key="TxtHelpFaqCrashLabel">Yüklemeden sonra oyun çöküyor</x:String>
+    <x:String x:Key="TxtHelpFaqCrashText">Farklı bir OptiScaler sürümü veya profili deneyin. Bazı oyunlar özel yapılandırmalar gerektirebilir.</x:String>
+    <x:String x:Key="TxtHelpFaqUpscLabel">Oyun içinde yükseltme çalışmıyor</x:String>
+    <x:String x:Key="TxtHelpFaqUpscText">Oyunun DLSS/FSR/XeSS'yi native olarak destekleyip desteklemediğini kontrol edin. OptiScaler mevcut yükseltme uygulamalarını değiştirir.</x:String>
+    <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll veya nvngx.dll bulunamadı ve diğer hatalar.</x:String>
+    <x:String x:Key="TxtHelpFaqDllText">Ayarlardan önbelleği temizleme düğmesini kullanın; bu çoğu sorunu çözecektir.</x:String>
+
+    <!-- Help - Profile Bullets -->
+    <x:String x:Key="TxtHelpProfDefaultTitle">Varsayılan profil</x:String>
+    <x:String x:Key="TxtHelpProfDefaultText">Bir oyunu yönetirken veya Hızlı Yükleme kullanırken varsayılan olarak seçilecek profili ayarlar.</x:String>
+    <x:String x:Key="TxtHelpProfNameTitle">Profil adı</x:String>
+    <x:String x:Key="TxtHelpProfNameText">Profilinizin görünen adını ayarlar.</x:String>
+    <x:String x:Key="TxtHelpProfDescTitle">Açıklama</x:String>
+    <x:String x:Key="TxtHelpProfDescText">Profiliniz için bir açıklama ayarlar.</x:String>
+    <x:String x:Key="TxtHelpProfModeTitle">Mod</x:String>
+    <x:String x:Key="TxtHelpProfModeText">Kolay ve Gelişmiş modlar arasında seçim yapın. Kolay mod, yeni başlayanlar için ideal olan hızlı ve basit bir kurulum için ayarları yalnızca temel düzeyde tutar. Gelişmiş mod, .ini dosyasının tam olarak düzenlenmesine izin vererek güçlü kullanıcılar için tam kontrol ve maksimum özelleştirme sunar.</x:String>
+    <x:String x:Key="TxtHelpProfNavTitle">Gezinti bölümü</x:String>
+    <x:String x:Key="TxtHelpProfNavText">Profil düzenleyicisinin farklı bölümleri arasında gezinmenizi sağlar.</x:String>
+    <x:String x:Key="TxtHelpProfSearchTitle">Arama çubuğu</x:String>
+    <x:String x:Key="TxtHelpProfSearchText">Profil düzenleyicisindeki belirli ayarları aramanızı sağlar.</x:String>
+
+    <!-- Profile Management View -->
+    <x:String x:Key="TxtProfViewTitle">Profiller</x:String>
+    <x:String x:Key="TxtProfViewDesc">OptiScaler yapilandirma profillerini olusturun ve yonetin</x:String>
+    <x:String x:Key="TxtBtnNewProfile">Yeni profil</x:String>
+    <x:String x:Key="TxtBtnImportIni">.ini iceri aktar...</x:String>
+    <x:String x:Key="TxtBtnSetDefault">Varsayilan olarak ayarla</x:String>
+    <x:String x:Key="TxtBtnEdit">Duzenle</x:String>
+    <x:String x:Key="TxtBtnDuplicate">Cokalt</x:String>
+    <x:String x:Key="TxtBtnExportIni">.ini disa aktar</x:String>
+    <x:String x:Key="TxtSearchProfiles">Profil ara...</x:String>
+    <x:String x:Key="TxtProfInfoFormat">{0} profil ({1} ozel).</x:String>
+    <x:String x:Key="TxtProfSearchResultFormat">{1} icinde {0} sonuc.</x:String>
+    <x:String x:Key="TxtProfNotFound">Profil bulunamadi.</x:String>
+    <x:String x:Key="TxtProfSearchNotFound">Eslesen profil bulunamadi.</x:String>
+    <x:String x:Key="TxtDefaultBadge">Varsayilan</x:String>
+
+    <!-- Profile Editor View -->
+    <x:String x:Key="TxtEditorBackBtn">← Profiller</x:String>
+    <x:String x:Key="TxtEditorTitle">Profil Duzenleyici</x:String>
+    <x:String x:Key="TxtEditorDesc">Bu profil icin OptiScaler ayarlarini yapilandirin</x:String>
+    <x:String x:Key="TxtEditorNewTitle">Yeni profil</x:String>
+    <x:String x:Key="TxtEditorEditTitleFmt">Duzenle: {0}</x:String>
+    <x:String x:Key="TxtEditorNameLabel">Profil adi</x:String>
+    <x:String x:Key="TxtEditorNameWatermark">Profil adini girin</x:String>
+    <x:String x:Key="TxtEditorDescLabel">Aciklama</x:String>
+    <x:String x:Key="TxtEditorDescWatermark">Aciklama girin (isteğe bagli)</x:String>
+    <x:String x:Key="TxtEditorModeLabel">Mod</x:String>
+    <x:String x:Key="TxtEditorModeEasy">Kolay</x:String>
+    <x:String x:Key="TxtEditorModeAdvanced">Gelismis</x:String>
+    <x:String x:Key="TxtEditorNavLabel">Navigasyon</x:String>
+    <x:String x:Key="TxtEditorSearchWm">Ayar ara...</x:String>
+    <x:String x:Key="TxtEditorFooterNote">Yalnizca yapilandirilan ayarlar OptiScaler varsayilanlarini gecersiz kilar</x:String>
+    <x:String x:Key="TxtEditorCancel">Iptal</x:String>
+    <x:String x:Key="TxtEditorSave">Profili kaydet</x:String>
+
+    <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtRefreshCoversTitle">Yalnizca eksik kapaklari yenile</x:String>
+    <x:String x:Key="TxtRefreshCoversDesc">Tam taramayi atlar ve yalnizca daha once alinamayan oyunlarin kapak gorsellerini yeniden dener. SteamGridDB API anahtari ayarlandiktan sonra kullanislidir.</x:String>
+    <x:String x:Key="TxtOrganizeGamesTooltip">Oyunlari duzenle</x:String>
+    <x:String x:Key="TxtOrganizeModeBanner">Duzenleme modu</x:String>
+    <x:String x:Key="TxtOrganizeModeReorder">▲▼ yeniden sirala</x:String>
+    <x:String x:Key="TxtOrganizeModeHideShow">goster/gizle</x:String>
+    <x:String x:Key="TxtOrganizeModeDone">Tamam</x:String>
+    <x:String x:Key="TxtDragToReorder">Yeniden siralamak icin sur</x:String>
+    <x:String x:Key="TxtMoveUp">Yukari tas</x:String>
+    <x:String x:Key="TxtMoveDown">Asagi tas</x:String>
+    <x:String x:Key="TxtHideShowGame">Oyunu goster/gizle</x:String>
+    <x:String x:Key="TxtHideGame">Gizle</x:String>
+    <x:String x:Key="TxtShowGame">Göster</x:String>
+    <x:String x:Key="TxtRefreshingCovers">Eksik kapaklar yenileniyor...</x:String>
+    <x:String x:Key="TxtCoverRefreshDoneFmt">Kapak yenileme tamamlandi. {0}/{1} eksik kapak bulundu.</x:String>
+    <x:String x:Key="TxtCoverRefreshToastFmt">Kapak yenileme tamamlandi — {0}/{1} kapak bulundu.</x:String>
+
+    <!-- OptiPatcher -->
+    <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
+    <x:String x:Key="TxtOptiPatcherTooltip">Desteklenen oyunlarda spoofing olmadan DLSS/DLSS-FG girişlerini açığa çıkaran OptiScaler için bir ASI Eklentisi. Intel Arc kullanıcılarının D3D12 hatalarından kaçınmasına yardımcı olur ve Dxgi spoofing'in neden olduğu performans düşüşlerini veya çökmeleri önler.</x:String>
+    <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher indiriliyor...</x:String>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher yükleniyor...</x:String></ResourceDictionary>
+
+
+
