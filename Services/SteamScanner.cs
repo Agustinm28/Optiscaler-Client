@@ -90,29 +90,37 @@ public class SteamScanner : IGameScanner
         return candidates.FirstOrDefault(p => Directory.Exists(Path.Combine(p, "steamapps")));
     }
 
+    private static string CanonicalPath(string path)
+    {
+        try { return new DirectoryInfo(path).ResolveLinkTarget(true)?.FullName ?? Path.GetFullPath(path); }
+        catch { return Path.GetFullPath(path); }
+    }
+
     private List<string> GetLibraryFolders(string steamPath)
     {
-        var folders = new List<string> { steamPath }; // Default library is always the install path
-        var vdfPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var folders = new List<string>();
 
+        var canonical = CanonicalPath(steamPath);
+        seen.Add(canonical);
+        folders.Add(canonical);
+
+        var vdfPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
         if (!File.Exists(vdfPath)) return folders;
 
         try
         {
             var content = File.ReadAllText(vdfPath);
-            // Regex to find "path" "..."
             var matches = Regex.Matches(content, "\"path\"\\s+\"([^\"]+)\"");
 
             foreach (Match match in matches)
             {
                 if (match.Success && match.Groups.Count > 1)
                 {
-                    // Unescape backslashes (VDF escapes them as \\ on Windows)
                     var path = match.Groups[1].Value.Replace("\\\\", "\\");
-                    if (!folders.Contains(path, StringComparer.Ordinal))
-                    {
-                        folders.Add(path);
-                    }
+                    var canon = CanonicalPath(path);
+                    if (seen.Add(canon))
+                        folders.Add(canon);
                 }
             }
         }
