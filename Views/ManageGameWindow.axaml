@@ -248,6 +248,27 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
+                            <!-- EasyAntiCheat Detection -->
+                            <Border Name="EasyAntiCheat"
+                                    Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="16,12"
+                                    Margin="0,8,0,0"
+                                    IsVisible="False">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="⚠ EasyAntiCheat Detected"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{StaticResource FontSizeBody}"/>
+                                        <TextBlock Text="This game uses anti-cheat protection, use OptiScaler at your own risk"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Border>
 
@@ -509,10 +530,12 @@
                                 <TextBlock Text="{DynamicResource TxtConfirmUninstallTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                             </StackPanel>
 
+                            <!-- Message -->
                             <TextBlock Text="{DynamicResource TxtConfirmUninstallMsg}"
                                        Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
                                        TextWrapping="Wrap" Margin="0,0,0,24"/>
 
+                            <!-- Buttons -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Name="BtnConfirmUninstallNo" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="16,8" Margin="0,0,10,0" Click="BtnConfirmUninstallNo_Click"/>
                                 <Button Name="BtnConfirmUninstallYes" Content="{DynamicResource TxtUninstall}" Classes="BtnDanger" Padding="16,8" Click="BtnConfirmUninstallYes_Click"/>
