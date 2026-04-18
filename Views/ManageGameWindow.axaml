@@ -259,7 +259,7 @@
                                     IsVisible="False">
                                 <StackPanel Orientation="Horizontal" Spacing="12">
                                     <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Text="⚠ EasyAntiCheat Detected"
+                                        <TextBlock Text="⚠ Anti Cheat Detected"
                                                    Foreground="{StaticResource BrTextPrimary}"
                                                    FontWeight="SemiBold"
                                                    FontSize="{StaticResource FontSizeBody}"/>
