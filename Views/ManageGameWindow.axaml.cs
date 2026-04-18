@@ -305,6 +305,12 @@ namespace OptiscalerClient.Views
 
             // ── Populate OptiPatcher selector ─────────────────────────────────
             PopulateOptiPatcherComboBox(componentService);
+
+            // ── Populate NukemFG selector ─────────────────────────────────────
+            PopulateNukemFGComboBox(componentService);
+
+            // ── Populate Fakenvapi selector ───────────────────────────────────
+            PopulateFakenvapiComboBox(componentService);
         }
 
         // ── OptiScaler tab selector ──────────────────────────────────────────
@@ -609,6 +615,106 @@ namespace OptiscalerClient.Views
             cmb.SelectedIndex = targetIndex;
         }
 
+        /// <summary>
+        /// Populates CmbNukemFGVersion with cached NukemFG versions + "None" + "Manage versions…" option.
+        /// </summary>
+        private void PopulateNukemFGComboBox(ComponentManagementService componentService)
+        {
+            var cmb = this.FindControl<ComboBox>("CmbNukemFGVersion");
+            if (cmb == null) return;
+
+            cmb.Items.Clear();
+
+            // Option 0: None (default — opt-in)
+            cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+            var versions = componentService.GetDownloadedNukemFGVersions();
+            foreach (var ver in versions)
+            {
+                cmb.Items.Add(new ComboBoxItem { Content = ver, Tag = ver });
+            }
+
+            // Last option: Manage versions...
+            cmb.Items.Add(new ComboBoxItem { Content = "Manage versions…", Tag = "__manage__" });
+
+            // Pre-select configured default
+            var savedNukemFG = componentService.Config.DefaultNukemFGVersion;
+            cmb.SelectedIndex = 0;
+            if (!string.IsNullOrEmpty(savedNukemFG) && !savedNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                for (int i = 1; i < cmb.Items.Count; i++)
+                {
+                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedNukemFG)
+                    {
+                        cmb.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            cmb.SelectionChanged += (s, e) =>
+            {
+                if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+                {
+                    // Reset selection to None
+                    cmb.SelectedIndex = 0;
+                    // Open CacheManagementWindow
+                    var cacheWindow = new CacheManagementWindow("nukemfg");
+                    cacheWindow.ShowDialog(this);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Populates CmbFakenvapiVersion with available Fakenvapi versions + "None" + "Manage versions…".
+        /// Shows a "latest" badge on the latest version.
+        /// </summary>
+        private void PopulateFakenvapiComboBox(ComponentManagementService componentService)
+        {
+            var cmb = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            if (cmb == null) return;
+
+            cmb.Items.Clear();
+
+            // Option 0: None (default — opt-in)
+            cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+            var versions = componentService.FakenvapiAvailableVersions;
+            foreach (var ver in versions)
+            {
+                var isLatest = ver == componentService.LatestFakenvapiVersion;
+                cmb.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: isLatest));
+            }
+
+            // Last option: Manage versions…
+            cmb.Items.Add(new ComboBoxItem { Content = "Manage versions…", Tag = "__manage__" });
+
+            // Pre-select configured default
+            var savedFakenvapi = componentService.Config.DefaultFakenvapiVersion;
+            cmb.SelectedIndex = 0;
+            if (!string.IsNullOrEmpty(savedFakenvapi) && !savedFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                for (int i = 1; i < cmb.Items.Count; i++)
+                {
+                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedFakenvapi)
+                    {
+                        cmb.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            cmb.SelectionChanged += (s, e) =>
+            {
+                if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+                {
+                    cmb.SelectedIndex = 0;
+                    var cacheWindow = new CacheManagementWindow("fakenvapi");
+                    cacheWindow.ShowDialog(this);
+                }
+            };
+        }
+
         private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
         {
             if (cmb == null) return;
@@ -620,8 +726,8 @@ namespace OptiscalerClient.Views
             // regardless of whether it's a beta or stable build.
             bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
 
-            var chkFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+            var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
             var betaInfoPanel = this.FindControl<Border>("BetaInfoPanel");
 
             // Show info panel for betas and stable >= 0.9 (both include Fakenvapi/NukemFG)
@@ -633,31 +739,31 @@ namespace OptiscalerClient.Views
             if (includedInPackage)
             {
                 // For versions >= 0.9 the files are included; disable and clear selections
-                if (chkFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkFakenvapi.IsEnabled = false;
-                    chkFakenvapi.IsChecked = false;
-                    ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+                    cmbFakenvapi.IsEnabled = false;
+                    cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbFakenvapi, "Included in OptiScaler 0.9+");
                 }
-                if (chkNukemFG != null)
+                if (cmbNukemFG != null)
                 {
-                    chkNukemFG.IsEnabled = false;
-                    chkNukemFG.IsChecked = false;
-                    ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+                    cmbNukemFG.IsEnabled = false;
+                    cmbNukemFG.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbNukemFG, "Included in OptiScaler 0.9+");
                 }
             }
             else
             {
                 // For older versions (< 0.9) allow user to toggle these options regardless of beta
-                if (chkFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkFakenvapi.IsEnabled = true;
-                    ToolTip.SetTip(chkFakenvapi, null);
+                    cmbFakenvapi.IsEnabled = true;
+                    ToolTip.SetTip(cmbFakenvapi, null);
                 }
-                if (chkNukemFG != null)
+                if (cmbNukemFG != null)
                 {
-                    chkNukemFG.IsEnabled = true;
-                    ToolTip.SetTip(chkNukemFG, null);
+                    cmbNukemFG.IsEnabled = true;
+                    ToolTip.SetTip(cmbNukemFG, null);
                 }
             }
         }
@@ -970,8 +1076,22 @@ namespace OptiscalerClient.Views
             var prgDownload = this.FindControl<ProgressBar>("PrgDownload");
             var txtProgressState = this.FindControl<TextBlock>("TxtProgressState");
             var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
-            var chkInstallFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkInstallNukemFG   = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+
+            // Read selected Fakenvapi version before any async work
+            var cmbFakenvapiVersion = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var selectedFakenvapiItem = cmbFakenvapiVersion?.SelectedItem as ComboBoxItem;
+            var selectedFakenvapiVersion = selectedFakenvapiItem?.Tag?.ToString();
+            bool installFakenvapi = !string.IsNullOrEmpty(selectedFakenvapiVersion) &&
+                                    !selectedFakenvapiVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                    selectedFakenvapiVersion != "__manage__";
+
+            // Read selected NukemFG version before any async work
+            var cmbNukemFGVersion = this.FindControl<ComboBox>("CmbNukemFGVersion");
+            var selectedNukemFGItem = cmbNukemFGVersion?.SelectedItem as ComboBoxItem;
+            var selectedNukemFGVersion = selectedNukemFGItem?.Tag?.ToString();
+            bool installNukemFG = !string.IsNullOrEmpty(selectedNukemFGVersion) &&
+                                  !selectedNukemFGVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                  selectedNukemFGVersion != "__manage__";
 
             // Read selected Extras (FSR4 INT8) version before any async work
             var selectedExtrasItem = cmbExtrasVersion?.SelectedItem as ComboBoxItem;
@@ -1109,21 +1229,21 @@ namespace OptiscalerClient.Views
                     });
                 }
 
-                var fakeCacheDir = componentService.GetFakenvapiCachePath();
-                var nukemCacheDir = componentService.GetNukemFGCachePath();
+                var fakeCacheDir = installFakenvapi
+                    ? componentService.GetFakenvapiCachePath(selectedFakenvapiVersion!)
+                    : componentService.GetFakenvapiCachePath();
+                var nukemCacheDir = installNukemFG
+                    ? componentService.GetNukemFGCachePath(selectedNukemFGVersion!)
+                    : componentService.GetNukemFGCachePath();
 
                 var selectedItem = cmbInjectionMethod?.SelectedItem as ComboBoxItem;
                 var injectionMethod = selectedItem?.Tag?.ToString() ?? "dxgi.dll";
 
-                bool installFakenvapi = chkInstallFakenvapi?.IsChecked == true;
-                bool installNukemFG = chkInstallNukemFG?.IsChecked == true;
-
-                if (installFakenvapi && (!Directory.Exists(fakeCacheDir) || Directory.GetFiles(fakeCacheDir).Length == 0))
+                // Download Fakenvapi if not cached yet
+                if (installFakenvapi && !componentService.IsFakenvapiCached(selectedFakenvapiVersion!))
                 {
                     try
                     {
-                        await componentService.CheckForUpdatesAsync();
-
                         Dispatcher.UIThread.Post(() =>
                         {
                             if (btnInstall != null) btnInstall.IsEnabled = false;
@@ -1131,11 +1251,14 @@ namespace OptiscalerClient.Views
                             if (btnUninstall != null) btnUninstall.IsEnabled = false;
                             if (cmbOptiVersion != null) cmbOptiVersion.IsEnabled = false;
                             if (bdProgress != null) bdProgress.IsVisible = true;
-                            if (txtProgressState != null) txtProgressState.Text = "Downloading Fakenvapi...";
-                            if (prgDownload != null) prgDownload.IsIndeterminate = true;
+                            if (txtProgressState != null) txtProgressState.Text = $"Downloading Fakenvapi v{selectedFakenvapiVersion}...";
+                            if (prgDownload != null) prgDownload.IsIndeterminate = false;
                         });
 
-                        await componentService.DownloadAndExtractFakenvapiAsync();
+                        var fakeProgress = new Progress<double>(p =>
+                            Dispatcher.UIThread.Post(() => { if (prgDownload != null) prgDownload.Value = p; }));
+
+                        fakeCacheDir = await componentService.DownloadFakenvapiAsync(selectedFakenvapiVersion!, fakeProgress);
                     }
                     catch (Exception ex)
                     {
@@ -1156,13 +1279,10 @@ namespace OptiscalerClient.Views
                     }
                 }
 
-                if (installNukemFG && (!Directory.Exists(nukemCacheDir) || Directory.GetFiles(nukemCacheDir).Length == 0))
+                if (installNukemFG && (!Directory.Exists(nukemCacheDir) || !File.Exists(System.IO.Path.Combine(nukemCacheDir, "dlssg_to_fsr3_amd_is_better.dll"))))
                 {
-                    bool provided = await componentService.ProvideNukemFGManuallyAsync(isUpdate: false);
-                    if (!provided || !Directory.Exists(nukemCacheDir) || Directory.GetFiles(nukemCacheDir).Length == 0)
-                    {
-                        return;
-                    }
+                    await new ConfirmDialog(this, "Error", $"NukemFG version '{selectedNukemFGVersion}' is not available in cache.\nPlease import it first via Manage versions.").ShowDialog<object>(this);
+                    return;
                 }
 
                 // Show extraction status
@@ -1598,28 +1718,28 @@ namespace OptiscalerClient.Views
             {
                 gpu = GpuSelectionHelper.GetPreferredGpu(_gpuService, componentService.Config.DefaultGpuId);
             }
-            var chkInstallFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkInstallNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+            var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
 
             if (gpu != null && gpu.Vendor == GpuVendor.NVIDIA)
             {
-                if (chkInstallFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkInstallFakenvapi.IsEnabled = false;
-                    chkInstallFakenvapi.IsChecked = false;
-                    ToolTip.SetTip(chkInstallFakenvapi, "Fakenvapi is not required for NVIDIA GPUs");
+                    cmbFakenvapi.IsEnabled = false;
+                    cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbFakenvapi, "Fakenvapi is not required for NVIDIA GPUs");
                 }
             }
             else
             {
-                if (chkInstallFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkInstallFakenvapi.IsEnabled = true;
-                    ToolTip.SetTip(chkInstallFakenvapi, "Required for AMD/Intel GPUs to enable DLSS FG with Nukem mod");
+                    cmbFakenvapi.IsEnabled = true;
+                    ToolTip.SetTip(cmbFakenvapi, "Required for AMD/Intel GPUs to enable DLSS FG with Nukem mod");
                 }
             }
 
-            if (chkInstallNukemFG != null) chkInstallNukemFG.IsEnabled = true;
+            if (cmbNukemFG != null) cmbNukemFG.IsEnabled = true;
         }
 
         private string GetResourceString(string key, string fallback)

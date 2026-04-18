@@ -1,22 +1,27 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using System.Collections.Generic;
-using OptiscalerClient.Helpers;
-using OptiscalerClient.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using OptiscalerClient.Helpers;
+using OptiscalerClient.Services;
 
 namespace OptiscalerClient.Views
 {
     public partial class CacheManagementWindow : Window
     {
         private readonly ComponentManagementService _componentService;
+        private bool _isAnimatingClose;
+        private string _currentSection = "opti-stable";
+        private string? _selectedVersion;
+        private Button? _setDefaultButton;
 
         public CacheManagementWindow()
         {
@@ -25,18 +30,15 @@ namespace OptiscalerClient.Views
         }
 
         public CacheManagementWindow(Window owner)
+            : this(owner, "opti-stable")
+        {
+        }
+
+        public CacheManagementWindow(string initialSection)
         {
             InitializeComponent();
             _componentService = new ComponentManagementService();
-
-            // Flicker-free startup strategy
-            this.Opacity = 0;
-
-            var titleBar = this.FindControl<Border>("TitleBar");
-            if (titleBar != null)
-            {
-                titleBar.PointerPressed += (s, e) => this.BeginMoveDrag(e);
-            }
+            _currentSection = initialSection;
 
             this.Opened += (s, e) =>
             {
@@ -49,7 +51,39 @@ namespace OptiscalerClient.Views
                 }
             };
 
-            LoadCacheItems();
+            BuildSidebar();
+            ShowSection(_currentSection);
+            UpdateSidebarSelection(_currentSection);
+            UpdateCacheInfo();
+        }
+
+        public CacheManagementWindow(Window owner, string initialSection = "opti-stable")
+        {
+            InitializeComponent();
+            _componentService = new ComponentManagementService();
+            _currentSection = initialSection;
+
+            this.Opacity = 0;
+
+            var titleBar = this.FindControl<Border>("TitleBar");
+            if (titleBar != null)
+                titleBar.PointerPressed += (s, e) => this.BeginMoveDrag(e);
+
+            this.Opened += (s, e) =>
+            {
+                this.Opacity = 1;
+                var rootPanel = this.FindControl<Panel>("RootPanel");
+                if (rootPanel != null)
+                {
+                    AnimationHelper.SetupPanelTransition(rootPanel);
+                    rootPanel.Opacity = 1;
+                }
+            };
+
+            BuildSidebar();
+            ShowSection(_currentSection);
+            UpdateSidebarSelection(_currentSection);
+            UpdateCacheInfo();
         }
 
         private void InitializeComponent()
@@ -57,167 +91,662 @@ namespace OptiscalerClient.Views
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void LoadCacheItems()
+        // ── Sidebar ──────────────────────────────────────────────────────────
+
+        private void BuildSidebar()
         {
-            var pnlVersions = this.FindControl<StackPanel>("PnlVersions");
-            var pnlExtras = this.FindControl<StackPanel>("PnlExtrasVersions");
-            var pnlCustom = this.FindControl<StackPanel>("PnlCustomVersions");
-            if (pnlVersions == null || pnlExtras == null) return;
+            var sidebar = this.FindControl<StackPanel>("CacheSidebar");
+            if (sidebar == null) return;
 
-            pnlVersions.Children.Clear();
-            pnlExtras.Children.Clear();
-            pnlCustom?.Children.Clear();
+            sidebar.Children.Clear();
 
-            var versions = _componentService.GetDownloadedOptiScalerVersions();
-            var extras = _componentService.GetDownloadedExtrasVersions();
-            var customSet = _componentService.CustomVersions;
+            // ── OptiScaler (expandable) ──────────────────────────────────────
+            var optiContainer = new StackPanel();
 
-            // Separate official vs custom
-            var officialVersions = versions.Where(v => !customSet.Contains(v)).ToList();
-            var customVersions = versions.Where(v => customSet.Contains(v)).ToList();
+            var optiButton = CreateCategoryButton("\uE70D", "\uE74C", "OptiScaler");
+            var expandIconTb = (optiButton.Content as StackPanel)?.Children.OfType<TextBlock>().FirstOrDefault();
 
-            var txtCacheInfo = this.FindControl<TextBlock>("TxtCacheInfo");
-            if (txtCacheInfo != null)
+            var optiChildren = new StackPanel { Margin = new Thickness(20, 0, 0, 0), IsVisible = true };
+            optiChildren.Children.Add(CreateSubButton("opti-stable", "Stable", "\uE72E"));
+            optiChildren.Children.Add(CreateSubButton("opti-beta",   "Beta",   "\uEBE8"));
+            optiChildren.Children.Add(CreateSubButton("opti-custom", "Custom", "\uE8F4"));
+
+            optiButton.Click += (s, e) =>
             {
-                int totalCount = versions.Count + extras.Count;
-                txtCacheInfo.Text = $"{totalCount} items stored locally (OptiScaler & FSR4 Extras).";
+                optiChildren.IsVisible = !optiChildren.IsVisible;
+                if (expandIconTb != null)
+                    expandIconTb.Text = optiChildren.IsVisible ? "\uE70D" : "\uE70E";
+            };
+
+            optiContainer.Children.Add(optiButton);
+            optiContainer.Children.Add(optiChildren);
+            sidebar.Children.Add(optiContainer);
+
+            // ── OptiPatcher ──────────────────────────────────────────────────
+            sidebar.Children.Add(CreateTopButton("optipatcher", "OptiPatcher", "\uE70F"));
+
+            // ── FSR4 INT8 ────────────────────────────────────────────────────
+            sidebar.Children.Add(CreateTopButton("fsr4",      "FSR4 INT8", "\uE8B9"));
+
+            // ── fakenvapi ────────────────────────────────────────────────────
+            sidebar.Children.Add(CreateTopButton("fakenvapi",  "fakenvapi", "\uEBC4"));
+
+            // ── nukemfg ──────────────────────────────────────────────────────
+            sidebar.Children.Add(CreateTopButton("nukemfg",   "nukemfg",   "\uE945"));
+
+            ShowSection("opti-stable");
+            UpdateSidebarSelection("opti-stable");
+        }
+
+        private Button CreateCategoryButton(string expandIcon, string icon, string label)
+        {
+            var btn = new Button
+            {
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Padding = new Thickness(12, 10),
+                Margin = new Thickness(0, 0, 0, 4),
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                Cursor = new Cursor(StandardCursorType.Hand)
+            };
+
+            btn.Styles.Add(new Style(x => x.OfType<Button>().Class(":pointerover"))
+            {
+                Setters = { new Setter(Button.BackgroundProperty, Brushes.Transparent) }
+            });
+            btn.Styles.Add(new Style(x => x.OfType<Button>().Class(":pressed"))
+            {
+                Setters = { new Setter(Button.BackgroundProperty, Brushes.Transparent) }
+            });
+
+            var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+
+            stack.Children.Add(new TextBlock
+            {
+                Text = expandIcon,
+                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontSize = 11,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = icon,
+                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontSize = 15,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = label,
+                FontSize = 13,
+                FontWeight = FontWeight.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+
+            btn.Content = stack;
+            return btn;
+        }
+
+        private Button CreateTopButton(string sectionId, string label, string icon)
+        {
+            var btn = new Button
+            {
+                Tag = sectionId,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Padding = new Thickness(12, 10),
+                Margin = new Thickness(0, 0, 0, 4),
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(6)
+            };
+
+            var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            stack.Children.Add(new TextBlock
+            {
+                Text = icon,
+                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontSize = 15,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = label,
+                FontSize = 13,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+
+            btn.Content = stack;
+            btn.Click += (s, e) => { ShowSection(sectionId); UpdateSidebarSelection(sectionId); };
+            return btn;
+        }
+
+        private Button CreateSubButton(string sectionId, string label, string icon)
+        {
+            var btn = new Button
+            {
+                Tag = sectionId,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Left,
+                Padding = new Thickness(12, 8),
+                Margin = new Thickness(0, 0, 0, 2),
+                Background = Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(6)
+            };
+
+            var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            stack.Children.Add(new TextBlock
+            {
+                Text = icon,
+                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontSize = 13,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+            stack.Children.Add(new TextBlock
+            {
+                Text = label,
+                FontSize = 13,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            });
+
+            btn.Content = stack;
+            btn.Click += (s, e) => { ShowSection(sectionId); UpdateSidebarSelection(sectionId); };
+            return btn;
+        }
+
+        private void UpdateSidebarSelection(string sectionId)
+        {
+            _currentSection = sectionId;
+
+            var sidebar = this.FindControl<StackPanel>("CacheSidebar");
+            if (sidebar == null) return;
+
+            var activeBg   = this.FindResource("BrBgCard")         as IBrush ?? Brushes.DimGray;
+            var inactiveBg = Brushes.Transparent;
+            var activeFg   = this.FindResource("BrTextPrimary")    as IBrush ?? Brushes.White;
+            var inactiveFg = this.FindResource("BrTextSecondary")  as IBrush ?? Brushes.Gray;
+
+            void StyleBtn(Button b)
+            {
+                bool active = b.Tag?.ToString() == sectionId;
+                b.Background = active ? activeBg : inactiveBg;
+                if (b.Content is StackPanel sp)
+                    foreach (var tb in sp.Children.OfType<TextBlock>())
+                        tb.Foreground = active ? activeFg : inactiveFg;
             }
 
-            // Populate OptiScaler Versions (official only)
-            if (!officialVersions.Any())
+            foreach (var child in sidebar.Children)
             {
-                pnlVersions.Children.Add(new TextBlock
+                if (child is Button topBtn)
                 {
-                    Text = "No OptiScaler versions cached.",
-                    Foreground = Brushes.Gray,
-                    FontSize = 11,
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 10)
-                });
-            }
-            else
-            {
-                foreach (var ver in officialVersions)
-                {
-                    var card = CreateVersionCard(ver, isExtras: false);
-                    pnlVersions.Children.Add(card);
+                    StyleBtn(topBtn);
                 }
-            }
-
-            // Populate Custom Versions
-            if (pnlCustom != null)
-            {
-                if (!customVersions.Any())
+                else if (child is StackPanel cat)
                 {
-                    pnlCustom.Children.Add(new TextBlock
+                    foreach (var catChild in cat.Children)
                     {
-                        Text = Application.Current?.FindResource("TxtNoCustomVersions") as string ?? "No custom versions imported.",
-                        Foreground = Brushes.Gray,
-                        FontSize = 11,
-                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                        Margin = new Thickness(0, 10)
-                    });
-                }
-                else
-                {
-                    foreach (var ver in customVersions)
-                    {
-                        var card = CreateVersionCard(ver, isExtras: false);
-                        pnlCustom.Children.Add(card);
+                        if (catChild is StackPanel subContainer)
+                            foreach (var sub in subContainer.Children.OfType<Button>())
+                                StyleBtn(sub);
                     }
-                }
-            }
-
-            // Populate Extras Versions
-            if (!extras.Any())
-            {
-                pnlExtras.Children.Add(new TextBlock
-                {
-                    Text = "No FSR4 Extras cached.",
-                    Foreground = Brushes.Gray,
-                    FontSize = 11,
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 10)
-                });
-            }
-            else
-            {
-                foreach (var ver in extras)
-                {
-                    var card = CreateVersionCard(ver, isExtras: true);
-                    pnlExtras.Children.Add(card);
                 }
             }
         }
 
-        private Border CreateVersionCard(string version, bool isExtras)
+        // ── Content rendering ─────────────────────────────────────────────────
+
+        private void ShowSection(string sectionId)
+        {
+            bool sectionChanged = _currentSection != sectionId;
+            _currentSection = sectionId;
+            if (sectionChanged) _selectedVersion = null;
+
+            var content = this.FindControl<StackPanel>("CacheContentArea");
+            if (content == null) return;
+
+            content.Children.Clear();
+
+            switch (sectionId)
+            {
+                case "opti-stable": RenderOptiScalerVersions(content, showBeta: false); break;
+                case "opti-beta":   RenderOptiScalerVersions(content, showBeta: true);  break;
+                case "opti-custom": RenderOptiScalerCustom(content); break;
+                case "optipatcher": RenderOptiPatcher(content); break;
+                case "fsr4":        RenderFsr4(content); break;
+                case "fakenvapi":   RenderFakenvapi(content); break;
+                case "nukemfg":     RenderNukemfg(content); break;
+            }
+        }
+
+        private void RenderOptiScalerVersions(StackPanel content, bool showBeta)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            var allVersions = _componentService.GetDownloadedOptiScalerVersions();
+            var betaSet     = _componentService.BetaVersions;
+            var customSet   = _componentService.CustomVersions;
+
+            var filtered = allVersions.Where(v =>
+            {
+                if (customSet.Contains(v)) return false;
+                return betaSet.Contains(v) == showBeta;
+            }).ToList();
+
+            if (filtered.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel("No versions cached."));
+                return;
+            }
+
+            foreach (var ver in filtered)
+                content.Children.Add(CreateVersionCard(ver, isExtras: false));
+        }
+
+        private void RenderOptiScalerCustom(StackPanel content)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            // Import button
+            var importRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto,Auto"), Margin = new Thickness(0, 0, 0, 16) };
+            var txtStatus = new TextBlock
+            {
+                Name = "TxtImportStatus",
+                FontSize = 11,
+                Foreground = this.FindResource("BrAccent") as IBrush,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 10, 0)
+            };
+            var btnImport = new Button
+            {
+                Name = "BtnImportCustom",
+                Content = Application.Current?.FindResource("TxtImportArchive") as string ?? "Import Archive",
+                Padding = new Thickness(12, 5),
+                FontSize = 11
+            };
+            btnImport.Classes.Add("BtnBase");
+            btnImport.Click += BtnImportCustom_Click;
+
+            importRow.Children.Add(txtStatus);
+            Grid.SetColumn(txtStatus, 1);
+            importRow.Children.Add(btnImport);
+            Grid.SetColumn(btnImport, 2);
+            content.Children.Add(importRow);
+
+            // Warning banner
+            content.Children.Add(new Border
+            {
+                Background = new SolidColorBrush(Color.Parse("#1AFF9800")),
+                BorderBrush = new SolidColorBrush(Color.Parse("#FF9800")),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(10, 8),
+                Margin = new Thickness(0, 0, 0, 12),
+                Child = new TextBlock
+                {
+                    Text = Application.Current?.FindResource("TxtCustomVersionWarning") as string ?? "",
+                    Foreground = new SolidColorBrush(Color.Parse("#FF9800")),
+                    FontSize = 11,
+                    TextWrapping = TextWrapping.Wrap
+                }
+            });
+
+            var customSet    = _componentService.CustomVersions;
+            var allDownloaded = _componentService.GetDownloadedOptiScalerVersions();
+            var filtered     = allDownloaded.Where(v => customSet.Contains(v)).ToList();
+
+            if (filtered.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel(
+                    Application.Current?.FindResource("TxtNoCustomVersions") as string
+                    ?? "No custom versions imported."));
+                return;
+            }
+
+            foreach (var ver in filtered)
+                content.Children.Add(CreateVersionCard(ver, isExtras: false));
+        }
+
+        private void RenderOptiPatcher(StackPanel content)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            var versions = _componentService.GetDownloadedOptiPatcherVersions();
+
+            if (versions.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel("No versions cached."));
+                return;
+            }
+
+            foreach (var ver in versions)
+                content.Children.Add(CreateVersionCard(ver, isExtras: false, isOptiPatcher: true));
+        }
+
+        private void RenderFsr4(StackPanel content)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            var versions = _componentService.GetDownloadedExtrasVersions();
+
+            if (versions.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel("No versions cached."));
+                return;
+            }
+
+            foreach (var ver in versions)
+                content.Children.Add(CreateVersionCard(ver, isExtras: true));
+        }
+
+        private void RenderFakenvapi(StackPanel content)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            var downloadedVersions = _componentService.GetDownloadedFakenvapiVersions();
+
+            if (downloadedVersions.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel("No Fakenvapi versions cached."));
+                return;
+            }
+
+            foreach (var ver in downloadedVersions)
+                content.Children.Add(CreateVersionCard(ver, isExtras: false, isDeletable: true, isOptiPatcher: false, isNukemFG: false, isFakenvapi: true));
+        }
+
+        private void RenderNukemfg(StackPanel content)
+        {
+            content.Children.Add(CreateSetDefaultRow());
+
+            // Import archive button row
+            var importRow = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Margin = new Thickness(0, 0, 0, 16) };
+            var btnImport = new Button
+            {
+                Name = "BtnImportNukemFG",
+                Content = Application.Current?.FindResource("TxtImportArchive") as string ?? "Import Archive",
+                Padding = new Thickness(12, 5),
+                FontSize = 11
+            };
+            btnImport.Classes.Add("BtnBase");
+            btnImport.Click += BtnImportNukemFG_Click;
+
+            importRow.Children.Add(btnImport);
+            Grid.SetColumn(btnImport, 1);
+            content.Children.Add(importRow);
+
+            // Info banner
+            content.Children.Add(new Border
+            {
+                Background = new SolidColorBrush(Color.Parse("#1A42A5F5")),
+                BorderBrush = new SolidColorBrush(Color.Parse("#42A5F5")),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(10, 8),
+                Margin = new Thickness(0, 0, 0, 12),
+                Child = new TextBlock
+                {
+                    Text = "NukemFG versions are imported from .zip archives containing dlssg_to_fsr3_amd_is_better.dll.",
+                    Foreground = new SolidColorBrush(Color.Parse("#42A5F5")),
+                    FontSize = 11,
+                    TextWrapping = TextWrapping.Wrap
+                }
+            });
+
+            // Version list
+            var nukemVersions = _componentService.GetDownloadedNukemFGVersions();
+            if (nukemVersions.Count == 0)
+            {
+                content.Children.Add(MakeEmptyLabel("No NukemFG versions cached."));
+            }
+            else
+            {
+                foreach (var ver in nukemVersions)
+                    content.Children.Add(CreateVersionCard(ver, isExtras: false, isDeletable: true, isOptiPatcher: false, isNukemFG: true));
+            }
+        }
+
+        // ── Version card ──────────────────────────────────────────────────────
+
+        private string? GetCurrentDefault()
+        {
+            return _currentSection switch
+            {
+                "opti-stable" or "opti-beta" or "opti-custom" => _componentService.Config.DefaultOptiScalerVersion,
+                "optipatcher" => _componentService.Config.DefaultOptiPatcherVersion,
+                "fsr4" => _componentService.Config.DefaultExtrasVersion,
+                "fakenvapi" => _componentService.Config.DefaultFakenvapiVersion,
+                "nukemfg" => _componentService.Config.DefaultNukemFGVersion,
+                _ => null
+            };
+        }
+
+        private Border CreateVersionCard(string version, bool isExtras, bool isDeletable = true, bool isOptiPatcher = false, bool isNukemFG = false, bool isFakenvapi = false)
         {
             var grid = new Grid
             {
-                ColumnDefinitions = new ColumnDefinitions("*, Auto"),
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                ColumnDefinitions = new ColumnDefinitions("*, Auto, Auto"),
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            var stack = new StackPanel { VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center };
+            var stack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             stack.Children.Add(new TextBlock
             {
                 Text = version,
                 FontWeight = FontWeight.Bold,
-                Foreground = Application.Current?.FindResource("BrTextPrimary") as IBrush ?? Brushes.White
+                Foreground = this.FindResource("BrTextPrimary") as IBrush ?? Brushes.White
             });
 
-            // Check if it's the currently selected main OptiScaler version
-            if (!isExtras && version == _componentService.OptiScalerVersion)
+            // Show "Currently selected" label if this is the installed OptiScaler version
+            // if (!isExtras && !isOptiPatcher && !isNukemFG && !isFakenvapi && version == _componentService.OptiScalerVersion)
+            // {
+            //     stack.Children.Add(new TextBlock
+            //     {
+            //         Text = Application.Current?.FindResource("TxtCurrentSelection") as string ?? "Currently selected",
+            //         FontSize = 10,
+            //         Foreground = this.FindResource("BrAccent") as IBrush ?? Brushes.DeepSkyBlue
+            //     });
+            // }
+
+            // Show DEFAULT badge if this version is the configured default
+            var currentDefault = GetCurrentDefault();
+            if (!string.IsNullOrEmpty(currentDefault) &&
+                currentDefault.Equals(version, StringComparison.OrdinalIgnoreCase))
             {
-                stack.Children.Add(new TextBlock
+                stack.Children.Add(new Border
                 {
-                    Text = Application.Current?.FindResource("TxtCurrentSelection") as string ?? "Currently selected",
-                    FontSize = 10,
-                    Foreground = Application.Current?.FindResource("BrAccent") as IBrush ?? Brushes.DeepSkyBlue
+                    CornerRadius = new CornerRadius(4),
+                    Background = new SolidColorBrush(Color.Parse("#7C3AED")),
+                    Padding = new Thickness(5, 1),
+                    Margin = new Thickness(0, 2, 0, 0),
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Child = new TextBlock
+                    {
+                        Text = Application.Current?.FindResource("TxtDefaultBadge") as string ?? "DEFAULT",
+                        FontSize = 9,
+                        Foreground = Brushes.White,
+                        FontWeight = FontWeight.Bold,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
                 });
             }
 
             grid.Children.Add(stack);
             Grid.SetColumn(stack, 0);
 
-            var btnDelete = new Button
+            if (isDeletable)
             {
-                Content = Application.Current?.FindResource("TxtDeletePlain") as string ?? "Delete",
-                Classes = { "BtnSecondary" },
-                Padding = new Thickness(12, 4),
-                FontSize = 11,
-                Tag = new VersionDeleteInfo { Version = version, IsExtras = isExtras }
-            };
-            btnDelete.Click += BtnDelete_Click;
+                var btnDelete = new Button
+                {
+                    Content = Application.Current?.FindResource("TxtDeletePlain") as string ?? "Delete",
+                    Padding = new Thickness(12, 4),
+                    FontSize = 11,
+                    Margin = new Thickness(8, 0, 0, 0),
+                    Tag = new VersionDeleteInfo { Version = version, IsExtras = isExtras, IsOptiPatcher = isOptiPatcher, IsNukemFG = isNukemFG, IsFakenvapi = isFakenvapi }
+                };
+                btnDelete.Classes.Add("BtnSecondary");
+                btnDelete.Click += BtnDelete_Click;
+                grid.Children.Add(btnDelete);
+                Grid.SetColumn(btnDelete, 2);
+            }
 
-            grid.Children.Add(btnDelete);
-            Grid.SetColumn(btnDelete, 1);
-
-            return new Border
+            var border = new Border
             {
-                Background = Application.Current?.FindResource("BrBgCard") as IBrush ?? Brushes.Transparent,
-                BorderBrush = Application.Current?.FindResource("BrBorderSubtle") as IBrush ?? Brushes.DimGray,
+                Background = this.FindResource("BrBgCard") as IBrush ?? Brushes.Transparent,
+                BorderBrush = (_selectedVersion == version)
+                    ? this.FindResource("BrAccent") as IBrush ?? Brushes.DeepSkyBlue
+                    : this.FindResource("BrBorderSubtle") as IBrush ?? Brushes.DimGray,
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(8),
                 Padding = new Thickness(16, 10),
+                Cursor = new Cursor(StandardCursorType.Hand),
+                Tag = version,
                 Child = grid
             };
+
+            border.PointerPressed += (s, e) =>
+            {
+                _selectedVersion = version;
+                if (_setDefaultButton != null) _setDefaultButton.IsEnabled = true;
+                ShowSection(_currentSection); // re-render to update highlight
+            };
+
+            return border;
         }
+
+        /// <summary>
+        /// Creates the "Set Default" header row shown at the top of each section.
+        /// </summary>
+        private Grid CreateSetDefaultRow()
+        {
+            var row = new Grid
+            {
+                ColumnDefinitions = new ColumnDefinitions("*, Auto"),
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+
+            var currentDefault = GetCurrentDefault();
+            var defaultLabel = new TextBlock
+            {
+                FontSize = 11,
+                VerticalAlignment = VerticalAlignment.Center,
+                Foreground = this.FindResource("BrTextSecondary") as IBrush
+            };
+
+            if (!string.IsNullOrEmpty(currentDefault) &&
+                !currentDefault.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                var fmt = Application.Current?.FindResource("TxtCurrentDefaultFormat") as string ?? "Current default: {0}";
+                defaultLabel.Text = string.Format(fmt, currentDefault);
+            }
+            else
+            {
+                defaultLabel.Text = Application.Current?.FindResource("TxtNoDefaultSet") as string ?? "No default set";
+            }
+
+            row.Children.Add(defaultLabel);
+            Grid.SetColumn(defaultLabel, 0);
+
+            var btnStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+
+            // Clear default button
+            var btnClear = new Button
+            {
+                Content = Application.Current?.FindResource("TxtClearDefault") as string ?? "Clear",
+                Padding = new Thickness(10, 5),
+                FontSize = 11,
+                IsEnabled = !string.IsNullOrEmpty(currentDefault) &&
+                            !currentDefault.Equals("none", StringComparison.OrdinalIgnoreCase)
+            };
+            btnClear.Classes.Add("BtnSecondary");
+            btnClear.Click += BtnClearDefault_Click;
+            btnStack.Children.Add(btnClear);
+
+            // Set Default button
+            var btnSetDefault = new Button
+            {
+                Content = Application.Current?.FindResource("TxtSetDefault") as string ?? "Set Default",
+                Padding = new Thickness(12, 5),
+                FontSize = 11,
+                IsEnabled = _selectedVersion != null
+            };
+            btnSetDefault.Classes.Add("BtnBase");
+            btnSetDefault.Click += BtnSetDefault_Click;
+            _setDefaultButton = btnSetDefault;
+            btnStack.Children.Add(btnSetDefault);
+
+            row.Children.Add(btnStack);
+            Grid.SetColumn(btnStack, 1);
+
+            return row;
+        }
+
+        private TextBlock MakeEmptyLabel(string text) => new TextBlock
+        {
+            Text = text,
+            FontSize = 13,
+            Foreground = this.FindResource("BrTextSecondary") as IBrush,
+            Margin = new Thickness(0, 8, 0, 0)
+        };
+
+        private void UpdateCacheInfo()
+        {
+            var txtCacheInfo = this.FindControl<TextBlock>("TxtCacheInfo");
+            if (txtCacheInfo == null) return;
+
+            var versions    = _componentService.GetDownloadedOptiScalerVersions();
+            var extras      = _componentService.GetDownloadedExtrasVersions();
+            var optiPatcher = _componentService.GetDownloadedOptiPatcherVersions();
+            var nukemfg     = _componentService.GetDownloadedNukemFGVersions();
+            var fakenvapi   = _componentService.GetDownloadedFakenvapiVersions();
+            int total       = versions.Count + extras.Count + optiPatcher.Count + nukemfg.Count + fakenvapi.Count;
+            txtCacheInfo.Text = $"{total} items cached locally.";
+        }
+
+        // ── Delete ─────────────────────────────────────────────────────────────
 
         private class VersionDeleteInfo
         {
             public string Version { get; set; } = "";
             public bool IsExtras { get; set; }
+            public bool IsOptiPatcher { get; set; }
+            public bool IsNukemFG { get; set; }
+            public bool IsFakenvapi { get; set; }
         }
 
         private async void BtnDelete_Click(object? sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is VersionDeleteInfo info)
             {
-                var title = info.IsExtras ? "Delete FSR4 Extra" : "Delete OptiScaler Version";
-                var msg = info.IsExtras 
-                    ? $"Are you sure you want to delete FSR4 INT8 Extra {info.Version}?"
-                    : $"Are you sure you want to delete OptiScaler {info.Version} from cache?";
+                string title, msg;
+                if (info.IsFakenvapi)
+                {
+                    title = "Delete Fakenvapi Version";
+                    msg = $"Are you sure you want to delete Fakenvapi '{info.Version}' from cache?";
+                }
+                else if (info.IsNukemFG)
+                {
+                    title = "Delete NukemFG Version";
+                    msg = $"Are you sure you want to delete NukemFG '{info.Version}' from cache?";
+                }
+                else if (info.IsExtras)
+                {
+                    title = "Delete FSR4 Extra";
+                    msg = $"Are you sure you want to delete FSR4 INT8 Extra {info.Version}?";
+                }
+                else
+                {
+                    title = "Delete OptiScaler Version";
+                    msg = $"Are you sure you want to delete OptiScaler {info.Version} from cache?";
+                }
 
                 var dialog = new ConfirmDialog(this, title, msg, false);
                 var result = await dialog.ShowDialog<bool>(this);
@@ -226,12 +755,19 @@ namespace OptiscalerClient.Views
                 {
                     try
                     {
-                        if (info.IsExtras)
+                        if (info.IsFakenvapi)
+                            _componentService.DeleteFakenvapiCache(info.Version);
+                        else if (info.IsNukemFG)
+                            _componentService.DeleteNukemFGCache(info.Version);
+                        else if (info.IsExtras)
                             _componentService.DeleteExtrasCache(info.Version);
+                        else if (info.IsOptiPatcher)
+                            _componentService.DeleteOptiPatcherCache(info.Version);
                         else
                             _componentService.DeleteOptiScalerCache(info.Version);
-                        
-                        LoadCacheItems();
+
+                        ShowSection(_currentSection);
+                        UpdateCacheInfo();
                     }
                     catch (Exception ex)
                     {
@@ -241,7 +777,67 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private bool _isAnimatingClose = false;
+        // ── Set Default ────────────────────────────────────────────────────────
+
+        private void BtnSetDefault_Click(object? sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_selectedVersion)) return;
+
+            switch (_currentSection)
+            {
+                case "opti-stable":
+                case "opti-beta":
+                case "opti-custom":
+                    _componentService.Config.DefaultOptiScalerVersion = _selectedVersion;
+                    break;
+                case "optipatcher":
+                    _componentService.Config.DefaultOptiPatcherVersion = _selectedVersion;
+                    break;
+                case "fsr4":
+                    _componentService.Config.DefaultExtrasVersion = _selectedVersion;
+                    break;
+                case "fakenvapi":
+                    _componentService.Config.DefaultFakenvapiVersion = _selectedVersion;
+                    break;
+                case "nukemfg":
+                    _componentService.Config.DefaultNukemFGVersion = _selectedVersion;
+                    break;
+            }
+
+            _componentService.SaveConfiguration();
+            _selectedVersion = null;
+            ShowSection(_currentSection);
+        }
+
+        private void BtnClearDefault_Click(object? sender, RoutedEventArgs e)
+        {
+            switch (_currentSection)
+            {
+                case "opti-stable":
+                case "opti-beta":
+                case "opti-custom":
+                    _componentService.Config.DefaultOptiScalerVersion = null;
+                    break;
+                case "optipatcher":
+                    _componentService.Config.DefaultOptiPatcherVersion = null;
+                    break;
+                case "fsr4":
+                    _componentService.Config.DefaultExtrasVersion = null;
+                    break;
+                case "fakenvapi":
+                    _componentService.Config.DefaultFakenvapiVersion = null;
+                    break;
+                case "nukemfg":
+                    _componentService.Config.DefaultNukemFGVersion = null;
+                    break;
+            }
+
+            _componentService.SaveConfiguration();
+            _selectedVersion = null;
+            ShowSection(_currentSection);
+        }
+
+        // ── Import ─────────────────────────────────────────────────────────────
 
         private async void BtnImportCustom_Click(object? sender, RoutedEventArgs e)
         {
@@ -267,35 +863,85 @@ namespace OptiscalerClient.Views
                     : files[0].TryGetLocalPath();
                 if (string.IsNullOrEmpty(filePath)) return;
 
-                // Show importing overlay
-                var overlay = this.FindControl<Grid>("OverlayImporting");
-                var btnImport = this.FindControl<Button>("BtnImportCustom");
-                var txtStatus = this.FindControl<TextBlock>("TxtImportStatus");
+                var overlay   = this.FindControl<Grid>("OverlayImporting");
                 if (overlay != null) overlay.IsVisible = true;
-                if (btnImport != null) btnImport.IsEnabled = false;
-                if (txtStatus != null) txtStatus.Text = "";
+                if (sender is Button btnSender) btnSender.IsEnabled = false;
 
                 var versionName = await _componentService.ImportCustomOptiScalerVersionAsync(filePath);
                 DebugWindow.Log($"[Cache] Custom version imported: {versionName}");
 
                 if (overlay != null) overlay.IsVisible = false;
-                if (txtStatus != null) txtStatus.Text = $"✓ {versionName}";
-                if (btnImport != null) btnImport.IsEnabled = true;
-                LoadCacheItems();
+                if (sender is Button btnSender2) btnSender2.IsEnabled = true;
+
+                ShowSection("opti-custom");
+                UpdateSidebarSelection("opti-custom");
+                UpdateCacheInfo();
             }
             catch (Exception ex)
             {
                 DebugWindow.Log($"[Cache] Import custom version failed: {ex}");
                 var overlay = this.FindControl<Grid>("OverlayImporting");
-                var btnImport = this.FindControl<Button>("BtnImportCustom");
-                var txtStatus = this.FindControl<TextBlock>("TxtImportStatus");
                 if (overlay != null) overlay.IsVisible = false;
-                if (btnImport != null) btnImport.IsEnabled = true;
-                if (txtStatus != null) txtStatus.Text = "";
+                if (sender is Button btnSender) btnSender.IsEnabled = true;
                 var innerMsg = ex.InnerException != null ? $"\n{ex.InnerException.Message}" : "";
-                await new ConfirmDialog(this, "Import Error", $"Failed to import custom version:\n{ex.Message}{innerMsg}").ShowDialog<object>(this);
+                await new ConfirmDialog(this, "Import Error",
+                    $"Failed to import custom version:\n{ex.Message}{innerMsg}").ShowDialog<object>(this);
             }
         }
+
+        // ── Import NukemFG ─────────────────────────────────────────────────
+
+        private async void BtnImportNukemFG_Click(object? sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = "Select NukemFG Archive",
+                    AllowMultiple = false,
+                    FileTypeFilter = new[]
+                    {
+                        new FilePickerFileType("Archives (zip, 7z, rar)")
+                        {
+                            Patterns = new[] { "*.zip", "*.7z", "*.rar" }
+                        }
+                    }
+                });
+
+                if (files == null || files.Count == 0) return;
+
+                var filePath = files[0].Path.IsAbsoluteUri
+                    ? files[0].Path.LocalPath
+                    : files[0].TryGetLocalPath();
+                if (string.IsNullOrEmpty(filePath)) return;
+
+                var overlay = this.FindControl<Grid>("OverlayImporting");
+                if (overlay != null) overlay.IsVisible = true;
+                if (sender is Button btnSender) btnSender.IsEnabled = false;
+
+                var versionName = await _componentService.ImportNukemFGArchiveAsync(filePath);
+                DebugWindow.Log($"[Cache] NukemFG version imported: {versionName}");
+
+                if (overlay != null) overlay.IsVisible = false;
+                if (sender is Button btnSender2) btnSender2.IsEnabled = true;
+
+                ShowSection("nukemfg");
+                UpdateSidebarSelection("nukemfg");
+                UpdateCacheInfo();
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[Cache] Import NukemFG failed: {ex}");
+                var overlay = this.FindControl<Grid>("OverlayImporting");
+                if (overlay != null) overlay.IsVisible = false;
+                if (sender is Button btnSender) btnSender.IsEnabled = true;
+                var innerMsg = ex.InnerException != null ? $"\n{ex.InnerException.Message}" : "";
+                await new ConfirmDialog(this, "Import Error",
+                    $"Failed to import NukemFG version:\n{ex.Message}{innerMsg}").ShowDialog<object>(this);
+            }
+        }
+
+        // ── Close ──────────────────────────────────────────────────────────────
 
         private void BtnClose_Click(object? sender, RoutedEventArgs e) => _ = CloseAnimated();
 

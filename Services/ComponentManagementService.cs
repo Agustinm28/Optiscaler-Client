@@ -67,6 +67,10 @@ namespace OptiscalerClient.Services
         private static OptiPatcherReleasesCache _optiPatcherCache = new();
         private static System.Collections.Generic.List<string>? _cachedOptiPatcherVersions = null;
         private static string? _cachedLatestOptiPatcherVersion = null;
+        // Persistent local cache of Fakenvapi release metadata
+        private static FakenvapiReleasesCache _fakenvapiCache = new();
+        private static System.Collections.Generic.List<string>? _cachedFakenvapiVersions = null;
+        private static string? _cachedLatestFakenvapiVersion = null;
 
         public System.Collections.Generic.List<string> OptiScalerAvailableVersions
         {
@@ -100,6 +104,12 @@ namespace OptiscalerClient.Services
             => _cachedOptiPatcherVersions ?? new System.Collections.Generic.List<string>();
         /// <summary>The latest OptiPatcher version tag, or null if none fetched yet.</summary>
         public string? LatestOptiPatcherVersion => _cachedLatestOptiPatcherVersion;
+
+        /// <summary>All available Fakenvapi versions from the remote cache.</summary>
+        public System.Collections.Generic.List<string> FakenvapiAvailableVersions
+            => _cachedFakenvapiVersions ?? new System.Collections.Generic.List<string>();
+        /// <summary>The latest Fakenvapi version tag, or null if none fetched yet.</summary>
+        public string? LatestFakenvapiVersion => _cachedLatestFakenvapiVersion;
 
         public string? OptiScalerVersion => _localVersions.OptiScalerVersion;
         public string? FakenvapiVersion => _localVersions.FakenvapiVersion;
@@ -135,6 +145,7 @@ namespace OptiscalerClient.Services
             LoadReleasesCache();
             LoadExtrasCache();
             LoadOptiPatcherCache();
+            LoadFakenvapiCache();
         }
 
         private static HttpClient CreateHttpClient()
@@ -610,7 +621,7 @@ namespace OptiscalerClient.Services
                         // Always fetch both stable and beta versions + extras
                         var optiVersionsTask = FetchAllReleasesWithUrlAsync(_config.OptiScaler, isBeta: false);
                         var optiBetasTask = FetchAllReleasesWithUrlAsync(_config.OptiScalerBetas, isBeta: true);
-                        var fakeTask = CheckComponentUpdateAsync("Fakenvapi", _config.Fakenvapi);
+                        var fakeTask = FetchFakenvapiReleasesAsync();
                         var nukemTask = CheckComponentUpdateAsync("NukemFG", _config.NukemFG);
                         var extrasTask = FetchExtrasReleasesAsync();
                         var optiPatcherTask = FetchOptiPatcherReleasesAsync();
@@ -656,7 +667,32 @@ namespace OptiscalerClient.Services
                             RebuildInMemoryExtrasCache();
                         }
 
-                        _cachedFakenvapiVersion = await fakeTask ?? _cachedFakenvapiVersion;
+                        var newFakenvapi = await fakeTask;
+                        if (newFakenvapi.Count > 0)
+                        {
+                            var existingFake = new System.Collections.Generic.HashSet<string>(
+                                _fakenvapiCache.Releases.Select(r => r.Version), StringComparer.OrdinalIgnoreCase);
+                            foreach (var e in _fakenvapiCache.Releases) e.IsLatest = false;
+                            foreach (var entry in newFakenvapi)
+                            {
+                                if (!existingFake.Contains(entry.Version))
+                                    _fakenvapiCache.Releases.Add(entry);
+                                else
+                                {
+                                    var ex = _fakenvapiCache.Releases.FirstOrDefault(
+                                        r => string.Equals(r.Version, entry.Version, StringComparison.OrdinalIgnoreCase));
+                                    if (ex != null)
+                                    {
+                                        if (string.IsNullOrEmpty(ex.DownloadUrl)) ex.DownloadUrl = entry.DownloadUrl;
+                                        ex.IsLatest = entry.IsLatest;
+                                    }
+                                }
+                            }
+                            _fakenvapiCache.LastUpdated = DateTime.Now;
+                            SaveFakenvapiCache();
+                            RebuildInMemoryFakenvapiCache();
+                        }
+                        _cachedFakenvapiVersion = _cachedLatestFakenvapiVersion ?? _cachedFakenvapiVersion;
                         _cachedNukemFGVersion = await nukemTask ?? _cachedNukemFGVersion;
 
                         var newOptiPatcher = await optiPatcherTask;
@@ -696,6 +732,7 @@ namespace OptiscalerClient.Services
                         RebuildInMemoryCacheFromReleases();
                         RebuildInMemoryExtrasCache();
                         RebuildInMemoryOptiPatcherCache();
+                        RebuildInMemoryFakenvapiCache();
                         // Rate limit must propagate so the UI can show a warning dialog
                         if (apiEx is GitHubRateLimitException) throw;
                     }
@@ -1187,6 +1224,329 @@ namespace OptiscalerClient.Services
             DebugWindow.Log($"[OptiPatcherCache] Rebuilt in-memory: {_cachedOptiPatcherVersions.Count} version(s), latest={_cachedLatestOptiPatcherVersion}");
         }
 
+        // ── Fakenvapi cache ───────────────────────────────────────────────────────
+
+        private void LoadFakenvapiCache()
+        {
+            if (_fakenvapiCache.Releases.Count > 0) return;
+            var file = Path.Combine(_baseDir, "fakenvapi_cache.json");
+            if (!File.Exists(file)) return;
+            try
+            {
+                var json = File.ReadAllText(file);
+                var loaded = JsonSerializer.Deserialize(json, OptimizerContext.Default.FakenvapiReleasesCache);
+                if (loaded != null)
+                {
+                    _fakenvapiCache = loaded;
+                    RebuildInMemoryFakenvapiCache();
+                    DebugWindow.Log($"[FakenvapiCache] Loaded {_fakenvapiCache.Releases.Count} entries from local cache.");
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[FakenvapiCache] Failed to load: {ex.Message}");
+            }
+        }
+
+        private void SaveFakenvapiCache()
+        {
+            try
+            {
+                var file = Path.Combine(_baseDir, "fakenvapi_cache.json");
+                var json = JsonSerializer.Serialize(_fakenvapiCache, OptimizerContext.Default.FakenvapiReleasesCache);
+                File.WriteAllText(file, json);
+                DebugWindow.Log($"[FakenvapiCache] Saved {_fakenvapiCache.Releases.Count} entries.");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[FakenvapiCache] Failed to save: {ex.Message}");
+            }
+        }
+
+        private void RebuildInMemoryFakenvapiCache()
+        {
+            if (_fakenvapiCache.Releases == null || _fakenvapiCache.Releases.Count == 0)
+            {
+                _cachedFakenvapiVersions = new System.Collections.Generic.List<string>();
+                return;
+            }
+            _cachedLatestFakenvapiVersion = _fakenvapiCache.Releases.FirstOrDefault(r => r.IsLatest)?.Version
+                ?? _fakenvapiCache.Releases.FirstOrDefault()?.Version;
+            _cachedFakenvapiVersions = _fakenvapiCache.Releases.Select(r => r.Version).Distinct().ToList();
+            DebugWindow.Log($"[FakenvapiCache] Rebuilt in-memory: {_cachedFakenvapiVersions.Count} version(s), latest={_cachedLatestFakenvapiVersion}");
+        }
+
+        /// <summary>
+        /// Fetches all releases from the Fakenvapi repo. Looks for .zip or .7z assets.
+        /// </summary>
+        private async Task<System.Collections.Generic.List<FakenvapiReleaseEntry>> FetchFakenvapiReleasesAsync()
+        {
+            var entries = new System.Collections.Generic.List<FakenvapiReleaseEntry>();
+            var config = _config.Fakenvapi;
+            var repoLabel = $"{config.RepoOwner}/{config.RepoName}";
+
+            try
+            {
+                if (string.IsNullOrEmpty(config.RepoOwner) || string.IsNullOrEmpty(config.RepoName))
+                {
+                    DebugWindow.Log($"[FakenvapiVersions] Skipping {repoLabel}: empty config");
+                    return entries;
+                }
+
+                // Resolve the actual latest tag from GitHub
+                string? actualLatestTag = null;
+                try
+                {
+                    var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
+                    var latestResp = await GetWithRetryAsync(_httpClient, latestUrl, maxRetries: 2, timeoutSeconds: 15);
+                    if (latestResp.IsSuccessStatusCode)
+                    {
+                        var latestJson = await latestResp.Content.ReadAsStringAsync();
+                        using var latestDoc = JsonDocument.Parse(latestJson);
+                        if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
+                        {
+                            actualLatestTag = tag.GetString();
+                            if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                                actualLatestTag = actualLatestTag.Substring(1);
+                        }
+                    }
+                }
+                catch (Exception ex) { DebugWindow.Log($"[FakenvapiVersions] Failed to resolve latest tag: {ex.Message}"); }
+
+                var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
+                var response = await GetWithRetryAsync(_httpClient, url);
+                DebugWindow.Log($"[FakenvapiVersions] GET {url} → HTTP {(int)response.StatusCode}");
+                response.EnsureSuccessStatusCode();
+
+                var json = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(json);
+                bool latestMarked = false;
+
+                if (doc.RootElement.ValueKind != JsonValueKind.Array)
+                {
+                    DebugWindow.Log($"[FakenvapiVersions] ERROR: Expected JSON array, got {doc.RootElement.ValueKind}");
+                    return entries;
+                }
+
+                foreach (var element in doc.RootElement.EnumerateArray())
+                {
+                    if (!element.TryGetProperty("tag_name", out var tagName)) continue;
+                    var version = tagName.GetString();
+                    if (string.IsNullOrEmpty(version)) continue;
+
+                    if (version.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                        version = version.Substring(1);
+
+                    // Look for a .zip or .7z asset
+                    string? downloadUrl = null;
+                    if (element.TryGetProperty("assets", out var assets))
+                    {
+                        foreach (var asset in assets.EnumerateArray())
+                        {
+                            if (asset.TryGetProperty("browser_download_url", out var urlProp) &&
+                                asset.TryGetProperty("name", out var nameProp))
+                            {
+                                var assetName = nameProp.GetString() ?? "";
+                                var assetUrl  = urlProp.GetString();
+                                if (assetUrl != null &&
+                                    (assetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
+                                     assetName.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    downloadUrl = assetUrl;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Fallback to zipball_url
+                    if (downloadUrl == null && element.TryGetProperty("zipball_url", out var zipballProp))
+                        downloadUrl = zipballProp.GetString();
+
+                    bool isLatest;
+                    if (!string.IsNullOrEmpty(actualLatestTag))
+                        isLatest = string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase);
+                    else
+                        isLatest = !latestMarked;
+
+                    entries.Add(new FakenvapiReleaseEntry
+                    {
+                        Version = version,
+                        DownloadUrl = downloadUrl,
+                        IsLatest = isLatest,
+                    });
+                    latestMarked = true;
+                }
+
+                DebugWindow.Log($"[FakenvapiVersions] {repoLabel} → {entries.Count} release(s)");
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[FakenvapiVersions] {repoLabel} → ERROR: {ex.Message}");
+            }
+
+            return entries;
+        }
+
+        /// <summary>
+        /// Returns the cache directory for a specific Fakenvapi version.
+        /// </summary>
+        public string GetFakenvapiCachePath(string version)
+            => Path.Combine(_cacheDir, "Fakenvapi", version);
+
+        /// <summary>
+        /// Returns true if the given Fakenvapi version is already cached locally.
+        /// </summary>
+        public bool IsFakenvapiCached(string version)
+        {
+            var dir = GetFakenvapiCachePath(version);
+            return Directory.Exists(dir) && Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories).Length > 0;
+        }
+
+        /// <summary>
+        /// Downloads and extracts Fakenvapi for the given version into the per-version cache folder.
+        /// Returns the full cache directory path.
+        /// </summary>
+        public async Task<string> DownloadFakenvapiAsync(string version, IProgress<double>? progress = null)
+        {
+            var cacheDir = GetFakenvapiCachePath(version);
+
+            if (IsFakenvapiCached(version))
+            {
+                DebugWindow.Log($"[FakenvapiDownload] v{version} already cached at {cacheDir}");
+                return cacheDir;
+            }
+
+            // Resolve download URL (cache first, then API)
+            string? downloadUrl = _fakenvapiCache.Releases
+                .FirstOrDefault(r => string.Equals(r.Version, version, StringComparison.OrdinalIgnoreCase))
+                ?.DownloadUrl;
+
+            if (string.IsNullOrEmpty(downloadUrl))
+            {
+                var config = _config.Fakenvapi;
+                foreach (var prefix in new[] { "v", "" })
+                {
+                    try
+                    {
+                        var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
+                        var resp = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
+                        if (!resp.IsSuccessStatusCode) continue;
+
+                        var json = await resp.Content.ReadAsStringAsync();
+                        using var doc = JsonDocument.Parse(json);
+                        if (doc.RootElement.TryGetProperty("assets", out var assets))
+                        {
+                            foreach (var asset in assets.EnumerateArray())
+                            {
+                                if (asset.TryGetProperty("browser_download_url", out var urlProp) &&
+                                    asset.TryGetProperty("name", out var nameProp))
+                                {
+                                    var assetName = nameProp.GetString() ?? "";
+                                    var assetUrl  = urlProp.GetString();
+                                    if (assetUrl != null &&
+                                        (assetName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
+                                         assetName.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)))
+                                    {
+                                        downloadUrl = assetUrl;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        // Fallback to zipball
+                        if (string.IsNullOrEmpty(downloadUrl) && doc.RootElement.TryGetProperty("zipball_url", out var zipball))
+                            downloadUrl = zipball.GetString();
+
+                        if (!string.IsNullOrEmpty(downloadUrl)) break;
+                    }
+                    catch (Exception ex) { DebugWindow.Log($"[FakenvapiDownload] API lookup attempt failed: {ex.Message}"); }
+                }
+            }
+
+            if (string.IsNullOrEmpty(downloadUrl))
+                throw new VersionUnavailableException(version, "No downloadable asset found for Fakenvapi.");
+
+            var tempFile = Path.Combine(Path.GetTempPath(), $"Fakenvapi_{Guid.NewGuid()}.zip");
+            try
+            {
+                DebugWindow.Log($"[FakenvapiDownload] Downloading {downloadUrl}");
+                await StreamToFileAsync(_httpClient, downloadUrl, tempFile, progress);
+
+                if (Directory.Exists(cacheDir))
+                    Directory.Delete(cacheDir, true);
+                Directory.CreateDirectory(cacheDir);
+
+                await Task.Run(() =>
+                {
+                    using var archive = ArchiveFactory.Open(tempFile);
+                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                    {
+                        var destPath = SafeDestinationPath(cacheDir, entry.Key ?? string.Empty);
+                        var destDir = Path.GetDirectoryName(destPath);
+                        if (destDir != null && !Directory.Exists(destDir))
+                            Directory.CreateDirectory(destDir);
+                        using var entryStream = entry.OpenEntryStream();
+                        using var fileStream = File.Create(destPath);
+                        entryStream.CopyTo(fileStream, 81920);
+                    }
+                });
+
+                DebugWindow.Log($"[FakenvapiDownload] Extracted v{version} to {cacheDir}");
+            }
+            finally
+            {
+                try { if (File.Exists(tempFile)) File.Delete(tempFile); } catch { }
+            }
+
+            return cacheDir;
+        }
+
+        /// <summary>
+        /// Returns a list of locally-cached Fakenvapi version names.
+        /// Also migrates the legacy flat cache layout to a versioned layout if needed.
+        /// </summary>
+        public List<string> GetDownloadedFakenvapiVersions()
+        {
+            var versions = new List<string>();
+            var fakenvapiDir = GetFakenvapiCachePath();
+            if (!Directory.Exists(fakenvapiDir)) return versions;
+
+            // Legacy migration: if nvapi64.dll exists directly in Fakenvapi/ (flat layout),
+            // move everything into a "default" subdirectory.
+            var legacyDll = Path.Combine(fakenvapiDir, "nvapi64.dll");
+            if (File.Exists(legacyDll))
+            {
+                var defaultDir = Path.Combine(fakenvapiDir, "default");
+                Directory.CreateDirectory(defaultDir);
+                foreach (var file in Directory.GetFiles(fakenvapiDir))
+                {
+                    var destFile = Path.Combine(defaultDir, Path.GetFileName(file));
+                    File.Move(file, destFile, true);
+                }
+                DebugWindow.Log("[Fakenvapi] Migrated legacy flat cache to versioned layout (default).");
+            }
+
+            foreach (var dir in Directory.GetDirectories(fakenvapiDir))
+            {
+                var files = Directory.GetFiles(dir, "*.*", SearchOption.AllDirectories);
+                if (files.Length > 0)
+                {
+                    versions.Add(Path.GetFileName(dir));
+                }
+            }
+            return versions.OrderByDescending(v => v).ToList();
+        }
+
+        public void DeleteFakenvapiCache(string version)
+        {
+            var cachePath = GetFakenvapiCachePath(version);
+            if (Directory.Exists(cachePath))
+            {
+                Directory.Delete(cachePath, true);
+            }
+        }
+
         /// <summary>
         /// Fetches all releases from the OptiPatcher repo. Looks for the OptiPatcher.asi asset.
         /// </summary>
@@ -1646,17 +2006,13 @@ namespace OptiscalerClient.Services
 
         public async Task DownloadAndExtractFakenvapiAsync()
         {
-            if (_remoteVersions.FakenvapiVersion == null)
+            var version = _cachedLatestFakenvapiVersion ?? _remoteVersions.FakenvapiVersion;
+            if (version == null)
                 throw new Exception("No remote version available for Fakenvapi");
 
-            await DownloadAndExtractComponentAsync(
-                "Fakenvapi",
-                _config.Fakenvapi,
-                _remoteVersions.FakenvapiVersion,
-                "Fakenvapi"
-            );
+            await DownloadFakenvapiAsync(version);
 
-            _localVersions.FakenvapiVersion = _remoteVersions.FakenvapiVersion;
+            _localVersions.FakenvapiVersion = version;
             SaveLocalVersions();
             OnStatusChanged?.Invoke();
         }
@@ -1805,9 +2161,12 @@ namespace OptiscalerClient.Services
         public string GetOptiScalerCachePath() => Path.Combine(_cacheDir, "OptiScaler", OptiScalerVersion ?? "latest");
         public string GetOptiScalerCachePath(string version) => Path.Combine(_cacheDir, "OptiScaler", version);
         public string GetFakenvapiCachePath() => Path.Combine(_cacheDir, "Fakenvapi");
-        /// <summary>Returns the cache directory for NukemFG files.</summary>
+        /// <summary>Returns the cache directory for NukemFG files (legacy flat path).</summary>
         public string GetNukemFGCachePath() => Path.Combine(_cacheDir, "NukemFG");
+        /// <summary>Returns the cache directory for a specific NukemFG version.</summary>
+        public string GetNukemFGCachePath(string version) => Path.Combine(_cacheDir, "NukemFG", version);
         public string GetNukemFGDllPath() => Path.Combine(GetNukemFGCachePath(), "dlssg_to_fsr3_amd_is_better.dll");
+        public string GetNukemFGDllPath(string version) => Path.Combine(GetNukemFGCachePath(version), "dlssg_to_fsr3_amd_is_better.dll");
 
         public System.Collections.Generic.List<string> GetDownloadedOptiScalerVersions()
         {
@@ -1993,12 +2352,134 @@ namespace OptiscalerClient.Services
             return versions.OrderByDescending(v => v).ToList();
         }
 
+        public System.Collections.Generic.List<string> GetDownloadedOptiPatcherVersions()
+        {
+            var versions = new System.Collections.Generic.List<string>();
+            var cachePath = Path.Combine(_cacheDir, "OptiPatcher");
+            if (Directory.Exists(cachePath))
+            {
+                foreach (var dir in Directory.GetDirectories(cachePath))
+                {
+                    var dirName = Path.GetFileName(dir);
+                    if (File.Exists(Path.Combine(dir, "OptiPatcher.asi")))
+                        versions.Add(dirName);
+                }
+            }
+            return versions.OrderByDescending(v => v).ToList();
+        }
+
+        public void DeleteOptiPatcherCache(string version)
+        {
+            var cachePath = Path.Combine(_cacheDir, "OptiPatcher", version);
+            if (Directory.Exists(cachePath))
+            {
+                Directory.Delete(cachePath, true);
+            }
+        }
+
         public void DeleteExtrasCache(string version)
         {
             var cachePath = Path.Combine(_cacheDir, "Extras", version);
             if (Directory.Exists(cachePath))
             {
                 Directory.Delete(cachePath, true);
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of locally-cached NukemFG version names (subdirectory names under Cache/NukemFG/).
+        /// Also migrates the legacy flat cache layout to the new versioned layout if needed.
+        /// </summary>
+        public List<string> GetDownloadedNukemFGVersions()
+        {
+            var versions = new List<string>();
+            var nukemDir = GetNukemFGCachePath();
+            if (!Directory.Exists(nukemDir)) return versions;
+
+            // Legacy migration: if dlssg_to_fsr3_amd_is_better.dll exists directly in NukemFG/,
+            // move it into a "default" subdirectory.
+            var legacyDll = Path.Combine(nukemDir, "dlssg_to_fsr3_amd_is_better.dll");
+            if (File.Exists(legacyDll))
+            {
+                var defaultDir = Path.Combine(nukemDir, "default");
+                Directory.CreateDirectory(defaultDir);
+                File.Move(legacyDll, Path.Combine(defaultDir, "dlssg_to_fsr3_amd_is_better.dll"), true);
+                DebugWindow.Log("[NukemFG] Migrated legacy flat cache to versioned layout (default).");
+            }
+
+            foreach (var dir in Directory.GetDirectories(nukemDir))
+            {
+                var dll = Path.Combine(dir, "dlssg_to_fsr3_amd_is_better.dll");
+                if (File.Exists(dll))
+                {
+                    versions.Add(Path.GetFileName(dir));
+                }
+            }
+            return versions.OrderByDescending(v => v).ToList();
+        }
+
+        public void DeleteNukemFGCache(string version)
+        {
+            var cachePath = GetNukemFGCachePath(version);
+            if (Directory.Exists(cachePath))
+            {
+                Directory.Delete(cachePath, true);
+            }
+        }
+
+        /// <summary>
+        /// Imports a NukemFG version from a .zip archive.
+        /// Extracts the archive, locates dlssg_to_fsr3_amd_is_better.dll, and caches it
+        /// under Cache/NukemFG/{archiveName}/.
+        /// </summary>
+        public async Task<string> ImportNukemFGArchiveAsync(string archivePath)
+        {
+            var archiveName = Path.GetFileNameWithoutExtension(archivePath);
+            // Sanitize folder name
+            foreach (var c in Path.GetInvalidFileNameChars())
+                archiveName = archiveName.Replace(c, '_');
+
+            var versionDir = GetNukemFGCachePath(archiveName);
+            Directory.CreateDirectory(versionDir);
+
+            var tempExtractDir = Path.Combine(Path.GetTempPath(), "OptiScaler_NukemFG_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempExtractDir);
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    using var archive = SharpCompress.Archives.ArchiveFactory.Open(archivePath);
+                    foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                    {
+                        entry.WriteToDirectory(tempExtractDir, new SharpCompress.Common.ExtractionOptions
+                        {
+                            ExtractFullPath = true,
+                            Overwrite = true
+                        });
+                    }
+                });
+
+                // Find the target DLL anywhere in the extracted tree
+                var dllFiles = Directory.GetFiles(tempExtractDir, "dlssg_to_fsr3_amd_is_better.dll", SearchOption.AllDirectories);
+                if (dllFiles.Length == 0)
+                {
+                    // Cleanup on failure
+                    if (Directory.Exists(versionDir)) Directory.Delete(versionDir, true);
+                    throw new FileNotFoundException("The archive does not contain 'dlssg_to_fsr3_amd_is_better.dll'.");
+                }
+
+                File.Copy(dllFiles[0], Path.Combine(versionDir, "dlssg_to_fsr3_amd_is_better.dll"), true);
+                DebugWindow.Log($"[NukemFG] Imported version '{archiveName}' from archive.");
+                return archiveName;
+            }
+            finally
+            {
+                // Cleanup temp extraction directory
+                if (Directory.Exists(tempExtractDir))
+                {
+                    try { Directory.Delete(tempExtractDir, true); } catch { /* best-effort */ }
+                }
             }
         }
     }

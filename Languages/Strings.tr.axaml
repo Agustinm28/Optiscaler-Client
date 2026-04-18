@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">Ayarlar</x:String>
     <x:String x:Key="TxtSettingsDesc">Uygulama tercihlerini yönet</x:String>
     <x:String x:Key="TxtAppPrefs">Uygulama Tercihleri</x:String>
-    <x:String x:Key="TxtCacheMgmt">Yerel Önbellek Yönetimi</x:String>
-    <x:String x:Key="TxtCacheDesc">Yerel depolamadan indirilen OptiScaler sürümlerini görüntüle ve silerek alan boşalt.</x:String>
+    <x:String x:Key="TxtCacheMgmt">Yerel önbellek &amp; Varsayılan sürüm yönetimi</x:String>
+    <x:String x:Key="TxtCacheDesc">Yüklenen bileşen sürümlerini görüntüleyin ve yönetin, Hızlı Kurulum ve oyun yönetimi için varsayılan sürümleri ayarlayın ve yerel depolama alanı açın.</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  Yönet</x:String>
     <x:String x:Key="TxtLanguage">Uygulama Dili</x:String>
     <x:String x:Key="TxtLanguageDesc">Kullanıcı arayüzü dilini değiştir.</x:String>
@@ -458,7 +458,6 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtProfSearchResultFormat">{1} icinde {0} sonuc.</x:String>
     <x:String x:Key="TxtProfNotFound">Profil bulunamadi.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">Eslesen profil bulunamadi.</x:String>
-    <x:String x:Key="TxtDefaultBadge">Varsayilan</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← Profiller</x:String>
@@ -503,7 +502,15 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">Desteklenen oyunlarda spoofing olmadan DLSS/DLSS-FG girişlerini açığa çıkaran OptiScaler için bir ASI Eklentisi. Intel Arc kullanıcılarının D3D12 hatalarından kaçınmasına yardımcı olur ve Dxgi spoofing'in neden olduğu performans düşüşlerini veya çökmeleri önler.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher indiriliyor...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher yükleniyor...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher yükleniyor...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">Sürüm Yönetimi</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi ve NukemFG sürümleri Ayarlar'daki Yerel önbellek &amp; Varsayılan sürüm yönetimi bölümünden yönetilebilir.</x:String>
+    <x:String x:Key="TxtSetDefault">Varsayılan Yap</x:String>
+    <x:String x:Key="TxtClearDefault">Temizle</x:String>
+    <x:String x:Key="TxtDefaultBadge">VARSAYILAN</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">Mevcut varsayılan: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">Varsayılan ayarlanmadı</x:String>
+</ResourceDictionary>
 
 
 

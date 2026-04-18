@@ -1,8 +1,8 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.CacheManagementWindow"
         Title="Cache Management"
-        Width="500"
+        Width="800"
         Height="640"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="None"
@@ -45,22 +45,19 @@
         <Border CornerRadius="12"
                 Background="{StaticResource BrBgBase}"
                 BoxShadow="0 10 30 0 #A0000000">
-            
             <Grid>
-                <!-- Separate layer for the subtle border -->
                 <Border CornerRadius="12"
                         BorderBrush="{StaticResource BrBorderSubtle}"
                         BorderThickness="1"
                         ZIndex="10"
                         IsHitTestVisible="False"/>
 
-                <!-- Main Content Layout -->
                 <Border CornerRadius="12"
                         Background="Transparent"
                         ClipToBounds="True">
-                    
                     <Grid RowDefinitions="Auto, *, Auto">
-                        <!-- Custom Title Bar (Draggable) -->
+
+                        <!-- Title Bar -->
                         <Border Grid.Row="0"
                                 Name="TitleBar"
                                 Background="{StaticResource BrBgDeep}"
@@ -78,9 +75,8 @@
                                                Foreground="{StaticResource BrTextSecondary}"
                                                Margin="0,2,0,0"/>
                                 </StackPanel>
-                                
                                 <Button Grid.Column="1"
-                                        Content="✕"
+                                        Content="&#10005;"
                                         Classes="BtnSecondary"
                                         Padding="8,4"
                                         MinWidth="32"
@@ -92,70 +88,27 @@
                             </Grid>
                         </Border>
 
-                        <!-- List of downloaded versions -->
-                        <ScrollViewer Grid.Row="1" Padding="0">
-                            <StackPanel Spacing="0" Margin="24,20">
-                                <!-- Group 1: OptiScaler -->
-                                <TextBlock Text="OptiScaler Versions" 
-                                           FontWeight="SemiBold" 
-                                           FontSize="13" 
-                                           Foreground="{StaticResource BrTextSecondary}"
-                                           Margin="0,0,0,12"/>
-                                <StackPanel Name="PnlVersions" Spacing="8" Margin="0,0,0,24">
-                                    <!-- OptiScaler versions go here -->
-                                </StackPanel>
+                        <!-- Sidebar + Content -->
+                        <Grid Grid.Row="1" ColumnDefinitions="190,*">
 
-                                <!-- Group 2: Custom OptiScaler Versions -->
-                                <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,12">
-                                    <TextBlock Grid.Column="0"
-                                               Text="{DynamicResource TxtCustomVersions}"
-                                               FontWeight="SemiBold"
-                                               FontSize="13"
-                                               Foreground="{StaticResource BrTextSecondary}"
-                                               VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1"
-                                               Name="TxtImportStatus"
-                                               FontSize="11"
-                                               Foreground="{StaticResource BrAccent}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,10,0"/>
-                                    <Button Grid.Column="2"
-                                            Name="BtnImportCustom"
-                                            Content="{DynamicResource TxtImportArchive}"
-                                            Classes="BtnBase"
-                                            Padding="12,5"
-                                            FontSize="11"
-                                            Click="BtnImportCustom_Click"/>
-                                </Grid>
+                            <!-- SIDEBAR -->
+                            <Border Grid.Column="0"
+                                    Background="{StaticResource BrBgDeep}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="0,0,1,0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Name="CacheSidebar" Margin="8,12,8,12" Spacing="2"/>
+                                </ScrollViewer>
+                            </Border>
 
-                                <!-- Warning banner -->
-                                <Border Background="#1AFF9800"
-                                        BorderBrush="#FF9800"
-                                        BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="10,8"
-                                        Margin="0,0,0,12">
-                                    <TextBlock Text="{DynamicResource TxtCustomVersionWarning}"
-                                               Foreground="#FF9800"
-                                               FontSize="11"
-                                               TextWrapping="Wrap"/>
-                                </Border>
+                            <!-- CONTENT AREA -->
+                            <ScrollViewer Grid.Column="1"
+                                          Name="CacheContentScrollViewer"
+                                          VerticalScrollBarVisibility="Auto">
+                                <StackPanel Name="CacheContentArea" Margin="24,20,24,24" Spacing="8"/>
+                            </ScrollViewer>
 
-                                <StackPanel Name="PnlCustomVersions" Spacing="8" Margin="0,0,0,24">
-                                    <!-- Custom versions go here -->
-                                </StackPanel>
-
-                                <!-- Group 3: FSR 4 INT8 Extras -->
-                                <TextBlock Text="FSR4 INT8 (Injection DLLs)" 
-                                           FontWeight="SemiBold" 
-                                           FontSize="13" 
-                                           Foreground="{StaticResource BrTextSecondary}"
-                                           Margin="0,0,0,12"/>
-                                <StackPanel Name="PnlExtrasVersions" Spacing="8">
-                                    <!-- Extras versions go here -->
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
+                        </Grid>
 
                         <!-- Footer -->
                         <Border Grid.Row="2"
@@ -164,7 +117,7 @@
                                 BorderBrush="{StaticResource BrBorderSubtle}"
                                 BorderThickness="0,1,0,0">
                             <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Grid.Column="0" 
+                                <TextBlock Grid.Column="0"
                                            Name="TxtCacheInfo"
                                            VerticalAlignment="Center"
                                            FontSize="11"

@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">Настройки</x:String>
     <x:String x:Key="TxtSettingsDesc">Управление предпочтениями приложения</x:String>
     <x:String x:Key="TxtAppPrefs">Настройки приложения</x:String>
-    <x:String x:Key="TxtCacheMgmt">Управление локальным кэшем</x:String>
-    <x:String x:Key="TxtCacheDesc">Просмотр и удаление загруженных версий OptiScaler из локального хранилища для освобождения места.</x:String>
+    <x:String x:Key="TxtCacheMgmt">Локальный кэш &amp; Управление версиями по умолчанию</x:String>
+    <x:String x:Key="TxtCacheDesc">Просмотр и управление загруженными версиями компонентов, настройка версий по умолчанию для быстрой установки и управления играми, а также освобождение локального дискового пространства.</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  Управлять</x:String>
     <x:String x:Key="TxtLanguage">Язык приложения</x:String>
     <x:String x:Key="TxtLanguageDesc">Изменить язык пользовательского интерфейса.</x:String>
@@ -458,7 +458,6 @@
     <x:String x:Key="TxtProfSearchResultFormat">{0} результат(ов) из {1}.</x:String>
     <x:String x:Key="TxtProfNotFound">Профили не найдены.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">Совпадающих профилей не найдено.</x:String>
-    <x:String x:Key="TxtDefaultBadge">По умолчанию</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← Профили</x:String>
@@ -503,7 +502,15 @@
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">ASI-плагин для OptiScaler, открывающий входы DLSS/DLSS-FG без спуфинга в поддерживаемых играх. Помогает пользователям Intel Arc избежать ошибок D3D12 и предотвращает потерю производительности или краши из-за спуфинга Dxgi.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">Загрузка OptiPatcher...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">Установка OptiPatcher...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">Установка OptiPatcher...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">Управление версиями</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">Версиями OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi и NukemFG можно управлять в разделе Локальный кэш &amp; Управление версиями по умолчанию в Настройках.</x:String>
+    <x:String x:Key="TxtSetDefault">Установить по умолчанию</x:String>
+    <x:String x:Key="TxtClearDefault">Очистить</x:String>
+    <x:String x:Key="TxtDefaultBadge">ПО УМОЛЧАНИЮ</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">Текущее по умолчанию: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">Не установлено</x:String>
+</ResourceDictionary>
 
 
 

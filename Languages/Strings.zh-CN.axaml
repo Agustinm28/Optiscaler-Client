@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">设置</x:String>
     <x:String x:Key="TxtSettingsDesc">管理应用程序首选项</x:String>
     <x:String x:Key="TxtAppPrefs">应用首选项</x:String>
-    <x:String x:Key="TxtCacheMgmt">本地缓存管理</x:String>
-    <x:String x:Key="TxtCacheDesc">查看并删除本地存储中已下载的OptiScaler版本以释放空间。</x:String>
+    <x:String x:Key="TxtCacheMgmt">本地缓存和默认版本管理</x:String>
+    <x:String x:Key="TxtCacheDesc">查看和管理已下载的组件版本，设置快速安装和游戏管理的默认版本，并释放本地存储空间。</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  管理</x:String>
     <x:String x:Key="TxtLanguage">应用程序语言</x:String>
     <x:String x:Key="TxtLanguageDesc">更改用户界面语言。</x:String>
@@ -458,7 +458,6 @@
     <x:String x:Key="TxtProfSearchResultFormat">共 {1} 个中找到 {0} 个结果。</x:String>
     <x:String x:Key="TxtProfNotFound">未找到配置文件。</x:String>
     <x:String x:Key="TxtProfSearchNotFound">未找到匹配的配置文件。</x:String>
-    <x:String x:Key="TxtDefaultBadge">默认</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← 配置文件</x:String>
@@ -503,7 +502,15 @@
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">OptiScaler 的 ASI 插件，在受支持的游戏中无需欺骗即可暴露 DLSS/DLSS-FG 输入。帮助 Intel Arc 用户避免 D3D12 错误，并防止 Dxgi 欺骗导致的性能开销或崩溃。</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">正在下载 OptiPatcher...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">正在安装 OptiPatcher...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">正在安装 OptiPatcher...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">版本管理</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler、OptiPatcher、FSR4 INT8、Fakenvapi 和 NukemFG 的版本可以在设置中的本地缓存和默认版本管理部分进行管理。</x:String>
+    <x:String x:Key="TxtSetDefault">设为默认</x:String>
+    <x:String x:Key="TxtClearDefault">清除</x:String>
+    <x:String x:Key="TxtDefaultBadge">默认</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">当前默认: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">未设置默认版本</x:String>
+</ResourceDictionary>
 
 
 

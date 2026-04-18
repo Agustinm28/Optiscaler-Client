@@ -458,7 +458,6 @@
     <x:String x:Key="TxtProfSearchResultFormat">{1}개 중 {0}개 결과.</x:String>
     <x:String x:Key="TxtProfNotFound">프로필을 찾을 수 없습니다.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">일치하는 프로필을 찾을 수 없습니다.</x:String>
-    <x:String x:Key="TxtDefaultBadge">기본값</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← 프로필</x:String>
@@ -503,7 +502,15 @@
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">지원 게임에서 스푸핑 없이 DLSS/DLSS-FG 입력을 노출하는 OptiScaler용 ASI 플러그인입니다. Intel Arc 사용자의 D3D12 오류와 Dxgi 스푸핑으로 인한 성능 저하 또는 크래시를 방지합니다.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher 다운로드 중...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher 설치 중...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher 설치 중...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">버전 관리</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi 및 NukemFG 버전은 설정의 로컬 캐시 &amp; 기본 버전 관리 섹션에서 관리할 수 있습니다.</x:String>
+    <x:String x:Key="TxtSetDefault">기본값 설정</x:String>
+    <x:String x:Key="TxtClearDefault">지우기</x:String>
+    <x:String x:Key="TxtDefaultBadge">기본값</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">현재 기본값: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">기본값 없음</x:String>
+</ResourceDictionary>
 
 
 

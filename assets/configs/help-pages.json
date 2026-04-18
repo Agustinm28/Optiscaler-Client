@@ -20,8 +20,8 @@
           "title": "Application Info"
         },
         {
-          "type": "external-resources",
-          "title": "External Resources"
+          "type": "version-management-info",
+          "title": "Version Management"
         },
         {
           "type": "system-info",

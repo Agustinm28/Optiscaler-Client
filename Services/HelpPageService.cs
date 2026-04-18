@@ -53,7 +53,7 @@ namespace OptiscalerClient.Services
                     Sections = new List<HelpSection>
                     {
                         new HelpSection { Type = "app-info" },
-                        new HelpSection { Type = "external-resources" },
+                        new HelpSection { Type = "version-management-info" },
                         new HelpSection { Type = "feedback" }
                     }
                 }

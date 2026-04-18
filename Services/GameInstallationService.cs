@@ -571,10 +571,6 @@ namespace OptiscalerClient.Services
                     }
                     catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to remove directory '{installedDir}': {ex.Message}"); }
                 }
-
-                // NOTE: Backup directory is NOT deleted here — ForceRemoveAllArtifacts
-                // will clean it up after ValidateAndHealPostUninstall has had a chance
-                // to use the backups for restoration.
             }
             else
             {
@@ -641,19 +637,29 @@ namespace OptiscalerClient.Services
                 }
             }
 
-            // We verify expected state and try to heal residues without touching files
-            // that existed before installation.
-            ValidateAndHealPostUninstall(gameDir, backupDir, manifest);
+            // Clean up runtime-generated files that no game would have
+            // (these are created when the game runs with OptiScaler, not during install)
+            foreach (var runtimeFile in new[] { "OptiScaler.log", "fakenvapi.log", "fakenvapi.ini" })
+            {
+                var runtimePath = Path.Combine(gameDir, runtimeFile);
+                try { if (File.Exists(runtimePath)) File.Delete(runtimePath); }
+                catch (Exception ex) { DebugWindow.Log($"[Uninstall] Could not delete runtime file '{runtimeFile}': {ex.Message}"); }
+            }
 
-            // Final unconditional sweep: remove ALL known OptiScaler artifacts.
-            // This guarantees a clean game directory regardless of manifest state,
-            // interrupted installs, or corrupted tracking data.
-            ForceRemoveAllArtifacts(gameDir);
+            // Remove backup directory now that restoration is complete
+            if (Directory.Exists(backupDir))
+            {
+                try { Directory.Delete(backupDir, true); }
+                catch (Exception ex) { DebugWindow.Log($"[Uninstall] Could not remove backup directory: {ex.Message}"); }
+            }
 
-            // Last resort: compare every file in the cached OptiScaler version against
-            // the game directory. If any cached file still exists in the game dir, it
-            // means the previous steps missed it — delete it unconditionally.
-            SweepResidualFilesFromCache(gameDir, manifest);
+            // Remove manifest file
+            var manifestFilePath = Path.Combine(backupDir, ManifestFileName);
+            if (File.Exists(manifestFilePath))
+            {
+                try { File.Delete(manifestFilePath); }
+                catch { /* already inside deleted backupDir */ }
+            }
 
             // Clear game state immediately so the UI reflects the uninstallation
             game.IsOptiscalerInstalled = false;
@@ -909,14 +915,29 @@ namespace OptiscalerClient.Services
             }
 
             // 3) Fallback sweep over known artifacts.
-            // If a file existed before install, we try to keep/restore it.
-            // If it did not exist before install, we remove it as residue.
+            // Only delete if we can confirm OptiScaler created the file (it's in FilesCreated).
+            // Never delete files that were backed up/restored (game-native) or files
+            // that OptiScaler never touched (not in the manifest at all).
+            var backedUpFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (manifest != null)
+            {
+                foreach (var f in manifest.FilesOverwritten)
+                    backedUpFiles.Add(f.RelativePath);
+                foreach (var f in manifest.BackedUpFiles)
+                    backedUpFiles.Add(f);
+            }
+
             foreach (var relativePath in KnownOptiscalerArtifacts)
             {
                 var fullPath = Path.Combine(gameDir, relativePath);
                 if (!File.Exists(fullPath))
                     continue;
 
+                // Skip files that were backed up — they belong to the game
+                if (backedUpFiles.Contains(relativePath))
+                    continue;
+
+                // If we have a pre-install snapshot showing the file existed, try to restore it
                 if (preInstallState.TryGetValue(relativePath, out var snapshot) && snapshot.Existed)
                 {
                     var currentHash = ComputeSha256(fullPath);
@@ -929,8 +950,14 @@ namespace OptiscalerClient.Services
                         restoredFiles++;
                         DebugWindow.Log($"[Uninstall][Validate] Restored key file to pre-install state: {relativePath}");
                     }
+                    continue;
                 }
-                else
+
+                // Only delete if this file was created by OptiScaler (not a game file)
+                var wasCreatedByInstall = manifest?.FilesCreated
+                    .Any(f => f.RelativePath.Equals(relativePath, StringComparison.OrdinalIgnoreCase)) ?? false;
+
+                if (wasCreatedByInstall)
                 {
                     if (TryDeleteFileIfExists(fullPath))
                     {

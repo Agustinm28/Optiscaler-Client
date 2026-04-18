@@ -1453,39 +1453,6 @@
                                 </Grid>
                             </Border>
 
-                            <!-- Default Versions -->
-                            <Border Background="{StaticResource BrBgCard}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="{StaticResource RadiusLarge}"
-                                    Padding="20,16"
-                                    Margin="0,0,16,16"
-                                    HorizontalAlignment="Left">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="{DynamicResource TxtDefaultVersionsTitle}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="{DynamicResource TxtDefaultVersionsDesc}"
-                                                   Foreground="{StaticResource BrTextSecondary}"
-                                                   TextWrapping="Wrap"
-                                                   Margin="0,4,16,0"
-                                                   FontSize="{StaticResource FontSizeCaption}"/>
-                                    </StackPanel>
-                                    <Button Name="BtnManageDefaultVersions"
-                                            Grid.Column="1"
-                                            Content="{DynamicResource TxtManage}"
-                                            Classes="BtnBase"
-                                            Padding="16,8"
-                                            VerticalAlignment="Center"
-                                            Click="BtnManageDefaultVersions_Click"/>
-                                </Grid>
-                            </Border>
-
                             <!-- Default GPU -->
                             <Border Background="{StaticResource BrBgCard}"
                                     BorderBrush="{StaticResource BrBorderSubtle}"

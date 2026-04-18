@@ -86,6 +86,16 @@ namespace OptiscalerClient.Models
         /// Null or "none" means "do not install".
         /// </summary>
         public string? DefaultOptiPatcherVersion { get; set; } = null;
+        /// <summary>
+        /// The default Fakenvapi version to pre-select in ManageGameWindow / Quick Install.
+        /// Null or "none" means "do not install".
+        /// </summary>
+        public string? DefaultFakenvapiVersion { get; set; } = null;
+        /// <summary>
+        /// The default NukemFG version to pre-select in ManageGameWindow / Quick Install.
+        /// Null or "none" means "do not install".
+        /// </summary>
+        public string? DefaultNukemFGVersion { get; set; } = null;
         public ScanSourcesConfig ScanSources { get; set; } = new();
         public string SteamGridDBApiKey { get; set; } = string.Empty;
         public List<ScanExclusion> ScanExclusions { get; set; } = new();
@@ -165,5 +175,24 @@ namespace OptiscalerClient.Models
     {
         public DateTime LastUpdated { get; set; } = DateTime.MinValue;
         public List<OptiPatcherReleaseEntry> Releases { get; set; } = new();
+    }
+
+    /// <summary>
+    /// A single Fakenvapi release entry stored in the local cache.
+    /// </summary>
+    public class FakenvapiReleaseEntry
+    {
+        public string Version { get; set; } = string.Empty;
+        public string? DownloadUrl { get; set; }
+        public bool IsLatest { get; set; }
+    }
+
+    /// <summary>
+    /// Local cache of Fakenvapi release metadata.
+    /// </summary>
+    public class FakenvapiReleasesCache
+    {
+        public DateTime LastUpdated { get; set; } = DateTime.MinValue;
+        public List<FakenvapiReleaseEntry> Releases { get; set; } = new();
     }
 }

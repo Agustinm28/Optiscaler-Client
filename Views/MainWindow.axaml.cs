@@ -2882,8 +2882,8 @@ namespace OptiscalerClient.Views
                 case "app-info":
                     RenderAppInfo(container);
                     break;
-                case "external-resources":
-                    RenderExternalResources(container);
+                case "version-management-info":
+                    RenderVersionManagementInfo(container);
                     break;
                 case "system-info":
                     RenderSystemInfo(container, section);
@@ -3068,11 +3068,11 @@ namespace OptiscalerClient.Views
             container.Children.Add(border);
         }
 
-        private void RenderExternalResources(StackPanel container)
+        private void RenderVersionManagementInfo(StackPanel container)
         {
             var title = new TextBlock
             {
-                Text = GetResourceString("TxtExternalResourcesTitle", "External Resources"),
+                Text = GetResourceString("TxtVersionMgmtInfoTitle", "Version Management"),
                 FontSize = 18,
                 FontWeight = FontWeight.SemiBold,
                 Margin = new Thickness(0, 0, 0, 12),
@@ -3089,56 +3089,31 @@ namespace OptiscalerClient.Views
                 CornerRadius = (CornerRadius)(this.FindResource("RadiusMedium") ?? new CornerRadius(8))
             };
 
-            var stack = new StackPanel();
+            var infoStack = new StackPanel { Spacing = 8 };
 
-            var optiScalerRow = CreateResourceRow("Latest OptiScaler",
-                string.IsNullOrWhiteSpace(_componentService.OptiScalerVersion) ? "Not installed" : _componentService.OptiScalerVersion,
-                _componentService.IsOptiScalerUpdateAvailable, false);
-            optiScalerRow.Margin = new Thickness(0, 0, 0, 16);
-            stack.Children.Add(optiScalerRow);
-
-            stack.Children.Add(CreateResourceRow("Latest Fakenvapi",
-                string.IsNullOrWhiteSpace(_componentService.FakenvapiVersion) ? "Not installed" : _componentService.FakenvapiVersion,
-                false, false, "BtnUpdateFakenvapi", BtnUpdateFakenvapi_Click));
-
-            stack.Children.Add(CreateResourceRow("Latest NukemFG",
-                _componentService.IsNukemFGInstalled
-                    ? (string.IsNullOrWhiteSpace(_componentService.NukemFGVersion) || _componentService.NukemFGVersion == "manual" ? "Available" : _componentService.NukemFGVersion)
-                    : "Not installed",
-                false, false, "BtnUpdateNukemFG", BtnUpdateNukemFG_Click,
-                _componentService.IsNukemFGInstalled ? GetResourceString("TxtBtnUpdate", "Update") : "Install"));
-
-            border.Child = stack;
-
-            var buttonStack = new StackPanel
+            infoStack.Children.Add(new TextBlock
             {
-                Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Margin = new Thickness(0, 0, 0, 16)
-            };
-
-            var checkUpdatesBtn = new Button
-            {
-                Content = GetResourceString("TxtCheckUpdatesBtn", "Check for Updates"),
-                Padding = new Thickness(16, 8),
-                Margin = new Thickness(0, 0, 12, 0)
-            };
-            checkUpdatesBtn.Classes.Add("BtnPrimary");
-            checkUpdatesBtn.Click += BtnCheckUpdates_Click;
+                Text = GetResourceString("TxtVersionMgmtInfoDesc", "OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi and NukemFG versions can be managed from the Local cache & Default version management section in Settings."),
+                Foreground = this.FindResource("BrTextSecondary") as IBrush,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 13
+            });
 
             var githubBtn = new Button
             {
-                Content = GetResourceString("TxtGithubBtn", "GitHub"),
-                Padding = new Thickness(16, 8)
+                Content = GetResourceString("TxtGithubBtn", "GitHub Repository"),
+                Padding = new Thickness(16, 8),
+                Margin = new Thickness(0, 8, 0, 0)
             };
             githubBtn.Classes.Add("BtnBase");
             githubBtn.Click += BtnGithub_Click;
 
-            buttonStack.Children.Add(checkUpdatesBtn);
-            buttonStack.Children.Add(githubBtn);
+            infoStack.Children.Add(githubBtn);
+
+            border.Child = infoStack;
 
             container.Children.Add(title);
             container.Children.Add(border);
-            container.Children.Add(buttonStack);
         }
 
         private void RenderSystemInfo(StackPanel container, HelpSection section)
@@ -4502,8 +4477,49 @@ namespace OptiscalerClient.Views
                             }
                         }
 
-                        var fakeCacheDir = _componentService.GetFakenvapiCachePath();
-                        var nukemCacheDir = _componentService.GetNukemFGCachePath();
+                        // ── Determine Fakenvapi / NukemFG install based on configured defaults
+                        // For OptiScaler >= 0.9, these components are bundled; skip them
+                        bool versionIncludesBundled = false;
+                        {
+                            var vMatch = System.Text.RegularExpressions.Regex.Match(versionToInstall, @"^v?(\d+(?:\.\d+)*)");
+                            if (vMatch.Success && Version.TryParse(vMatch.Groups[1].Value, out var parsedVer))
+                                versionIncludesBundled = parsedVer.Major > 0 || parsedVer.Minor >= 9;
+                        }
+
+                        var configuredFakenvapi = versionIncludesBundled ? null : _componentService.Config.DefaultFakenvapiVersion;
+                        bool installFakenvapi = !string.IsNullOrEmpty(configuredFakenvapi) &&
+                                                !configuredFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+                        var configuredNukemFG = versionIncludesBundled ? null : _componentService.Config.DefaultNukemFGVersion;
+                        bool installNukemFG = !string.IsNullOrEmpty(configuredNukemFG) &&
+                                              !configuredNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+                        var fakeCacheDir = installFakenvapi
+                            ? _componentService.GetFakenvapiCachePath(configuredFakenvapi!)
+                            : _componentService.GetFakenvapiCachePath();
+                        var nukemCacheDir = installNukemFG
+                            ? _componentService.GetNukemFGCachePath(configuredNukemFG!)
+                            : _componentService.GetNukemFGCachePath();
+
+                        // Download Fakenvapi on-demand if not cached
+                        if (installFakenvapi && !_componentService.IsFakenvapiCached(configuredFakenvapi!))
+                        {
+                            try
+                            {
+                                ShowToast($"Downloading Fakenvapi v{configuredFakenvapi}...", showProgress: true, progressPercent: 0);
+                                var fakeProgress = new Progress<double>(p =>
+                                    UpdateToastProgress($"Downloading Fakenvapi v{configuredFakenvapi}... {(int)p}%", p));
+                                fakeCacheDir = await _componentService.DownloadFakenvapiAsync(configuredFakenvapi!, fakeProgress);
+                            }
+                            catch (Exception ex)
+                            {
+                                HideToast();
+                                await new ConfirmDialog(this, GetResourceString("TxtWarning", "Warning"),
+                                    $"Failed to download Fakenvapi v{configuredFakenvapi}: {ex.Message}", isAlert: true)
+                                    .ShowDialog<bool>(this);
+                                installFakenvapi = false;
+                            }
+                        }
 
                         // Resolve the configured default profile (null = built-in default → no .ini written)
                         var profileService = new ProfileManagementService();
@@ -4513,7 +4529,6 @@ namespace OptiscalerClient.Views
                             defaultProfile = profileService.GetProfileByName(defaultProfileName);
 
                         // Install with default settings (backup always enabled)
-                        // Always install Fakenvapi and NukemFG by default
                         SetQuickInstallLoading(button);
                         await Task.Run(() =>
                         {
@@ -4521,9 +4536,9 @@ namespace OptiscalerClient.Views
                                 selectedGame,
                                 optiCacheDir,
                                 "dxgi.dll",
-                                installFakenvapi: true, // Always install Fakenvapi
+                                installFakenvapi: installFakenvapi,
                                 fakenvapiCachePath: fakeCacheDir,
-                                installNukemFG: true,  // Always install NukemFG
+                                installNukemFG: installNukemFG,
                                 nukemFGCachePath: nukemCacheDir,
                                 optiscalerVersion: versionToInstall,
                                 profile: defaultProfile
@@ -4639,6 +4654,10 @@ namespace OptiscalerClient.Views
 
                         // Final toast: report what was installed
                         var parts = new System.Collections.Generic.List<string> { $"OptiScaler {versionToInstall}" };
+                        if (installFakenvapi)
+                            parts.Add($"Fakenvapi {configuredFakenvapi}");
+                        if (installNukemFG)
+                            parts.Add($"NukemFG {configuredNukemFG}");
                         var configuredExtrasFinal = _componentService.Config.DefaultExtrasVersion;
                         if (!string.IsNullOrEmpty(configuredExtrasFinal) && !configuredExtrasFinal.Equals("none", StringComparison.OrdinalIgnoreCase))
                             parts.Add($"FSR4 INT8 {configuredExtrasFinal}");
