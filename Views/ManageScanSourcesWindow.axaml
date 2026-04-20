@@ -74,31 +74,31 @@
                                         </Grid>
                                         
                                         <!-- Epic Games -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridEpic" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Epic Games" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEpic" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- GOG Galaxy -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridGOG" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="GOG Galaxy" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglGOG" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- Xbox (Microsoft Store) -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridXbox" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Xbox (Microsoft Store)" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglXbox" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- EA App -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridEA" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="EA App" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEA" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
 
                                         <!-- Ubisoft Connect -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridUbisoft" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Ubisoft Connect" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglUbisoft" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
