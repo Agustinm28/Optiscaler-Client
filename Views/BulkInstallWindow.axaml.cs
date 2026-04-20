@@ -64,12 +64,7 @@ public partial class BulkInstallWindow : Window
         _filteredGameItems = new ObservableCollection<BulkGameItem>();
 
         // Initialize GPU service
-        if (OperatingSystem.IsWindows())
-            _gpuService = new WindowsGpuDetectionService();
-        else if (OperatingSystem.IsLinux())
-            _gpuService = new LinuxGpuDetectionService();
-        else
-            _gpuService = null!;
+        _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
         // Populate games list
         foreach (var game in games.OrderBy(g => g.Name))

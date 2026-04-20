@@ -226,14 +226,17 @@ namespace OptiscalerClient.Views
             pnlDriveList.Children.Clear();
             _driveToggles.Clear();
 
-            var drives = DriveInfo.GetDrives()
-                .Where(d => d.IsReady && (d.DriveType == DriveType.Fixed ||
-                                          d.DriveType == DriveType.Removable ||
-                                          d.DriveType == DriveType.Network))
-                .OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase)
-                .ToList();
+            var drivePaths = OperatingSystem.IsLinux()
+                ? GetLinuxDrives()
+                : DriveInfo.GetDrives()
+                    .Where(d => d.IsReady && (d.DriveType == DriveType.Fixed ||
+                                              d.DriveType == DriveType.Removable ||
+                                              d.DriveType == DriveType.Network))
+                    .Select(d => d.Name)
+                    .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+                    .ToList();
 
-            if (drives.Count == 0)
+            if (drivePaths.Count == 0)
             {
                 if (txtNoDrives != null)
                     txtNoDrives.IsVisible = true;
@@ -243,11 +246,8 @@ namespace OptiscalerClient.Views
             if (txtNoDrives != null)
                 txtNoDrives.IsVisible = false;
 
-            foreach (var drive in drives)
+            foreach (var drivePath in drivePaths)
             {
-                var label = SafeGetVolumeLabel(drive);
-                var name = string.IsNullOrWhiteSpace(label) ? drive.Name : $"{drive.Name} ({label})";
-
                 var toggle = new ToggleSwitch
                 {
                     IsChecked = true,
@@ -262,7 +262,7 @@ namespace OptiscalerClient.Views
 
                 var text = new TextBlock
                 {
-                    Text = name,
+                    Text = drivePath,
                     VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                     Foreground = Application.Current?.FindResource("BrTextPrimary") as IBrush ?? Brushes.White
                 };
@@ -274,9 +274,73 @@ namespace OptiscalerClient.Views
                 Grid.SetColumn(toggle, 1);
 
                 pnlDriveList.Children.Add(row);
-                _driveToggles.Add(new DriveToggle(drive.Name, toggle));
+                _driveToggles.Add(new DriveToggle(drivePath, toggle));
             }
         }
+
+        /// <summary>
+        /// Returns a deduplicated 3-bucket list of relevant mount points on Linux:
+        /// root (/), the user's home partition (if on a separate mount), and
+        /// removable/external drives under /run/media, /media, or /mnt.
+        /// </summary>
+        private static List<string> GetLinuxDrives()
+        {
+            var result = new List<string>();
+
+            // Bucket 1: root is always present
+            result.Add("/");
+
+            // Bucket 2: home partition (only if separate from /)
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            if (!string.IsNullOrEmpty(home))
+            {
+                var realHome = System.IO.Path.GetFullPath(home);
+                var homeMount = FindMountPoint(realHome);
+                if (!string.IsNullOrEmpty(homeMount) && homeMount != "/")
+                    result.Add(homeMount);
+            }
+
+            // Bucket 3: external / removable drives
+            var externalPrefixes = new[] { "/run/media", "/media", "/mnt" };
+            try
+            {
+                foreach (var line in File.ReadAllLines("/proc/mounts"))
+                {
+                    var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length < 2) continue;
+                    var mp = UnescapeMountPoint(parts[1]);
+                    if (externalPrefixes.Any(p => mp.StartsWith(p, StringComparison.Ordinal)))
+                    {
+                        if (!result.Contains(mp))
+                            result.Add(mp);
+                    }
+                }
+            }
+            catch { /* /proc/mounts unavailable — skip externals */ }
+
+            return result;
+        }
+
+        private static string FindMountPoint(string path)
+        {
+            try
+            {
+                var current = path;
+                while (!string.IsNullOrEmpty(current))
+                {
+                    if (DriveInfo.GetDrives().Any(d => d.Name == current + "/" || d.Name == current))
+                        return current;
+                    var parent = System.IO.Path.GetDirectoryName(current);
+                    if (parent == current) break;
+                    current = parent ?? string.Empty;
+                }
+            }
+            catch { /* ignore */ }
+            return "/";
+        }
+
+        private static string UnescapeMountPoint(string raw) =>
+            raw.Replace("\\040", " ").Replace("\\011", "\t").Replace("\\012", "\n").Replace("\\134", "\\");
 
         private static string SafeGetVolumeLabel(DriveInfo drive)
         {

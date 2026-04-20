@@ -179,12 +179,7 @@ namespace OptiscalerClient.Views
                 this.Position = new PixelPoint((int)Math.Max(0, x), (int)Math.Max(0, y));
             }
 
-            if (OperatingSystem.IsWindows())
-                _gpuService = new WindowsGpuDetectionService();
-            else if (OperatingSystem.IsLinux())
-                _gpuService = new LinuxGpuDetectionService();
-            else
-                _gpuService = null!;
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
             SetupUI();
 
@@ -1061,14 +1056,7 @@ namespace OptiscalerClient.Views
                     return;
                 }
 
-                if (OperatingSystem.IsWindows())
-                    Process.Start("explorer.exe", $"\"{dirToOpen}\"");
-                else
-                {
-                    var psi = new ProcessStartInfo("xdg-open") { UseShellExecute = false };
-                    psi.ArgumentList.Add(dirToOpen);
-                    Process.Start(psi);
-                }
+                PlatformServiceFactory.CreateShellService().OpenFolder(dirToOpen);
             }
             catch (Exception ex)
             {

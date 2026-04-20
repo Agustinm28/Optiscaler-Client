@@ -31,8 +31,7 @@ namespace OptiscalerClient.Views
             InitializeComponent();
             _componentService = componentService;
 
-            if (OperatingSystem.IsWindows())
-                _gpuService = new WindowsGpuDetectionService();
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
             this.Opacity = 0;
 

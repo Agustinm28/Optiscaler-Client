@@ -122,12 +122,7 @@ namespace OptiscalerClient.Views
             _componentService = new ComponentManagementService();
             _metadataService = new GameMetadataService(_componentService);
             App.ChangeLanguage(_componentService.Config.Language);
-            if (OperatingSystem.IsWindows())
-                _gpuService = new WindowsGpuDetectionService();
-            else if (OperatingSystem.IsLinux())
-                _gpuService = new LinuxGpuDetectionService();
-            else
-                _gpuService = null!;
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService()!;
             _games = new ObservableCollection<Game>();
 
             // Debug Window check
@@ -3177,12 +3172,6 @@ namespace OptiscalerClient.Views
             try
             {
                 LogToFile("[GetHelpGpuInfo] Starting...");
-
-                if (!OperatingSystem.IsWindows())
-                {
-                    LogToFile("[GetHelpGpuInfo] Not Windows");
-                    return ("Not available", true);
-                }
 
                 if (_gpuService == null)
                 {

@@ -111,12 +111,7 @@ namespace OptiscalerClient.Views
 
                 Directory.CreateDirectory(cachePath);
 
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "explorer.exe",
-                    Arguments = cachePath,
-                    UseShellExecute = true
-                });
+                PlatformServiceFactory.CreateShellService().OpenFolder(cachePath);
             }
             catch (Exception ex)
             {
