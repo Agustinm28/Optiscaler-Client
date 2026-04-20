@@ -28,16 +28,3 @@ public interface IShellService
     /// <summary>Opens <paramref name="url"/> in the default browser.</summary>
     void OpenUrl(string url);
 }
-namespace OptiscalerClient.Services;
-
-/// <summary>
-/// Abstracts platform-specific shell operations (opening folders, URLs).
-/// </summary>
-public interface IShellService
-{
-    /// <summary>Opens a folder in the system file manager.</summary>
-    void OpenFolder(string path);
-
-    /// <summary>Opens a URL in the default browser.</summary>
-    void OpenUrl(string url);
-}

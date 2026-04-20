@@ -68,16 +68,22 @@ public class LinuxGpuDetectionService : IGpuDetectionService
                 ? File.ReadAllText(Path.Combine(devicePath, "device")).Trim()
                 : "";
 
-            var shortVendor = vendorIdRaw.Replace("0x", "").PadLeft(4, '0');
-            var shortDevice = deviceIdRaw.Replace("0x", "").PadLeft(4, '0');
+            var shortVendor = vendorIdRaw.Replace("0x", "").PadLeft(4, '0').ToLowerInvariant();
+            var shortDevice = deviceIdRaw.Replace("0x", "").PadLeft(4, '0').ToLowerInvariant();
 
-            var output = RunProcess("lspci", $"-d {shortVendor}:{shortDevice} -mm", timeoutMs: 2000);
-            if (!string.IsNullOrWhiteSpace(output))
+            // 1. Try lspci (fastest, most accurate)
+            var lspciOutput = RunProcess("lspci", $"-d {shortVendor}:{shortDevice} -mm", timeoutMs: 2000);
+            if (!string.IsNullOrWhiteSpace(lspciOutput))
             {
-                var parts = Regex.Matches(output, "\"([^\"]*)\"");
+                var parts = Regex.Matches(lspciOutput, "\"([^\"]*)\"");
                 if (parts.Count >= 3)
                     return $"{parts[1].Groups[1].Value} {parts[2].Groups[1].Value}".Trim();
             }
+
+            // 2. Fallback: parse pci.ids directly (works without lspci installed)
+            var name = LookupPciIds(shortVendor, shortDevice);
+            if (!string.IsNullOrEmpty(name))
+                return name;
         }
         catch { }
 
@@ -88,6 +94,66 @@ public class LinuxGpuDetectionService : IGpuDetectionService
             GpuVendor.Intel => "Intel GPU",
             _ => "Unknown GPU"
         };
+    }
+
+    private static readonly string[] _pciIdsPaths =
+    [
+        "/usr/share/hwdata/pci.ids",
+        "/usr/share/misc/pci.ids",
+        "/usr/share/pci.ids",
+    ];
+
+    /// <summary>
+    /// Looks up vendor + device names from a local pci.ids database file.
+    /// Format:
+    ///   vendorid  Vendor Name
+    ///   \tdeviceid  Device Name
+    /// </summary>
+    private static string? LookupPciIds(string vendorId, string deviceId)
+    {
+        try
+        {
+            var idsFile = _pciIdsPaths.FirstOrDefault(File.Exists);
+            if (idsFile == null) return null;
+
+            string? vendorName = null;
+            string? deviceName = null;
+            bool inVendor = false;
+
+            foreach (var line in File.ReadLines(idsFile))
+            {
+                if (line.StartsWith('#') || string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                if (!line.StartsWith('\t'))
+                {
+                    // vendor line: "10de  NVIDIA Corporation"
+                    inVendor = line.StartsWith(vendorId, StringComparison.OrdinalIgnoreCase);
+                    if (inVendor)
+                        vendorName = line.Substring(4).Trim();
+                    else if (vendorName != null)
+                        break; // past our vendor section
+                }
+                else if (inVendor && line.StartsWith('\t') && !line.StartsWith("\t\t"))
+                {
+                    // device line: "\t687f  Vega 10 XL/XT [Radeon RX Vega 56/64]"
+                    var stripped = line.TrimStart('\t');
+                    if (stripped.StartsWith(deviceId, StringComparison.OrdinalIgnoreCase))
+                    {
+                        deviceName = stripped.Substring(4).Trim();
+                        break;
+                    }
+                }
+            }
+
+            if (deviceName != null)
+                return deviceName;
+            if (vendorName != null)
+                return vendorName;
+        }
+        catch { }
+
+        return null;
     }
 
     private ulong GetVram(string devicePath, GpuVendor vendor)

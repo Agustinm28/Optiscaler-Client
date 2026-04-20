@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using OptiscalerClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

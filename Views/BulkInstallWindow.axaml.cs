@@ -21,7 +21,7 @@ public partial class BulkInstallWindow : Window
 {
     private readonly ComponentManagementService _componentService;
     private readonly GameInstallationService _installService;
-    private readonly IGpuDetectionService _gpuService;
+    private readonly IGpuDetectionService? _gpuService;
     private readonly ObservableCollection<BulkGameItem> _gameItems;
     private readonly ObservableCollection<BulkGameItem> _filteredGameItems;
     private List<BulkGameItem> _allGames = new List<BulkGameItem>();

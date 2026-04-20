@@ -44,7 +44,7 @@ namespace OptiscalerClient.Views
     public partial class ManageGameWindow : Window
     {
         private readonly Game _game;
-        private readonly IGpuDetectionService _gpuService;
+        private readonly IGpuDetectionService? _gpuService;
         private Window? _ownerWindow;
         private HashSet<string> _betaVersions = new();
         private HashSet<string> _customVersions = new();
