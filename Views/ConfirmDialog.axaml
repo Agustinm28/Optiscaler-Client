@@ -34,7 +34,7 @@
                     <Grid ColumnDefinitions="*, Auto">
                         <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="16,0" VerticalAlignment="Center">
                             <TextBlock Name="TxtIcon"
-                                       Text="&#xE9CE;"
+                                       Text="&#xF63E;"
                                        FontFamily="{StaticResource FontIcons}"
                                        Foreground="{StaticResource BrAccent}"
                                        FontSize="18"

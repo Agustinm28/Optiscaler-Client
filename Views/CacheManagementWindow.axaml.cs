@@ -17,6 +17,7 @@ namespace OptiscalerClient.Views
 {
     public partial class CacheManagementWindow : Window
     {
+        private static readonly FontFamily IconFont = new("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular");
         private readonly ComponentManagementService _componentService;
         private bool _isAnimatingClose;
         private string _currentSection = "opti-stable";
@@ -103,19 +104,19 @@ namespace OptiscalerClient.Views
             // ── OptiScaler (expandable) ──────────────────────────────────────
             var optiContainer = new StackPanel();
 
-            var optiButton = CreateCategoryButton("\uE70D", "\uE74C", "OptiScaler");
+            var optiButton = CreateCategoryButton("\uF2A3", "\uEB8C", "OptiScaler");
             var expandIconTb = (optiButton.Content as StackPanel)?.Children.OfType<TextBlock>().FirstOrDefault();
 
             var optiChildren = new StackPanel { Margin = new Thickness(20, 0, 0, 0), IsVisible = true };
-            optiChildren.Children.Add(CreateSubButton("opti-stable", "Stable", "\uE72E"));
-            optiChildren.Children.Add(CreateSubButton("opti-beta",   "Beta",   "\uEBE8"));
-            optiChildren.Children.Add(CreateSubButton("opti-custom", "Custom", "\uE8F4"));
+            optiChildren.Children.Add(CreateSubButton("opti-stable", "Stable", "\uE78F"));
+            optiChildren.Children.Add(CreateSubButton("opti-beta",   "Beta",   "\uE206"));
+            optiChildren.Children.Add(CreateSubButton("opti-custom", "Custom", "\uF41D"));
 
             optiButton.Click += (s, e) =>
             {
                 optiChildren.IsVisible = !optiChildren.IsVisible;
                 if (expandIconTb != null)
-                    expandIconTb.Text = optiChildren.IsVisible ? "\uE70D" : "\uE70E";
+                    expandIconTb.Text = optiChildren.IsVisible ? "\uF2A3" : "\uF2B6";
             };
 
             optiContainer.Children.Add(optiButton);
@@ -123,16 +124,16 @@ namespace OptiscalerClient.Views
             sidebar.Children.Add(optiContainer);
 
             // ── OptiPatcher ──────────────────────────────────────────────────
-            sidebar.Children.Add(CreateTopButton("optipatcher", "OptiPatcher", "\uE70F"));
+            sidebar.Children.Add(CreateTopButton("optipatcher", "OptiPatcher", "\uE8D7"));
 
             // ── FSR4 INT8 ────────────────────────────────────────────────────
-            sidebar.Children.Add(CreateTopButton("fsr4",      "FSR4 INT8", "\uE8B9"));
+            sidebar.Children.Add(CreateTopButton("fsr4",      "FSR4 INT8", "\uE726"));
 
             // ── fakenvapi ────────────────────────────────────────────────────
-            sidebar.Children.Add(CreateTopButton("fakenvapi",  "fakenvapi", "\uEBC4"));
+            sidebar.Children.Add(CreateTopButton("fakenvapi",  "fakenvapi", "\uF193"));
 
             // ── nukemfg ──────────────────────────────────────────────────────
-            sidebar.Children.Add(CreateTopButton("nukemfg",   "nukemfg",   "\uE945"));
+            sidebar.Children.Add(CreateTopButton("nukemfg",   "nukemfg",   "\uE619"));
 
             ShowSection("opti-stable");
             UpdateSidebarSelection("opti-stable");
@@ -165,7 +166,7 @@ namespace OptiscalerClient.Views
             stack.Children.Add(new TextBlock
             {
                 Text = expandIcon,
-                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontFamily = IconFont,
                 FontSize = 11,
                 VerticalAlignment = VerticalAlignment.Center,
                 Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -173,7 +174,7 @@ namespace OptiscalerClient.Views
             stack.Children.Add(new TextBlock
             {
                 Text = icon,
-                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontFamily = IconFont,
                 FontSize = 15,
                 VerticalAlignment = VerticalAlignment.Center,
                 Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -209,7 +210,7 @@ namespace OptiscalerClient.Views
             stack.Children.Add(new TextBlock
             {
                 Text = icon,
-                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontFamily = IconFont,
                 FontSize = 15,
                 VerticalAlignment = VerticalAlignment.Center,
                 Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -245,7 +246,7 @@ namespace OptiscalerClient.Views
             stack.Children.Add(new TextBlock
             {
                 Text = icon,
-                FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                FontFamily = IconFont,
                 FontSize = 13,
                 VerticalAlignment = VerticalAlignment.Center,
                 Foreground = this.FindResource("BrTextSecondary") as IBrush

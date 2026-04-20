@@ -2562,7 +2562,8 @@ namespace OptiscalerClient.Views
                 this,
                 "GitHub Rate Limit Reached",
                 "Could not fetch version data from GitHub (HTTP 403 — too many requests).\n\nPlease wait a few minutes and restart the application.\n\nIn the meantime, you can still install any OptiScaler versions already cached locally.",
-                isAlert: true
+                isAlert: true,
+                iconOverride: "\uF4A4"
             ).ShowDialog<object>(this);
         }
 
