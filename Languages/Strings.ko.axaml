@@ -292,7 +292,7 @@
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; 문제 해결</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">면책 조항 ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">이것은 OptiScaler의 공식 프로젝트가 아닙니다. 저는 OptiScaler 팀과 아무런 관련이 없습니다. 이것은 상업적 목적 없이 개발된 개인 프로젝트입니다. 누구든지 자신의 책임 하에 이 소프트웨어를 사용할 수 있습니다.&#x0a;&#x0a;크레딧: OptiScaler 팀에 특별한 감사를 드립니다. 이 도구는 그들의 놀라운 원본 모드 작업 덕분에 가능합니다.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later 라이선스에 따라 사용이 허가되었습니다. 이것은 자유 소프트웨어입니다: 특정 조건 하에 수정 및 재배포가 가능합니다. 자세한 내용은 LICENSE 파일을 참조하세요.&#x0a;&#x0a;서드파티 컴포넌트 (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8)는 각각의 라이선스를 따릅니다.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;GPL-3.0-or-later 라이선스에 따라 사용이 허가되었습니다. 이것은 자유 소프트웨어입니다: 특정 조건 하에 수정 및 재배포가 가능합니다. 자세한 내용은 LICENSE 파일을 참조하세요.&#x0a;&#x0a;서드파티 컴포넌트 (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8)는 각각의 라이선스를 따릅니다.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">시스템</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">라이선스 &amp; 저작권</x:String>
 

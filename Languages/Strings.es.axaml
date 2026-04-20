@@ -295,7 +295,7 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtHelpDisclaimerContent">Este no es un proyecto oficial de OptiScaler. No tengo ninguna afiliación con el equipo de OptiScaler. Este es un proyecto personal desarrollado sin ningún propósito comercial. Cualquiera puede intentar usar este software bajo su propio riesgo.&#x0a;&#x0a;Créditos: Un agradecimiento especial al equipo de OptiScaler; esta herramienta solo es posible gracias a su increíble trabajo en el mod original.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">Sistema</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Licencia y Derechos de Autor</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustín Montaña (Agustinm28)&#x0a;&#x0a;Licenciado bajo GPL-3.0-or-later. Este es software libre: puedes cambiarlo y redistribuirlo bajo ciertas condiciones. Consulta el archivo LICENSE para más detalles.&#x0a;&#x0a;Los componentes de terceros (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) están sujetos a sus respectivas licencias.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;Licenciado bajo GPL-3.0-or-later. Este es software libre: puedes cambiarlo y redistribuirlo bajo ciertas condiciones. Consulta el archivo LICENSE para más detalles.&#x0a;&#x0a;Los componentes de terceros (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) están sujetos a sus respectivas licencias.</x:String>
 
 
     <!-- Help - Getting Started -->

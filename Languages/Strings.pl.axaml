@@ -292,7 +292,7 @@ Ta wersja nie jest dostępna do pobrania. Sprawdź połączenie internetowe i sp
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; Rozwiązywanie problemów</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Zastrzeżenie ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">To nie jest oficjalny projekt OptiScaler. Nie mam żadnych powiązań z zespołem OptiScaler. To osobisty projekt opracowany bez celów komercyjnych. Każdy może próbować używać tego oprogramowania na własne ryzyko.&#x0a;&#x0a;Uznania: Specjalne podziękowania dla zespołu OptiScaler; to narzędzie jest możliwe tylko dzięki ich niesamowitej pracy nad oryginalnym modem.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;Licencjonowane na zasadach GPL-3.0-or-later. To wolne oprogramowanie: możesz je zmieniać i rozpowszechniać na określonych warunkach. Szczegóły znajdują się w pliku LICENSE.&#x0a;&#x0a;Komponenty stron trzecich (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) podlegają odpowiednim licencjom.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;Licencjonowane na zasadach GPL-3.0-or-later. To wolne oprogramowanie: możesz je zmieniać i rozpowszechniać na określonych warunkach. Szczegóły znajdują się w pliku LICENSE.&#x0a;&#x0a;Komponenty stron trzecich (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) podlegają odpowiednim licencjom.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">System</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Licencja &amp; Prawa autorskie</x:String>
 

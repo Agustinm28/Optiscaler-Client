@@ -292,7 +292,7 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtHelpPageTroubleshooting">SSS &amp; Sorun Giderme</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Yasal Uyarı ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">Bu resmi bir OptiScaler projesi değildir. OptiScaler ekibiyle hiçbir bağlantım yoktur. Bu, herhangi bir ticari amaç güdülmeden geliştirilen kişisel bir projedir. Herkes bu yazılımı kendi sorumluluğunda kullanmakta özgürdür.&#x0a;&#x0a;Katkılar: OptiScaler ekibine özel teşekkürler; bu araç yalnızca orijinal mod üzerindeki inanılmaz çalışmaları sayesinde mümkündür.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later lisansı altında lisanslanmıştır. Bu özgür yazılımdır: belirli koşullar altında değiştirip yeniden dağıtabilirsiniz. Ayrıntılar için LICENSE dosyasına bakın.&#x0a;&#x0a;Üçüncü taraf bileşenler (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) kendi lisanslarına tabidir.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;GPL-3.0-or-later lisansı altında lisanslanmıştır. Bu özgür yazılımdır: belirli koşullar altında değiştirip yeniden dağıtabilirsiniz. Ayrıntılar için LICENSE dosyasına bakın.&#x0a;&#x0a;Üçüncü taraf bileşenler (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) kendi lisanslarına tabidir.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">Sistem</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Lisans &amp; Telif Hakkı</x:String>
 

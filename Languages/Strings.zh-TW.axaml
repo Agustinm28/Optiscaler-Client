@@ -292,7 +292,7 @@
     <x:String x:Key="TxtHelpPageTroubleshooting">常見問題 &amp; 疑難排解</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">免責聲明 ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">這不是 OptiScaler 的官方專案。我與 OptiScaler 團隊沒有任何關聯。這是一個沒有任何商業目的的個人專案。任何人均可自行承擔風險使用本軟體。&#x0a;&#x0a;致謝：特別感謝 OptiScaler 團隊；本工具的實現完全得益於他們在原版模組上的卓越工作。</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;根據 GPL-3.0-or-later 授權。這是自由軟體：您可以在特定條件下修改並重新散布。詳情請參閱 LICENSE 檔案。&#x0a;&#x0a;第三方元件（OptiScaler、Fakenvapi、NukemFG、FSR4 INT8）受其各自授權條款的約束。</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;根據 GPL-3.0-or-later 授權。這是自由軟體：您可以在特定條件下修改並重新散布。詳情請參閱 LICENSE 檔案。&#x0a;&#x0a;第三方元件（OptiScaler、Fakenvapi、NukemFG、FSR4 INT8）受其各自授權條款的約束。</x:String>
     <x:String x:Key="TxtHelpSystemTitle">系統</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">授權 &amp; 版權</x:String>
 

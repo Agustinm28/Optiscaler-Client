@@ -32,7 +32,7 @@
           "type": "disclaimer",
           "title": "License & Copyright",
           "titleKey": "TxtHelpLicenseTitle",
-          "content": "Copyright 2026 Agustín Montaña (Agustinm28)\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses.",
+          "content": "Copyright 2026 Agustinm28\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses.",
           "contentKey": "TxtHelpLicenseContent"
         },
         {
@@ -586,6 +586,12 @@
               "labelKey": "TxtHelpFaqDllLabel",
               "text": "Use the button to clear the cache from the settings; that should solve most problems.",
               "textKey": "TxtHelpFaqDllText"
+            },
+            {
+              "label": "Game folder is still dirty with OptiScaler files after uninstall",
+              "labelKey": "TxtHelpFaqDirtyFolderLabel",
+              "text": "This happens when a previous installation was not properly tracked (e.g. a crash left orphan files). To fix it: use the Uninstall button in the app first, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.). After that, future installs and uninstalls will work correctly.",
+              "textKey": "TxtHelpFaqDirtyFolderText"
             }
           ]
         }

@@ -292,7 +292,7 @@ Cette version n'est pas disponible en téléchargement. Vérifiez votre connexio
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; Dépannage</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Avertissement ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">Ce n'est pas un projet officiel d'OptiScaler. Je n'ai aucune affiliation avec l'équipe d'OptiScaler. Il s'agit d'un projet personnel développé sans but commercial. Chacun est libre d'essayer et d'utiliser ce logiciel à ses propres risques.&#x0a;&#x0a;Crédits : Un remerciement spécial à l'équipe d'OptiScaler ; cet outil n'est possible que grâce à leur incroyable travail sur le mod original.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;Sous licence GPL-3.0-or-later. Ce logiciel est libre : vous pouvez le modifier et le redistribuer sous certaines conditions. Consultez le fichier LICENSE pour plus de détails.&#x0a;&#x0a;Les composants tiers (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) sont soumis à leurs licences respectives.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;Sous licence GPL-3.0-or-later. Ce logiciel est libre : vous pouvez le modifier et le redistribuer sous certaines conditions. Consultez le fichier LICENSE pour plus de détails.&#x0a;&#x0a;Les composants tiers (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) sont soumis à leurs licences respectives.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">Système</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Licence &amp; Droits d'auteur</x:String>
 
