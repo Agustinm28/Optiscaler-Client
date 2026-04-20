@@ -31,7 +31,7 @@
     <x:String x:Key="TxtAppTitle">Optiscaler Client</x:String>
     <x:String x:Key="TxtBtnScan">⟳  Scan Games</x:String>
     <x:String x:Key="TxtBtnAddManual">＋  Add Manually</x:String>
-    <x:String x:Key="TxtBtnBulkInstall">⚡  Bulk Install</x:String>
+    <x:String x:Key="TxtBtnBulkInstall">Bulk Install</x:String>
     <x:String x:Key="TxtTipSettings">Settings</x:String>
     <x:String x:Key="TxtTipComponent">Component versions</x:String>
     <x:String x:Key="TxtUpdateNukem">↑  Update NukemFG</x:String>

@@ -66,10 +66,17 @@
                                 BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="*, Auto">
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="{DynamicResource TxtManageCacheTitle}"
-                                               FontSize="18"
-                                               FontWeight="Bold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
+                                        <TextBlock Text="&#xF63E;"
+                                                   FontFamily="{StaticResource FontIcons}"
+                                                   FontSize="16"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource TxtManageCacheTitle}"
+                                                   FontSize="18"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                    </StackPanel>
                                     <TextBlock Text="{DynamicResource TxtManageCacheDesc}"
                                                FontSize="11"
                                                Foreground="{StaticResource BrTextSecondary}"

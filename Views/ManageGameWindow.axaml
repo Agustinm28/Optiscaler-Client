@@ -86,9 +86,9 @@
                                 <Image Name="ImgGameCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Border Classes="ImageOverlay">
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
-                                        <TextBlock Text="&#xE70F;"
-                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                                   FontSize="16"
+                                        <TextBlock Text="&#xF493;"
+                                                   FontFamily="{StaticResource FontIcons}"
+                                                   FontSize="22"
                                                    Foreground="{StaticResource BrTextPrimary}"
                                                    HorizontalAlignment="Center"/>
                                         <TextBlock Text="{DynamicResource TxtEditImage}"
@@ -120,8 +120,8 @@
                                         Padding="10,6"
                                         Click="BtnEditTitle_Click">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="&#xE70F;"
-                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        <TextBlock Text="&#xF3DD;"
+                                                   FontFamily="{StaticResource FontIcons}"
                                                    FontSize="12"/>
                                     </StackPanel>
                                 </Button>
@@ -147,9 +147,9 @@
                                 ToolTip.Tip="{DynamicResource TxtOpenFolder}"
                                 VerticalAlignment="Center"
                                 Click="BtnOpenFolder_Click">
-                            <TextBlock Text="&#xE8B7;"
-                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                       FontSize="12"/>
+                            <TextBlock Text="&#xF419;"
+                                       FontFamily="{StaticResource FontIcons}"
+                                       FontSize="14"/>
                         </Button>
                     </Grid>
                 </Grid>
@@ -293,9 +293,10 @@
                                     Margin="0,0,0,10"
                                     IsVisible="False">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="&#xE946;"
+                                    <TextBlock Text="&#xF4A4;"
+                                               FontFamily="{StaticResource FontIcons}"
                                                Foreground="#4A90E2"
-                                               FontSize="14"
+                                               FontSize="16"
                                                FontWeight="Bold"
                                                VerticalAlignment="Center"/>
                                     <TextBlock Text="{DynamicResource TxtBetaIncludesComponents}"
@@ -559,8 +560,8 @@
                             <!-- Encabezado -->
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <Border Background="{StaticResource BrBgSurface}" Width="36" Height="36" CornerRadius="{StaticResource RadiusMedium}">
-                                    <TextBlock Text="&#xE8B9;"
-                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        <TextBlock Text="&#xE726;"
+                                               FontFamily="{StaticResource FontIcons}"
                                                FontSize="18"
                                                Foreground="{StaticResource BrAccent}"
                                                HorizontalAlignment="Center"
@@ -586,7 +587,7 @@
                                     ClipToBounds="True">
                                 <Grid>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                                        <TextBlock Text="&#xE8B9;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" FontSize="32" Foreground="{StaticResource BrTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="&#xE726;" FontFamily="{StaticResource FontIcons}" FontSize="32" Foreground="{StaticResource BrTextSecondary}" HorizontalAlignment="Center"/>
                                         <TextBlock Text="{DynamicResource TxtPreviewUnavailable}" Foreground="{StaticResource BrTextSecondary}" FontWeight="Medium"/>
                                     </StackPanel>
                                     <Image Name="ImgCoverPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -632,7 +633,10 @@
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
                             <Button Name="BtnCoverReset" Grid.Column="0" Classes="BtnBase" Padding="14,8" Click="BtnCoverReset_Click" ToolTip.Tip="{DynamicResource TxtCoverRestoreTooltip}">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <TextBlock Text="&#xE777;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" VerticalAlignment="Center" FontSize="12"/>
+                                    <TextBlock Text="&#xF1A0;"
+                                               FontFamily="{StaticResource FontIcons}"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"/>
                                     <TextBlock Text="{DynamicResource TxtRestore}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>

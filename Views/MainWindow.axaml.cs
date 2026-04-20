@@ -596,7 +596,10 @@ namespace OptiscalerClient.Views
                     var hideIcon = container.GetVisualDescendants()
                         .OfType<TextBlock>().FirstOrDefault(x => x.Name == "TxtHideIcon");
                     if (hideIcon != null)
-                        hideIcon.Foreground = game.IsHidden ? warmBrush : secondaryBrush;
+                    {
+                        hideIcon.Text = game.IsHidden ? "\uE5F5" : "\uE5F2";
+                        hideIcon.Foreground = game.IsHidden ? new SolidColorBrush(Color.Parse("#E05252")) : secondaryBrush;
+                    }
 
                     container.Opacity = editMode && game.IsHidden ? 0.4 : 1.0;
                 }
@@ -615,8 +618,8 @@ namespace OptiscalerClient.Views
                         .OfType<TextBlock>().FirstOrDefault(x => x.Name == "TxtHideIconGrid");
                     if (hideIcon != null)
                     {
-                        hideIcon.Text = game.IsHidden ? "\uED1A" : "\uE7B3";
-                        hideIcon.Foreground = game.IsHidden ? warmBrush : secondaryBrush;
+                        hideIcon.Text = game.IsHidden ? "\uE5F5" : "\uE5F2";
+                        hideIcon.Foreground = game.IsHidden ? new SolidColorBrush(Color.Parse("#E05252")) : secondaryBrush;
                     }
 
                     var hideLabel = container.GetVisualDescendants()
@@ -862,9 +865,9 @@ namespace OptiscalerClient.Views
                     {
                         new TextBlock
                         {
-                            Text                = "\uE7FC",  // game controller icon
-                            FontFamily          = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
-                            FontSize            = 22,
+                            Text                = "\uEEB9",  // game controller icon (FluentSystemIcons-Regular)
+                            FontFamily          = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
+                            FontSize            = 28,
                             Foreground          = accentBrush,
                             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
                         },
@@ -2603,7 +2606,7 @@ namespace OptiscalerClient.Views
                     var icon = new TextBlock
                     {
                         Text = currentPage.Icon,
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 16,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
                     };
@@ -2668,8 +2671,8 @@ namespace OptiscalerClient.Views
 
                     var expandIcon = new TextBlock
                     {
-                        Text = "\uE70D", // ChevronUp
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        Text = "\uF2A3", // ChevronDown
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 12,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                         Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2677,8 +2680,8 @@ namespace OptiscalerClient.Views
 
                     var categoryIcon = new TextBlock
                     {
-                        Text = "\uE8F1", // BookOpen icon for Guides
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        Text = "\uF4D3", // Library icon for Guides
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 16,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                         Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2730,7 +2733,7 @@ namespace OptiscalerClient.Views
                         var pageIcon = new TextBlock
                         {
                             Text = page.Icon,
-                            FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                            FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                             FontSize = 16,
                             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                             Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2756,7 +2759,7 @@ namespace OptiscalerClient.Views
                     categoryButton.Click += (s, e) =>
                     {
                         childrenContainer.IsVisible = !childrenContainer.IsVisible;
-                        expandIcon.Text = childrenContainer.IsVisible ? "\uE70D" : "\uE70E"; // ChevronUp : ChevronDown
+                        expandIcon.Text = childrenContainer.IsVisible ? "\uF2A3" : "\uF2B6"; // ChevronDown : ChevronUp
                     };
 
                     categoryContainer.Children.Add(categoryButton);

@@ -4,7 +4,7 @@
       "id": "about",
       "title": "About & Feedback",
       "titleKey": "TxtHelpPageAbout",
-      "icon": "\uE946",
+      "icon": "\uF4A4",
       "sections": [
         {
           "type": "disclaimer",
@@ -45,7 +45,7 @@
       "id": "getting-started",
       "title": "Getting Started",
       "titleKey": "TxtHelpPageGettingStarted",
-      "icon": "\uE8F4",
+      "icon": "\uF41D",
       "fontSize": 14,
       "sections": [
         {
@@ -97,7 +97,7 @@
       "id": "features",
       "title": "Features",
       "titleKey": "TxtHelpPageFeatures",
-      "icon": "\uE734",
+      "icon": "\uF710",
       "fontSize": 14,
       "sections": [
         {
@@ -155,7 +155,7 @@
       "id": "main-window",
       "title": "Main Window",
       "titleKey": "TxtHelpPageMainWindow",
-      "icon": "\uE80F",
+      "icon": "\uF481",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -233,7 +233,7 @@
       "id": "game-management",
       "title": "Game Management",
       "titleKey": "TxtHelpPageGameManagement",
-      "icon": "\uE7FC",
+      "icon": "\uEEB9",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -323,7 +323,7 @@
       "id": "profiles",
       "title": "Profile System",
       "titleKey": "TxtHelpPageProfiles",
-      "icon": "\uE8B7",
+      "icon": "\uF419",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -405,7 +405,7 @@
       "id": "settings",
       "title": "Settings & Configuration",
       "titleKey": "TxtHelpPageSettings",
-      "icon": "\uE713",
+      "icon": "\uF6AA",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -483,7 +483,7 @@
       "id": "bulk-operations",
       "title": "Bulk Operations",
       "titleKey": "TxtHelpPageBulkOperations",
-      "icon": "\uE8F1",
+      "icon": "\uE619",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -531,7 +531,7 @@
       "id": "troubleshooting",
       "title": "FAQ & Troubleshooting",
       "titleKey": "TxtHelpPageTroubleshooting",
-      "icon": "\uE9D9",
+      "icon": "\uE9E1",
       "fontSize": 14,
       "sections": [
         {

@@ -31,7 +31,7 @@
     <x:String x:Key="TxtAppTitle">Optiscaler Client</x:String>
     <x:String x:Key="TxtBtnScan">⟳ Escanear Juegos</x:String>
     <x:String x:Key="TxtBtnAddManual">＋ Añadir Manualmente</x:String>
-    <x:String x:Key="TxtBtnBulkInstall">⚡ Instalación Masiva</x:String>
+    <x:String x:Key="TxtBtnBulkInstall">Instalación Masiva</x:String>
     <x:String x:Key="TxtTipSettings">Ajustes</x:String>
     <x:String x:Key="TxtTipComponent">Versiones de componentes</x:String>
     <x:String x:Key="TxtUpdateNukem">↑ Actualizar NukemFG</x:String>
