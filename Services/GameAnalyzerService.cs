@@ -128,6 +128,35 @@ public class GameAnalyzerService
             // Do this first so we can ignore its installed files when looking for native DLLs
             try
             {
+                // ── Priority 0: external backup store ──────────────────────────────
+                // A valid external backup means OptiScaler was installed (and tracked) by v1.0.5+.
+                // Check candidate game dirs derived from InstallPath / ExecutablePath.
+                {
+                    var backupStore = new BackupStoreService();
+                    var candidateDirs = new List<string?> { game.InstallPath };
+                    if (!string.IsNullOrEmpty(game.ExecutablePath))
+                        candidateDirs.Add(Path.GetDirectoryName(game.ExecutablePath));
+
+                    foreach (var candidate in candidateDirs.Where(d => !string.IsNullOrEmpty(d) && Directory.Exists(d)))
+                    {
+                        if (backupStore.HasValidBackup(candidate!))
+                        {
+                            var extManifest = backupStore.LoadManifest(candidate!);
+                            if (extManifest != null && string.Equals(extManifest.OperationStatus, "committed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                game.IsOptiscalerInstalled = true;
+                                if (!string.IsNullOrEmpty(extManifest.OptiscalerVersion))
+                                    game.OptiscalerVersion = extManifest.OptiscalerVersion;
+                                foreach (var f in extManifest.InstalledFiles)
+                                    ignoredFiles.Add(f);
+                                blockHeuristicFallbackDetection = true;
+                                DebugWindow.Log($"[Analyzer] Priority 0 (external store) detected OptiScaler {extManifest.OptiscalerVersion} for '{game.Name}'");
+                                goto detectOtherComponents;
+                            }
+                        }
+                    }
+                }
+
                 // ── Priority 1: manifest ────────────────────────────────────────────
                 var manifestFiles = collectedFiles.TryGetValue("optiscaler_manifest.json", out var mf) ? mf.ToArray() : Array.Empty<string>();
                 if (manifestFiles.Length > 0)
@@ -255,8 +284,7 @@ public class GameAnalyzerService
             {
                 DebugWindow.Log($"[Analyzer] OptiScaler detection error for '{game.Name}': {ex.Message}");
             }
-
-            // DLSS
+            detectOtherComponents:
             FindBestVersionFromCollected(game, collectedFiles, _dlssNames, ignoredFiles, (g, path, ver) =>
             {
                 g.DlssPath = path;

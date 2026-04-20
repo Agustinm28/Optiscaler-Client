@@ -429,6 +429,8 @@
     <x:String x:Key="TxtHelpFaqUpscText">檢查遊戲是否原生支援 DLSS/FSR/XeSS。OptiScaler 取代現有的超解析度實作。</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">找不到 Optiscaler.dll 或 nvngx.dll 及其他錯誤。</x:String>
     <x:String x:Key="TxtHelpFaqDllText">使用設定中的按鈕清除快取；這應該能解決大多數問題。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">解除安裝後遊戲資料夾仍殘留 OptiScaler 檔案</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">這是因為先前的安裝未被正確追蹤（例如程式崩潰留下了孤立檔案）。解決方式：先在應用程式中按下「解除安裝」按鈕，然後手動刪除遊戲資料夾中殘留的 OptiScaler 檔案（OptiScaler.dll、OptiScaler.ini、若為注入目標則包含 dxgi.dll、nvapi64.dll 等）。之後，未來的安裝與解除安裝將可正常運作。</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">預設配置檔</x:String>

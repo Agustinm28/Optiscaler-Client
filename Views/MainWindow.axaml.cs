@@ -3832,6 +3832,17 @@ namespace OptiscalerClient.Views
             // Normalise DisplayOrder so it's 0-based and gapless
             for (int i = 0; i < _allGames.Count; i++) _allGames[i].DisplayOrder = i;
 
+            // Migrate legacy in-folder backups to external store (idempotent, guarded by version check)
+            try
+            {
+                var migrationService = new StartupMigrationService(new BackupStoreService(), _componentService);
+                migrationService.RunIfNeeded(_allGames);
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[MainWindow] Startup migration error (non-fatal): {ex.Message}");
+            }
+
             ApplyFilter(_txtSearch?.Text);
 
             var loadedFormat = GetResourceString("TxtLoadedGamesFormat", "Loaded {0} games.");

@@ -429,6 +429,8 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtHelpFaqUpscText">Oyunun DLSS/FSR/XeSS'yi native olarak destekleyip desteklemediğini kontrol edin. OptiScaler mevcut yükseltme uygulamalarını değiştirir.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll veya nvngx.dll bulunamadı ve diğer hatalar.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Ayarlardan önbelleği temizleme düğmesini kullanın; bu çoğu sorunu çözecektir.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Kaldırma işleminden sonra oyun klasöründe hâlâ OptiScaler dosyaları var</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Bu, önceki bir kurulumun düzgün izlenmediği durumlarda oluşur (ör. bir kilitlenme artık dosyalar bıraktı). Düzeltmek için: önce uygulamada Kaldır düğmesini kullanın, ardından oyun klasöründe kalan OptiScaler dosyalarını (OptiScaler.dll, OptiScaler.ini, enjeksiyon hedefiyse dxgi.dll, nvapi64.dll vb.) manuel olarak silin. Bundan sonra, gelecekteki kurulum ve kaldırma işlemleri düzgün çalışacaktır.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Varsayılan profil</x:String>

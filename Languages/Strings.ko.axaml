@@ -429,6 +429,8 @@
     <x:String x:Key="TxtHelpFaqUpscText">게임이 DLSS/FSR/XeSS를 기본적으로 지원하는지 확인하세요. OptiScaler는 기존 업스케일링 구현을 대체합니다.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll 또는 nvngx.dll을 찾을 수 없음 및 기타 오류.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">설정에서 캐시를 지우는 버튼을 사용하세요. 대부분의 문제가 해결될 것입니다.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">제거 후에도 게임 폴더에 OptiScaler 파일이 남아 있음</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">이 문제는 이전 설치가 제대로 추적되지 않은 경우(예: 충돌로 인해 고아 파일이 남은 경우)에 발생합니다. 해결 방법: 먼저 앱에서 제거 버튼을 사용한 다음, 게임 폴더에 남아 있는 OptiScaler 파일(OptiScaler.dll, OptiScaler.ini, 주입 대상이었던 경우 dxgi.dll, nvapi64.dll 등)을 수동으로 삭제하세요. 이후에는 설치 및 제거가 정상적으로 작동합니다.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">기본 프로필</x:String>

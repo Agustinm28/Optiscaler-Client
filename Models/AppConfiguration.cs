@@ -104,6 +104,12 @@ namespace OptiscalerClient.Models
         /// Each entry corresponds to a subdirectory under Cache/OptiScaler/.
         /// </summary>
         public List<string> CustomOptiScalerVersions { get; set; } = new();
+
+        /// <summary>
+        /// Version of the app on which the last startup migration pass completed.
+        /// When this matches the current AppVersion, the migration step is skipped entirely.
+        /// </summary>
+        public string? LastMigratedAppVersion { get; set; } = null;
     }
 
     /// <summary>

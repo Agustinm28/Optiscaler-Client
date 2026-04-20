@@ -429,6 +429,8 @@
     <x:String x:Key="TxtHelpFaqUpscText">Убедитесь, что игра нативно поддерживает DLSS/FSR/XeSS. OptiScaler заменяет существующие реализации масштабирования.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll или nvngx.dll не найдены и другие ошибки.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Воспользуйтесь кнопкой очистки кэша в настройках — это должно решить большинство проблем.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">В папке игры после удаления остались файлы OptiScaler</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Это происходит, когда предыдущая установка не была корректно отслежена (например, сбой оставил осиротевшие файлы). Чтобы исправить: сначала нажмите кнопку «Удалить» в приложении, затем вручную удалите оставшиеся файлы OptiScaler из папки игры (OptiScaler.dll, OptiScaler.ini, dxgi.dll если это была цель внедрения, nvapi64.dll и т.д.). После этого будущие установки и удаления будут работать корректно.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Профиль по умолчанию</x:String>

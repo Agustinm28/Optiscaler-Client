@@ -429,6 +429,8 @@ Questa versione non è disponibile per il download. Controlla la tua connessione
     <x:String x:Key="TxtHelpFaqUpscText">Verifica che il gioco supporti DLSS/FSR/XeSS nativamente. OptiScaler sostituisce le implementazioni di upscaling esistenti.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll o nvngx.dll non trovati e altri errori.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Usa il pulsante per svuotare la cache dalle impostazioni; dovrebbe risolvere la maggior parte dei problemi.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">La cartella del gioco contiene ancora file di OptiScaler dopo la disinstallazione</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Ciò accade quando un'installazione precedente non è stata tracciata correttamente (es. un crash ha lasciato file orfani). Per risolvere: usa prima il pulsante Disinstalla nell'app, poi elimina manualmente i file OptiScaler rimasti nella cartella del gioco (OptiScaler.dll, OptiScaler.ini, dxgi.dll se era il target di iniezione, nvapi64.dll, ecc.). Dopo di ciò, installazioni e disinstallazioni future funzioneranno correttamente.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Profilo predefinito</x:String>

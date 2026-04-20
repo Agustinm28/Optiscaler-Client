@@ -429,6 +429,8 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtHelpFaqUpscText">Controleer of de game DLSS/FSR/XeSS standaard ondersteunt. OptiScaler vervangt bestaande upscaling-implementaties.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll of nvngx.dll niet gevonden en andere fouten.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Gebruik de knop om de cache te wissen via de instellingen; dat zou de meeste problemen moeten oplossen.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Spelmap bevat na verwijdering nog steeds OptiScaler-bestanden</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Dit gebeurt wanneer een eerdere installatie niet correct is bijgehouden (bijv. een crash liet achtergelaten bestanden achter). Om het op te lossen: gebruik eerst de knop Verwijderen in de app en verwijder vervolgens handmatig de resterende OptiScaler-bestanden uit de spelmap (OptiScaler.dll, OptiScaler.ini, dxgi.dll als dat het injectiedoel was, nvapi64.dll, enz.). Daarna zullen toekomstige installaties en verwijderingen correct werken.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Standaardprofiel</x:String>
