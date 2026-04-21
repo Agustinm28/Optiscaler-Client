@@ -94,14 +94,18 @@ namespace OptiscalerClient.Services
             if (string.IsNullOrEmpty(gameDir) || !Directory.Exists(gameDir))
                 throw new Exception("Installation cancelled or valid directory not found.");
 
-            DebugWindow.Log($"[Install] External backup store: {_backupStore.GetBackupRoot(gameDir)}");
+            // storeKey is always the stable game root (game.InstallPath) so that lookup is
+            // consistent after app restarts, regardless of which subdirectory was chosen as gameDir.
+            var storeKey = game.InstallPath;
+
+            DebugWindow.Log($"[Install] External backup store: {_backupStore.GetBackupRoot(storeKey)}");
 
             // ── Pre-install: detect and remove residues from previous dirty installs ──
             // If there is no valid external backup for this gameDir, any known OptiScaler
             // artifacts found in the game folder are residues (orphaned files from a previous
             // install that was never properly uninstalled). Back them up as original files
             // would corrupt the next uninstall, so we delete them first.
-            if (!_backupStore.HasValidBackup(gameDir))
+            if (!_backupStore.HasValidBackup(storeKey))
             {
                 var componentService = new ComponentManagementService();
                 var cacheDirsForResidue = new List<string>();
@@ -153,7 +157,7 @@ namespace OptiscalerClient.Services
             manifest.AppliedProfileName = profile?.Name;
 
             // Persist immediately as in-progress so crashes can be recovered later.
-            _backupStore.SaveManifest(gameDir, manifest);
+            _backupStore.SaveManifest(storeKey, manifest);
 
             try
             {
@@ -184,7 +188,7 @@ namespace OptiscalerClient.Services
             // Backup existing file if it exists (into external store)
             if (injectionExisted)
             {
-                _backupStore.BackupFile(gameDir, injectionDllName);
+                _backupStore.BackupFile(storeKey, gameDir, injectionDllName);
                 manifest.BackedUpFiles.Add(injectionDllName);
                 DebugWindow.Log($"[Install] Backed up existing file: {injectionDllName}");
             }
@@ -238,7 +242,7 @@ namespace OptiscalerClient.Services
                 var preHash = existedBefore ? ComputeSha256(destPath) : null;
                 if (existedBefore)
                 {
-                    _backupStore.BackupFile(gameDir, relativePath);
+                    _backupStore.BackupFile(storeKey, gameDir, relativePath);
                     manifest.BackedUpFiles.Add(relativePath);
                     DebugWindow.Log($"[Install] Backed up existing file: {relativePath}");
                 }
@@ -297,7 +301,7 @@ namespace OptiscalerClient.Services
                         // Backup if exists (into external store)
                         if (existedBefore)
                         {
-                            _backupStore.BackupFile(gameDir, fileName);
+                            _backupStore.BackupFile(storeKey, gameDir, fileName);
                             manifest.BackedUpFiles.Add(fileName);
                             DebugWindow.Log($"[Install] Backed up existing Fakenvapi file: {fileName}");
                         }
@@ -349,7 +353,7 @@ namespace OptiscalerClient.Services
                         // Backup if exists (into external store)
                         if (existedBefore)
                         {
-                            _backupStore.BackupFile(gameDir, fileName);
+                            _backupStore.BackupFile(storeKey, gameDir, fileName);
                             manifest.BackedUpFiles.Add(fileName);
                             DebugWindow.Log($"[Install] Backed up existing NukemFG file: {fileName}");
                         }
@@ -387,7 +391,7 @@ namespace OptiscalerClient.Services
             manifest.ExpectedFinalMarkers = manifest.ExpectedFinalMarkers.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
             manifest.OperationStatus = "committed";
             manifest.FinishedAtUtc = DateTime.UtcNow.ToString("O");
-            _backupStore.SaveManifest(gameDir, manifest);
+            _backupStore.SaveManifest(storeKey, manifest);
             DebugWindow.Log($"[Install] Saved installation manifest to external store");
 
             // Immediately update the game object so the UI reflects the correct state
@@ -414,14 +418,14 @@ namespace OptiscalerClient.Services
 
                 manifest.OperationStatus = "failed";
                 manifest.FinishedAtUtc = DateTime.UtcNow.ToString("O");
-                _backupStore.SaveManifest(gameDir, manifest);
+                _backupStore.SaveManifest(storeKey, manifest);
 
-                var backupFilesDir = _backupStore.GetFilesDir(gameDir);
+                var backupFilesDir = _backupStore.GetFilesDir(storeKey);
                 var rollbackSummary = RollbackFailedInstall(gameDir, backupFilesDir, manifest);
                 DebugWindow.Log($"[Install] Rollback completed. Restored={rollbackSummary.Restored}, Deleted={rollbackSummary.Deleted}");
 
                 // Clean up the external store entry for this failed install
-                _backupStore.DeleteBackup(gameDir);
+                _backupStore.DeleteBackup(storeKey);
 
                 throw new Exception($"{ex.Message}", ex);
             }
@@ -444,6 +448,7 @@ namespace OptiscalerClient.Services
 
             // ── Load manifest: prefer external backup store, fall back to legacy in-folder ──
             string? gameDir = null;
+            string? storeKey = null; // slug key for backup store (= game.InstallPath for new installs)
             InstallationManifest? manifest = null;
             bool usingExternalStore = false;
 
@@ -463,10 +468,16 @@ namespace OptiscalerClient.Services
             {
                 if (_backupStore.HasValidBackup(candidate!))
                 {
-                    gameDir = candidate;
+                    storeKey = candidate;
                     manifest = _backupStore.LoadManifest(candidate!);
                     usingExternalStore = true;
-                    DebugWindow.Log($"[Uninstall] Found external backup for '{game.Name}' at: {candidate}");
+                    // Resolve actual game directory from the manifest so file operations target
+                    // the correct subdirectory (e.g. ..\Game\ for Elden Ring, not the root).
+                    var installedDir = manifest?.InstalledGameDirectory;
+                    gameDir = !string.IsNullOrEmpty(installedDir) && Directory.Exists(installedDir)
+                        ? installedDir
+                        : candidate;
+                    DebugWindow.Log($"[Uninstall] Found external backup for '{game.Name}' at store key: {candidate}, game dir: {gameDir}");
                     break;
                 }
             }
@@ -518,7 +529,7 @@ namespace OptiscalerClient.Services
             if (string.IsNullOrEmpty(gameDir) || !Directory.Exists(gameDir))
                 throw new Exception($"Could not determine installation directory for '{game.Name}'.");
 
-            var backupDir = _backupStore.GetFilesDir(gameDir);
+            var backupDir = _backupStore.GetFilesDir(storeKey ?? gameDir);
             var legacyBackupDir = Path.Combine(gameDir, BackupFolderName);
 
             // If legacy folder exists but no external backup, migrate now (in case startup migration was skipped)
@@ -534,6 +545,7 @@ namespace OptiscalerClient.Services
                         {
                             manifest = _backupStore.LoadManifest(gameDir);
                             usingExternalStore = true;
+                            storeKey = gameDir; // legacy migration uses gameDir as its slug key
                             backupDir = _backupStore.GetFilesDir(gameDir);
                             DebugWindow.Log($"[Uninstall] On-demand migration completed for '{game.Name}'");
                         }
@@ -575,7 +587,7 @@ namespace OptiscalerClient.Services
                     {
                         try
                         {
-                            if (!_backupStore.RestoreFile(gameDir, overwritten.RelativePath, overwritten.BackupRelativePath))
+                            if (!_backupStore.RestoreFile(storeKey ?? gameDir, gameDir, overwritten.RelativePath, overwritten.BackupRelativePath))
                             {
                                 // Fallback: try legacy in-folder backup
                                 var legacyBackupPath = Path.Combine(legacyBackupDir,
@@ -593,7 +605,7 @@ namespace OptiscalerClient.Services
                     {
                         try
                         {
-                            if (!_backupStore.RestoreFile(gameDir, backedUpFile))
+                            if (!_backupStore.RestoreFile(storeKey ?? gameDir, gameDir, backedUpFile))
                             {
                                 // Fallback: try legacy in-folder backup
                                 var legacyBackupPath = Path.Combine(legacyBackupDir, backedUpFile);
@@ -692,7 +704,7 @@ namespace OptiscalerClient.Services
             }
 
             // Remove external backup store entry
-            _backupStore.DeleteBackup(gameDir);
+            _backupStore.DeleteBackup(storeKey ?? gameDir);
 
             // Remove legacy OptiScalerBackup/ folder if it still exists
             // (first uninstall after migration from v1.0.4, or if migration was skipped)

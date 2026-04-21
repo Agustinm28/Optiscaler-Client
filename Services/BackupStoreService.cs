@@ -118,16 +118,18 @@ namespace OptiscalerClient.Services
         // ── Backup / Restore ──────────────────────────────────────────────────────
 
         /// <summary>
-        /// Copies {gameDir}/{relativePath} into the external backup store.
+        /// Copies {gameDir}/{relativePath} into the external backup store keyed by storeKey.
+        /// storeKey is the game root (game.InstallPath) used for slug computation.
+        /// gameDir is the actual directory where the file lives on disk.
         /// Returns true if the file was backed up, false if it didn't exist.
         /// </summary>
-        public bool BackupFile(string gameDir, string relativePath)
+        public bool BackupFile(string storeKey, string gameDir, string relativePath)
         {
             var src = Path.Combine(gameDir, relativePath);
             if (!File.Exists(src))
                 return false;
 
-            var dst = Path.Combine(GetFilesDir(gameDir), relativePath);
+            var dst = Path.Combine(GetFilesDir(storeKey), relativePath);
             var dstDir = Path.GetDirectoryName(dst);
             if (!string.IsNullOrEmpty(dstDir))
                 Directory.CreateDirectory(dstDir);
@@ -138,12 +140,14 @@ namespace OptiscalerClient.Services
 
         /// <summary>
         /// Restores a backed-up file back into the game directory.
+        /// storeKey is the game root (game.InstallPath) used for slug computation.
+        /// gameDir is the actual directory where the file should be restored to.
         /// Returns true if the restore succeeded.
         /// </summary>
-        public bool RestoreFile(string gameDir, string relativePath, string? backupRelativePath = null)
+        public bool RestoreFile(string storeKey, string gameDir, string relativePath, string? backupRelativePath = null)
         {
             var effectiveRelative = string.IsNullOrWhiteSpace(backupRelativePath) ? relativePath : backupRelativePath;
-            var src = Path.Combine(GetFilesDir(gameDir), effectiveRelative);
+            var src = Path.Combine(GetFilesDir(storeKey), effectiveRelative);
             if (!File.Exists(src))
                 return false;
 
