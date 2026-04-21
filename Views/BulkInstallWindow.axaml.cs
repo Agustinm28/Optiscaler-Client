@@ -127,6 +127,12 @@ public partial class BulkInstallWindow : Window
         // Populate OptiPatcher versions
         PopulateOptiPatcherComboBox();
 
+        // Populate Fakenvapi versions
+        PopulateFakenvapiComboBox();
+
+        // Populate NukemFG versions
+        PopulateNukemFGComboBox();
+
         // Populate profile selector
         PopulateProfileSelector();
 
@@ -190,6 +196,8 @@ public partial class BulkInstallWindow : Window
             UpdateOptiChannelButtons();
             PopulateOptiVersionCombo();
             PopulateOptiPatcherComboBox();
+            PopulateFakenvapiComboBox();
+            PopulateNukemFGComboBox();
         });
     }
 
@@ -448,15 +456,27 @@ public partial class BulkInstallWindow : Window
         var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
         var cmbExtrasVersion = this.FindControl<ComboBox>("CmbExtrasVersion");
         var cmbOptiPatcher = this.FindControl<ComboBox>("CmbOptiPatcherVersion");
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+        var cmbFakenvapiVersion = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        var cmbNukemFGVersion = this.FindControl<ComboBox>("CmbNukemFGVersion");
         var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
 
         if (cmbOptiVersion?.SelectedItem is not ComboBoxItem selectedItem) return;
 
         string version = selectedItem.Tag?.ToString() ?? "";
-        bool installFakenvapi = chkFakenvapi?.IsChecked == true;
-        bool installNukemFG = chkNukemFG?.IsChecked == true;
+
+        // Fakenvapi: read version from combobox
+        var selectedFakenvapiItem = cmbFakenvapiVersion?.SelectedItem as ComboBoxItem;
+        var selectedFakenvapiVersion = selectedFakenvapiItem?.Tag?.ToString();
+        bool installFakenvapi = !string.IsNullOrEmpty(selectedFakenvapiVersion) &&
+                                !selectedFakenvapiVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                selectedFakenvapiVersion != "__manage__";
+
+        // NukemFG: read version from combobox
+        var selectedNukemFGItem = cmbNukemFGVersion?.SelectedItem as ComboBoxItem;
+        var selectedNukemFGVersion = selectedNukemFGItem?.Tag?.ToString();
+        bool installNukemFG = !string.IsNullOrEmpty(selectedNukemFGVersion) &&
+                              !selectedNukemFGVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                              selectedNukemFGVersion != "__manage__";
 
         // Get injection method
         var injectionItem = cmbInjectionMethod?.SelectedItem as ComboBoxItem;
@@ -512,8 +532,12 @@ public partial class BulkInstallWindow : Window
             {
                 // Get cache paths
                 var optiCacheDir = _componentService.GetOptiScalerCachePath(version);
-                var fakeCacheDir = installFakenvapi ? _componentService.GetFakenvapiCachePath() : "";
-                var nukemCacheDir = installNukemFG ? _componentService.GetNukemFGCachePath() : "";
+                var fakeCacheDir = installFakenvapi
+                    ? _componentService.GetFakenvapiCachePath(selectedFakenvapiVersion!)
+                    : "";
+                var nukemCacheDir = installNukemFG
+                    ? _componentService.GetNukemFGCachePath(selectedNukemFGVersion!)
+                    : "";
 
                 await Task.Run(() =>
                 {
@@ -687,38 +711,38 @@ public partial class BulkInstallWindow : Window
         var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
         bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
 
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
-
         // Disable Fakenvapi/NukemFG for any OptiScaler version >= 0.9 regardless of beta
         bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
 
+        var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
+
         if (includedInPackage)
         {
-            if (chkFakenvapi != null)
+            if (cmbFakenvapi != null)
             {
-                chkFakenvapi.IsEnabled = false;
-                chkFakenvapi.IsChecked = false;
-                ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+                cmbFakenvapi.IsEnabled = false;
+                cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                ToolTip.SetTip(cmbFakenvapi, "Included in OptiScaler 0.9+");
             }
-            if (chkNukemFG != null)
+            if (cmbNukemFG != null)
             {
-                chkNukemFG.IsEnabled = false;
-                chkNukemFG.IsChecked = false;
-                ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+                cmbNukemFG.IsEnabled = false;
+                cmbNukemFG.SelectedIndex = 0; // Reset to "None"
+                ToolTip.SetTip(cmbNukemFG, "Included in OptiScaler 0.9+");
             }
         }
         else
         {
-            if (chkFakenvapi != null)
+            if (cmbFakenvapi != null)
             {
-                chkFakenvapi.IsEnabled = true;
-                ToolTip.SetTip(chkFakenvapi, null);
+                cmbFakenvapi.IsEnabled = true;
+                ToolTip.SetTip(cmbFakenvapi, null);
             }
-            if (chkNukemFG != null)
+            if (cmbNukemFG != null)
             {
-                chkNukemFG.IsEnabled = true;
-                ToolTip.SetTip(chkNukemFG, null);
+                cmbNukemFG.IsEnabled = true;
+                ToolTip.SetTip(cmbNukemFG, null);
             }
         }
     }
@@ -935,6 +959,91 @@ public partial class BulkInstallWindow : Window
         }
 
         cmb.SelectedIndex = targetIndex;
+    }
+
+    private void PopulateFakenvapiComboBox()
+    {
+        var cmb = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        if (cmb == null) return;
+
+        cmb.Items.Clear();
+        cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+        var versions = _componentService.FakenvapiAvailableVersions;
+        foreach (var ver in versions)
+        {
+            var isLatest = ver == _componentService.LatestFakenvapiVersion;
+            cmb.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: isLatest));
+        }
+
+        cmb.Items.Add(new ComboBoxItem { Content = "Manage versions\u2026", Tag = "__manage__" });
+
+        // Pre-select configured default
+        var savedFakenvapi = _componentService.Config.DefaultFakenvapiVersion;
+        cmb.SelectedIndex = 0;
+        if (!string.IsNullOrEmpty(savedFakenvapi) && !savedFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int i = 1; i < cmb.Items.Count; i++)
+            {
+                if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedFakenvapi)
+                {
+                    cmb.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectionChanged += (s, e) =>
+        {
+            if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+            {
+                cmb.SelectedIndex = 0;
+                var cacheWindow = new CacheManagementWindow("fakenvapi");
+                cacheWindow.ShowDialog(this);
+            }
+        };
+    }
+
+    private void PopulateNukemFGComboBox()
+    {
+        var cmb = this.FindControl<ComboBox>("CmbNukemFGVersion");
+        if (cmb == null) return;
+
+        cmb.Items.Clear();
+        cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+        var versions = _componentService.GetDownloadedNukemFGVersions();
+        foreach (var ver in versions)
+        {
+            cmb.Items.Add(new ComboBoxItem { Content = ver, Tag = ver });
+        }
+
+        cmb.Items.Add(new ComboBoxItem { Content = "Manage versions\u2026", Tag = "__manage__" });
+
+        // Pre-select configured default
+        var savedNukemFG = _componentService.Config.DefaultNukemFGVersion;
+        cmb.SelectedIndex = 0;
+        if (!string.IsNullOrEmpty(savedNukemFG) && !savedNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int i = 1; i < cmb.Items.Count; i++)
+            {
+                if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedNukemFG)
+                {
+                    cmb.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectionChanged += (s, e) =>
+        {
+            if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+            {
+                cmb.SelectedIndex = 0;
+                var cacheWindow = new CacheManagementWindow("nukemfg");
+                cacheWindow.ShowDialog(this);
+            }
+        };
     }
 
     // (Replaced by unified version earlier)
