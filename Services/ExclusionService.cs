@@ -83,7 +83,13 @@ public class ExclusionService
     /// </summary>
     private static List<ScanExclusion> DefaultExclusions() =>
     [
-        new() { Name = "Wallpaper Engine",                    PathSegment = "wallpaper_engine"   },
-        new() { Name = "Steamworks Common Redistributables",  PathSegment = "Steamworks Shared"  }
+        new() { Name = "Wallpaper Engine",                    PathSegment = "wallpaper_engine"          },
+        new() { Name = "Steamworks Common Redistributables",  PathSegment = "Steamworks Shared"         },
+        new() {                                               PathSegment = "SteamLinuxRuntime"         },
+        new() {                                               PathSegment = "common/Proton "            },
+        new() {                                               PathSegment = "Proton - "                 },
+        new() {                                               PathSegment = "Proton Hotfix"             },
+        new() {                                               PathSegment = "Proton EasyAntiCheat Runtime" },
+        new() {                                               PathSegment = "Proton BattlEye Runtime"   },
     ];
 }

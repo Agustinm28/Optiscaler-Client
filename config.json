@@ -39,7 +39,13 @@
         {
             "Name": "GameSave",
             "PathSegment": "GameSave"
-        }
+        },
+        { "PathSegment": "SteamLinuxRuntime" },
+        { "PathSegment": "common/Proton " },
+        { "PathSegment": "Proton - " },
+        { "PathSegment": "Proton Hotfix" },
+        { "PathSegment": "Proton EasyAntiCheat Runtime" },
+        { "PathSegment": "Proton BattlEye Runtime" }
     ],
     "SteamGridDBApiKey": "",
     "Debug": false
