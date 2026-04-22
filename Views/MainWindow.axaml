@@ -557,8 +557,7 @@
                                                  </Border>
 
                                                 <!-- Drag handle -->
-                                                <Border Name="DragHandle"
-                                                        Width="32" Height="32"
+                                                <Border Width="32" Height="32"
                                                         Background="Transparent"
                                                         Cursor="SizeAll"
                                                         ToolTip.Tip="{DynamicResource TxtDragToReorder}"
