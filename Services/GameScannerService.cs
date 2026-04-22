@@ -129,8 +129,12 @@ public class GameScannerService
 
             GameAnalyzerService.FlushCacheToDisk();
 
-            DebugWindow.Log($"[Scanner] Scan completed. Found {games.Count} valid games.");
-            return games.OrderBy(g => g.Platform).ThenBy(g => g.Name).ToList();
+            var filtered = scanConfig.ShowNonGameEntries
+                ? games
+                : games.Where(g => g.HasUpscaler || g.Platform == GamePlatform.Custom);
+
+            DebugWindow.Log($"[Scanner] Scan completed. Found {filtered.Count()} games (ShowNonGameEntries={scanConfig.ShowNonGameEntries}).");
+            return filtered.OrderBy(g => g.Platform).ThenBy(g => g.Name).ToList();
         });
     }
 

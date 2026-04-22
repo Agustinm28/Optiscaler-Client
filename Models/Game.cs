@@ -57,6 +57,8 @@ public class Game
     public string? OptiscalerVersion { get; set; }
     public string? Fsr4ExtraVersion { get; set; }
 
+    public bool HasUpscaler => DlssVersion != null || DlssFrameGenVersion != null || FsrVersion != null || XessVersion != null || IsOptiscalerInstalled;
+
     // UI customization (not set by scanner)
     public bool IsHidden { get; set; } = false;
     public int DisplayOrder { get; set; } = 0;
