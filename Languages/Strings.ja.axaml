@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">カスタムフォルダー</x:String>
     <x:String x:Key="TxtAddFolder">+ フォルダーを追加</x:String>
     <x:String x:Key="TxtNoCustomFolders">カスタムフォルダーはまだ追加されていません。</x:String>
+    <x:String x:Key="TxtFilterOptions">フィルターオプション</x:String>
+    <x:String x:Key="TxtShowNonGameApps">アップスケーラーのないゲームを表示（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">削除</x:String>
     <x:String x:Key="TxtSave">保存</x:String>
     <x:String x:Key="TxtScanSources">スキャンソース</x:String>

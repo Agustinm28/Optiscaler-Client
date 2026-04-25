@@ -106,6 +106,25 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Filter Options -->
+                                <TextBlock Text="{DynamicResource TxtFilterOptions}"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Foreground="{StaticResource BrTextPrimary}"
+                                           Margin="0,0,0,12"/>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,12"
+                                        Margin="0,0,0,24">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0" Text="{DynamicResource TxtShowNonGameApps}" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}" TextWrapping="Wrap"/>
+                                        <ToggleSwitch Grid.Column="1" Name="TglShowNonGameApps" OnContent="" OffContent="" IsChecked="False"/>
+                                    </Grid>
+                                </Border>
+
                                 <!-- Custom Folders -->
                                 <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">
                                     <TextBlock Grid.Column="0"

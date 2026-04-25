@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">自訂資料夾</x:String>
     <x:String x:Key="TxtAddFolder">+ 新增資料夾</x:String>
     <x:String x:Key="TxtNoCustomFolders">尚未新增自訂資料夾。</x:String>
+    <x:String x:Key="TxtFilterOptions">篩選選項</x:String>
+    <x:String x:Key="TxtShowNonGameApps">顯示沒有升頻器的遊戲（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">移除</x:String>
     <x:String x:Key="TxtSave">儲存</x:String>
     <x:String x:Key="TxtScanSources">掃描來源</x:String>

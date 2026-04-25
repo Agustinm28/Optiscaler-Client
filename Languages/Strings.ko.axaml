@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">사용자 지정 폴더</x:String>
     <x:String x:Key="TxtAddFolder">+ 폴더 추가</x:String>
     <x:String x:Key="TxtNoCustomFolders">아직 사용자 지정 폴더가 추가되지 않았습니다.</x:String>
+    <x:String x:Key="TxtFilterOptions">필터 옵션</x:String>
+    <x:String x:Key="TxtShowNonGameApps">업스케일러 없는 게임 표시 (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">제거</x:String>
     <x:String x:Key="TxtSave">저장</x:String>
     <x:String x:Key="TxtScanSources">스캔 소스</x:String>

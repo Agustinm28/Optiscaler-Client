@@ -208,6 +208,8 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtCustomFolders">Carpetas personalizadas</x:String>
     <x:String x:Key="TxtAddFolder">+ Agregar carpeta</x:String>
     <x:String x:Key="TxtNoCustomFolders">No se han agregado carpetas personalizadas aún.</x:String>
+    <x:String x:Key="TxtFilterOptions">Opciones de filtro</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Mostrar juegos sin upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Eliminar</x:String>
     <x:String x:Key="TxtSave">Guardar</x:String>
     <x:String x:Key="TxtScanSources">Fuentes de escaneo</x:String>

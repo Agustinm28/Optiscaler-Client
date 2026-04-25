@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">自定义文件夹</x:String>
     <x:String x:Key="TxtAddFolder">+ 添加文件夹</x:String>
     <x:String x:Key="TxtNoCustomFolders">尚未添加自定义文件夹。</x:String>
+    <x:String x:Key="TxtFilterOptions">筛选选项</x:String>
+    <x:String x:Key="TxtShowNonGameApps">显示没有升频器的游戏（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">移除</x:String>
     <x:String x:Key="TxtSave">保存</x:String>
     <x:String x:Key="TxtScanSources">扫描源</x:String>

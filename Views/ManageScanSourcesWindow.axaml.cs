@@ -75,6 +75,9 @@ namespace OptiscalerClient.Views
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
 
+            var tglShowNonGameApps = this.FindControl<ToggleSwitch>("TglShowNonGameApps");
+            if (tglShowNonGameApps != null) tglShowNonGameApps.IsChecked = config.ShowNonGameEntries;
+
             var isWindows = OperatingSystem.IsWindows();
             var gridEpic = this.FindControl<Grid>("GridEpic");
             var gridGOG = this.FindControl<Grid>("GridGOG");
@@ -208,6 +211,8 @@ namespace OptiscalerClient.Views
             var tglEA = this.FindControl<ToggleSwitch>("TglEA");
             var tglUbisoft = this.FindControl<ToggleSwitch>("TglUbisoft");
 
+            var tglShowNonGameApps = this.FindControl<ToggleSwitch>("TglShowNonGameApps");
+
             _componentService.Config.ScanSources.ScanSteam = tglSteam?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanEpic = tglEpic?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanGOG = tglGOG?.IsChecked ?? true;
@@ -215,6 +220,7 @@ namespace OptiscalerClient.Views
             _componentService.Config.ScanSources.ScanEA = tglEA?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanUbisoft = tglUbisoft?.IsChecked ?? true;
             _componentService.Config.ScanSources.CustomFolders = _customFolders.ToList();
+            _componentService.Config.ScanSources.ShowNonGameEntries = tglShowNonGameApps?.IsChecked ?? false;
 
             _componentService.SaveConfiguration();
             Close(true);

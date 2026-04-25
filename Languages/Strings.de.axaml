@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Benutzerdefinierte Ordner</x:String>
     <x:String x:Key="TxtAddFolder">+ Ordner hinzufügen</x:String>
     <x:String x:Key="TxtNoCustomFolders">Noch keine benutzerdefinierten Ordner hinzugefügt.</x:String>
+    <x:String x:Key="TxtFilterOptions">Filteroptionen</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Spiele ohne Upscaler anzeigen (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Entfernen</x:String>
     <x:String x:Key="TxtSave">Speichern</x:String>
     <x:String x:Key="TxtScanSources">Scan-Quellen</x:String>

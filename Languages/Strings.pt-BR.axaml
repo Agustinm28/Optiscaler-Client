@@ -199,6 +199,8 @@
     <x:String x:Key="TxtCustomFolders">Pastas personalizadas</x:String>
     <x:String x:Key="TxtAddFolder">+ Adicionar pasta</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nenhuma pasta personalizada adicionada ainda.</x:String>
+    <x:String x:Key="TxtFilterOptions">Opções de Filtro</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Mostrar jogos sem upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Remover</x:String>
     <x:String x:Key="TxtSave">Salvar</x:String>
     <x:String x:Key="TxtScanSources">Fontes de verificação</x:String>

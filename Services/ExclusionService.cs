@@ -85,11 +85,12 @@ public class ExclusionService
     [
         new() { Name = "Wallpaper Engine",                    PathSegment = "wallpaper_engine"          },
         new() { Name = "Steamworks Common Redistributables",  PathSegment = "Steamworks Shared"         },
-        new() {                                               PathSegment = "SteamLinuxRuntime"         },
-        new() {                                               PathSegment = "common/Proton "            },
-        new() {                                               PathSegment = "Proton - "                 },
-        new() {                                               PathSegment = "Proton Hotfix"             },
-        new() {                                               PathSegment = "Proton EasyAntiCheat Runtime" },
-        new() {                                               PathSegment = "Proton BattlEye Runtime"   },
+        new() { Name = "Steam Linux Runtime",                 PathSegment = "SteamLinuxRuntime"         },
+        new() { Name = "Proton Common",                       PathSegment = "common/Proton "            },
+        new() { Name = "Proton",                              PathSegment = "Proton "                 },
+        new() { Name = "Proton Hotfix",                        PathSegment = "Proton Hotfix"             },
+        new() { Name = "Proton EasyAntiCheat Runtime",        PathSegment = "Proton EasyAntiCheat Runtime" },
+        new() { Name = "Proton BattlEye Runtime",             PathSegment = "Proton BattlEye Runtime"   },
+        new() { Name = "SteamVR",                              PathSegment = "SteamVR"           }
     ];
 }

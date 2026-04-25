@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Dossiers personnalisés</x:String>
     <x:String x:Key="TxtAddFolder">+ Ajouter un dossier</x:String>
     <x:String x:Key="TxtNoCustomFolders">Aucun dossier personnalisé ajouté pour le moment.</x:String>
+    <x:String x:Key="TxtFilterOptions">Options de filtre</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Afficher les jeux sans upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Supprimer</x:String>
     <x:String x:Key="TxtSave">Enregistrer</x:String>
     <x:String x:Key="TxtScanSources">Sources d'analyse</x:String>

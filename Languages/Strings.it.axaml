@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Cartelle personalizzate</x:String>
     <x:String x:Key="TxtAddFolder">+ Aggiungi cartella</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nessuna cartella personalizzata aggiunta ancora.</x:String>
+    <x:String x:Key="TxtFilterOptions">Opzioni filtro</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Mostra giochi senza upscaler (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Rimuovi</x:String>
     <x:String x:Key="TxtSave">Salva</x:String>
     <x:String x:Key="TxtScanSources">Fonti di scansione</x:String>

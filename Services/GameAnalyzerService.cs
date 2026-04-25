@@ -393,6 +393,7 @@ public class GameAnalyzerService
                     }
                     list.Add(file);
                 }
+
             }
         }
         catch (Exception ex)

@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Özel klasörler</x:String>
     <x:String x:Key="TxtAddFolder">+ Klasör ekle</x:String>
     <x:String x:Key="TxtNoCustomFolders">Henüz özel klasör eklenmedi.</x:String>
+    <x:String x:Key="TxtFilterOptions">Filtre Seçenekleri</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Upscaler'sız oyunları göster (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Kaldır</x:String>
     <x:String x:Key="TxtSave">Kaydet</x:String>
     <x:String x:Key="TxtScanSources">Tarama kaynakları</x:String>

@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Niestandardowe foldery</x:String>
     <x:String x:Key="TxtAddFolder">+ Dodaj folder</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nie dodano jeszcze żadnych niestandardowych folderów.</x:String>
+    <x:String x:Key="TxtFilterOptions">Opcje filtrowania</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Pokaż gry bez upscalerów (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Usuń</x:String>
     <x:String x:Key="TxtSave">Zapisz</x:String>
     <x:String x:Key="TxtScanSources">Źródła skanowania</x:String>

@@ -40,6 +40,7 @@ namespace OptiscalerClient.Models
         public bool ScanEA { get; set; } = true;
         public bool ScanUbisoft { get; set; } = true;
         public List<string> CustomFolders { get; set; } = new();
+        public bool ShowNonGameEntries { get; set; } = false;
     }
 
     /// <summary>

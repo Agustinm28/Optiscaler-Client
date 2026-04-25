@@ -183,6 +183,8 @@
     <x:String x:Key="TxtCustomFolders">Пользовательские папки</x:String>
     <x:String x:Key="TxtAddFolder">+ Добавить папку</x:String>
     <x:String x:Key="TxtNoCustomFolders">Пользовательские папки еще не добавлены.</x:String>
+    <x:String x:Key="TxtFilterOptions">Параметры фильтра</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Показать игры без апскейлеров (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Удалить</x:String>
     <x:String x:Key="TxtSave">Сохранить</x:String>
     <x:String x:Key="TxtScanSources">Источники сканирования</x:String>
