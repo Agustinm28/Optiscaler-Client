@@ -556,23 +556,7 @@
                                                                 FontWeight="SemiBold"/>
                                                  </Border>
 
-                                                <!-- Drag handle -->
-                                                <Border Width="32" Height="32"
-                                                        Background="Transparent"
-                                                        Cursor="SizeAll"
-                                                        ToolTip.Tip="{DynamicResource TxtDragToReorder}"
-                                                        PointerPressed="DragHandle_PointerPressed"
-                                                        Margin="0,0,6,0"
-                                                        HorizontalAlignment="Center"
-                                                        VerticalAlignment="Center">
-                                                    <TextBlock Text="&#x283F;"
-                                                               FontSize="22"
-                                                               TextAlignment="Center"
-                                                               Foreground="{StaticResource BrTextSecondary}"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               Padding="0"/>
-                                                </Border><Border Background="#1E1530"
+                                                 <Border Background="#1E1530"
                                                          BorderBrush="{StaticResource BrAccent}"
                                                          BorderThickness="1"
                                                          CornerRadius="6"
