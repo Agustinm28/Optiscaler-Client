@@ -36,6 +36,27 @@ namespace OptiscalerClient.Models
     }
 
     /// <summary>
+    /// Network and proxy configuration.
+    /// </summary>
+    public class NetworkConfig
+    {
+        /// <summary>When true (default), the OS proxy / HTTP_PROXY env vars are used. When false, the explicit settings below apply.</summary>
+        public bool UseSystemProxy { get; set; } = true;
+        /// <summary>Proxy protocol: "HTTPS" (HTTP CONNECT tunneling) or "SOCKS5".</summary>
+        public string ProxyType { get; set; } = "HTTPS";
+        /// <summary>Proxy server hostname or IP address.</summary>
+        public string? ProxyHost { get; set; } = null;
+        /// <summary>Proxy server port number.</summary>
+        public int? ProxyPort { get; set; } = null;
+        /// <summary>Whether the proxy requires authentication credentials.</summary>
+        public bool ProxyRequiresAuth { get; set; } = false;
+        /// <summary>Username for authenticated proxies.</summary>
+        public string? ProxyUsername { get; set; } = null;
+        /// <summary>Password for authenticated proxies. Stored in plaintext; use OS keyring in a future iteration.</summary>
+        public string? ProxyPassword { get; set; } = null;
+    }
+
+    /// <summary>
     /// Configuration for GitHub repositories
     /// </summary>
     public class RepositoryConfig
@@ -121,6 +142,9 @@ namespace OptiscalerClient.Models
         /// Each entry corresponds to a subdirectory under Cache/OptiScaler/.
         /// </summary>
         public List<string> CustomOptiScalerVersions { get; set; } = new();
+
+        /// <summary>Network and proxy settings.</summary>
+        public NetworkConfig Network { get; set; } = new();
 
         /// <summary>
         /// Version of the app on which the last startup migration pass completed.

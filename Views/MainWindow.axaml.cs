@@ -2427,6 +2427,16 @@ namespace OptiscalerClient.Views
             _componentService.SaveConfiguration();
         }
 
+        private async void BtnManageProxy_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var proxyWindow = new ProxySettingsWindow(this, _componentService);
+                await proxyWindow.ShowDialog<object>(this);
+            }
+            catch (Exception ex) { DebugWindow.Log($"[MainWindow] Proxy settings dialog failed: {ex.Message}"); }
+        }
+
         private async void BtnSteamGridApiGuide_Click(object sender, RoutedEventArgs e)
         {
             try

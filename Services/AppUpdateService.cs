@@ -15,8 +15,7 @@ namespace OptiscalerClient.Services
 {
     public class AppUpdateService
     {
-        private static readonly HttpClient SharedHttpClient = CreateHttpClient();
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient => NetworkService.GetHttpClient();
         private readonly ComponentManagementService _componentService;
 
         public string? LatestVersion { get; private set; }
@@ -27,14 +26,6 @@ namespace OptiscalerClient.Services
         public AppUpdateService(ComponentManagementService componentService)
         {
             _componentService = componentService;
-            _httpClient = SharedHttpClient;
-        }
-
-        private static HttpClient CreateHttpClient()
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClientUpdater");
-            return client;
         }
 
         // ── Download helpers ─────────────────────────────────────────────────────

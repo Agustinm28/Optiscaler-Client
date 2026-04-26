@@ -1,0 +1,222 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="OptiscalerClient.Views.ProxySettingsWindow"
+        Title="Network &amp; Proxy"
+        Width="480"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Panel Margin="16" Name="RootPanel" Opacity="0">
+        <Border CornerRadius="12"
+                Background="{StaticResource BrBgBase}"
+                BoxShadow="0 10 30 0 #A0000000">
+
+            <Grid>
+                <Border CornerRadius="12"
+                        BorderBrush="{StaticResource BrBorderSubtle}"
+                        BorderThickness="1"
+                        ZIndex="10"
+                        IsHitTestVisible="False"/>
+
+                <Border CornerRadius="12"
+                        Background="Transparent"
+                        ClipToBounds="True">
+
+                    <Grid RowDefinitions="Auto, Auto, Auto">
+
+                        <!-- Title Bar -->
+                        <Border Grid.Row="0"
+                                Name="TitleBar"
+                                Background="{StaticResource BrBgDeep}"
+                                Padding="24,18"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource TxtNetworkTitle}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                <TextBlock Text="{DynamicResource TxtNetworkWindowDesc}"
+                                           FontSize="{StaticResource FontSizeCaption}"
+                                           Foreground="{StaticResource BrTextSecondary}"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Content -->
+                        <StackPanel Grid.Row="1" Margin="24,20" Spacing="12">
+
+                            <!-- Use System Proxy -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusMedium}"
+                                    Padding="16,12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtNetworkUseSystemProxy}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtNetworkUseSystemProxyDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="{StaticResource FontSizeCaption}"
+                                                   Margin="0,3,12,0"/>
+                                    </StackPanel>
+                                    <ToggleSwitch Name="TglUseSystemProxy"
+                                                  Grid.Column="1"
+                                                  OnContent="" OffContent=""
+                                                  IsChecked="True"
+                                                  IsCheckedChanged="TglUseSystemProxy_IsCheckedChanged"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Explicit proxy config (disabled when UseSystemProxy is on) -->
+                            <StackPanel Name="PnlExplicitProxy" Spacing="12" IsEnabled="False">
+
+                                <!-- Type + Host + Port -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,14">
+                                    <StackPanel Spacing="12">
+                                        <TextBlock Text="{DynamicResource TxtNetworkProxyConfig}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+
+                                        <!-- Type -->
+                                        <Grid ColumnDefinitions="80,*">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource TxtNetworkProxyType}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       VerticalAlignment="Center"/>
+                                            <ComboBox Name="CmbProxyType"
+                                                      Grid.Column="1"
+                                                      SelectionChanged="CmbProxyType_SelectionChanged">
+                                                <ComboBoxItem Content="HTTPS" Tag="HTTPS"/>
+                                                <ComboBoxItem Content="SOCKS5" Tag="SOCKS5"/>
+                                            </ComboBox>
+                                        </Grid>
+
+                                        <!-- Host -->
+                                        <Grid ColumnDefinitions="80,*">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource TxtNetworkProxyHost}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBox Name="TxtProxyHost"
+                                                     Grid.Column="1"
+                                                     Watermark="{DynamicResource TxtNetworkProxyHostPlaceholder}"
+                                                     LostFocus="TxtProxyHost_LostFocus"/>
+                                        </Grid>
+
+                                        <!-- Port -->
+                                        <Grid ColumnDefinitions="80,*">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{DynamicResource TxtNetworkProxyPort}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBox Name="TxtProxyPort"
+                                                     Grid.Column="1"
+                                                     Watermark="{DynamicResource TxtNetworkProxyPortPlaceholder}"
+                                                     LostFocus="TxtProxyPort_LostFocus"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Authentication -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,14">
+                                    <StackPanel Spacing="12">
+                                        <CheckBox Name="ChkProxyRequiresAuth"
+                                                  Content="{DynamicResource TxtNetworkRequiresAuth}"
+                                                  Foreground="{StaticResource BrTextPrimary}"
+                                                  IsCheckedChanged="ChkProxyRequiresAuth_IsCheckedChanged"/>
+
+                                        <!-- Credentials (enabled when checkbox is checked) -->
+                                        <StackPanel Name="PnlCredentials" Spacing="10" IsEnabled="False">
+                                            <Grid ColumnDefinitions="80,*">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{DynamicResource TxtNetworkUsername}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBox Name="TxtProxyUsername"
+                                                         Grid.Column="1"
+                                                         Watermark="{DynamicResource TxtNetworkUsernamePlaceholder}"
+                                                         LostFocus="TxtProxyUsername_LostFocus"/>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="80,*">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{DynamicResource TxtNetworkPassword}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBox Name="TxtProxyPassword"
+                                                         Grid.Column="1"
+                                                         PasswordChar="●"
+                                                         Watermark="{DynamicResource TxtNetworkPasswordPlaceholder}"
+                                                         LostFocus="TxtProxyPassword_LostFocus"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+
+                            <!-- Test connection -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusMedium}"
+                                    Padding="16,12">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Name="TxtProxyTestResult"
+                                               Grid.Column="0"
+                                               Text=""
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"
+                                               VerticalAlignment="Center"
+                                               TextWrapping="Wrap"/>
+                                    <Button Name="BtnTestProxyConnection"
+                                            Grid.Column="1"
+                                            Content="{DynamicResource TxtNetworkTestBtn}"
+                                            Classes="BtnBase"
+                                            Padding="16,8"
+                                            Click="BtnTestProxyConnection_Click"/>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                        <!-- Footer -->
+                        <!-- Footer -->
+                        <Border Grid.Row="2"
+                                Background="{StaticResource BrBgDeep}"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,1,0,0"
+                                Padding="24,14">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        Spacing="8">
+                                <Button Content="{DynamicResource TxtClose}"
+                                        Classes="BtnBase"
+                                        Padding="20,8"
+                                        Click="BtnClose_Click"/>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Panel>
+
+</Window>

@@ -42,8 +42,7 @@ namespace OptiscalerClient.Services
         private readonly string _versionFile;
         private readonly string _configFile;
         private readonly string _releasesCacheFile;
-        private static readonly HttpClient _sharedHttpClient = CreateHttpClient();
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient => NetworkService.GetHttpClient();
 
         public AppConfiguration Config => _config;
         private AppConfiguration _config = new();
@@ -138,21 +137,13 @@ namespace OptiscalerClient.Services
 
             Directory.CreateDirectory(_cacheDir);
 
-            _httpClient = _sharedHttpClient;
-
             LoadConfiguration();
+            NetworkService.Configure(_config.Network);
             LoadLocalVersions();
             LoadReleasesCache();
             LoadExtrasCache();
             LoadOptiPatcherCache();
             LoadFakenvapiCache();
-        }
-
-        private static HttpClient CreateHttpClient()
-        {
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "OptiscalerClient");
-            return client;
         }
 
         private void LoadConfiguration()

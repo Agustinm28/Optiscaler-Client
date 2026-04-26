@@ -285,6 +285,29 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtSteamGridGuideStep1Prefix">Go to </x:String>
     <x:String x:Key="TxtSteamGridGuideStep1Suffix"> and sign in.</x:String>
 
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Network &amp; Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Configure an HTTP(S) proxy for GitHub API and download connections.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Configure an HTTP(S) or SOCKS5 proxy for GitHub API and download connections. Leave blank to use the system proxy.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Use system proxy</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">When enabled, the OS proxy settings and HTTP_PROXY / HTTPS_PROXY environment variables are used. Disable to set a custom proxy below.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy Configuration</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Type</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Port</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy requires authentication</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Credentials</x:String>
+    <x:String x:Key="TxtNetworkUsername">Username</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Optional</x:String>
+    <x:String x:Key="TxtNetworkPassword">Password</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Optional</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Test connection</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Connected</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Failed</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Testing…</x:String>
+
     <x:String x:Key="TxtViewGrid">Grid view</x:String>
     <x:String x:Key="TxtViewList">List view</x:String>
     <x:String x:Key="TxtLoadingResources">Loading resources...</x:String>
