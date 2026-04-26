@@ -202,6 +202,13 @@
     <x:String x:Key="TxtAddFolder">+ Map toevoegen</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nog geen aangepaste mappen toegevoegd.</x:String>
     <x:String x:Key="TxtFilterOptions">Filteropties</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Alle games scannen</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Alle geïnstalleerde games van alle ingeschakelde bronnen detecteren en weergeven.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Alles scannen, games zonder upscalers verbergen</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Alles scannen, maar games zonder detecteerbare DLSS, FSR of XeSS automatisch verbergen. Verborgen games blijven in de lijst en kunnen worden weergegeven vanuit de Organiseer-modus.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Games zonder upscalers overslaan</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Alleen games opnemen waarbij DLSS-, FSR- of XeSS-DLL's zijn gedetecteerd.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Sommige games ondersteunen upscalers maar tonen hun DLL's niet op een detecteerbaar pad. Die games verschijnen niet in de lijst.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Spellen zonder upscalers weergeven (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Verwijderen</x:String>
     <x:String x:Key="TxtSave">Opslaan</x:String>
@@ -232,6 +239,8 @@
     <x:String x:Key="TxtInstallSelected">Geselecteerde installeren</x:String>
     <x:String x:Key="TxtNoGames">Geen games</x:String>
     <x:String x:Key="TxtNoGamesFound">Geen games gevonden. Scan eerst op games.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Geen compatibele games gevonden</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Er zijn geen games met upscalers (DLSS, FSR of XeSS) gevonden. Schakel 'Games zonder upscalers tonen' in bij Scanbronnen, of schakel 'Games zonder DLLs overslaan' uit tijdens het scannen.</x:String>
 
 
     <!-- SteamGridDB -->

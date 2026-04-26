@@ -209,6 +209,13 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtAddFolder">+ Agregar carpeta</x:String>
     <x:String x:Key="TxtNoCustomFolders">No se han agregado carpetas personalizadas aún.</x:String>
     <x:String x:Key="TxtFilterOptions">Opciones de filtro</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Escanear todos los juegos</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Detectar y mostrar todos los juegos instalados de todas las fuentes habilitadas.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Escanear todo, ocultar sin upscalers</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Escanea todo, pero oculta automáticamente los juegos sin DLSS, FSR o XeSS detectables. Los juegos ocultos permanecen en la lista y pueden mostrarse desde el modo Organizar.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Ignorar juegos sin upscalers</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Solo incluir juegos donde se detecten DLLs de DLSS, FSR o XeSS.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Algunos juegos soportan upscalers pero no exponen sus DLLs en una ruta detectable. Esos juegos no aparecerán en la lista.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Mostrar juegos sin upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Eliminar</x:String>
     <x:String x:Key="TxtSave">Guardar</x:String>
@@ -251,6 +258,8 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtInstallSelected">Instalar Seleccionados</x:String>
     <x:String x:Key="TxtNoGames">Sin Juegos</x:String>
     <x:String x:Key="TxtNoGamesFound">No se encontraron juegos. Por favor, escanea primero.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">No se detectaron juegos compatibles</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">No se encontraron juegos con upscalers (DLSS, FSR o XeSS). Activa 'Mostrar juegos sin upscalers' en Fuentes de escaneo, o desactiva 'Omitir juegos sin DLLs' al escanear para ver todos los juegos instalados.</x:String>
 
 
     <!-- SteamGridDB -->

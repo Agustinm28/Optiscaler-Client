@@ -184,6 +184,13 @@
     <x:String x:Key="TxtAddFolder">+ Klasör ekle</x:String>
     <x:String x:Key="TxtNoCustomFolders">Henüz özel klasör eklenmedi.</x:String>
     <x:String x:Key="TxtFilterOptions">Filtre Seçenekleri</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Tüm oyunları tara</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Tüm etkin kaynaklardan tüm yüklü oyunları algıla ve göster.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Tümünü tara, upscaler olmadanları gizle</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Her şeyi tara, ancak algılanabilir DLSS, FSR veya XeSS içermeyen oyunları otomatik olarak gizle. Gizli oyunlar listede kalır ve Düzenle modundan gösterilebilir.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Upscaler olmayan oyunları atla</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Yalnızca DLSS, FSR veya XeSS DLL'lerinin algılandığı oyunları dahil et.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Bazı oyunlar upscaler destekler ancak DLL'lerini algılanabilir bir yolda göstermez. Bu oyunlar listede görünmez.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Upscaler'sız oyunları göster (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Kaldır</x:String>
     <x:String x:Key="TxtSave">Kaydet</x:String>
@@ -214,6 +221,8 @@
     <x:String x:Key="TxtInstallSelected">Seçilenleri Yükle</x:String>
     <x:String x:Key="TxtNoGames">Oyun Yok</x:String>
     <x:String x:Key="TxtNoGamesFound">Oyun bulunamadı. Lütfen önce oyunları tarayın.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Uyumlu oyun bulunamadı</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Upscaler içeren oyun (DLSS, FSR veya XeSS) bulunamadı. Tarama Kaynaklarında 'Upscaler olmayan oyunları göster' seçeneğini etkinleştirin veya tarama sırasında 'DLL olmayan oyunları atla' seçeneğini devre dışı bırakın.</x:String>
 
 
     <!-- SteamGridDB -->

@@ -225,6 +225,13 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtAddFolder">+ Add Folder</x:String>
     <x:String x:Key="TxtNoCustomFolders">No custom folders added yet.</x:String>
     <x:String x:Key="TxtFilterOptions">Filter Options</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Scan all games</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Detect and show all installed games from all enabled sources.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Scan all, hide games without upscalers</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Scan everything, but automatically hide games with no detectable DLSS, FSR, or XeSS. Hidden games remain in the list and can be shown from Organize mode.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Skip games without upscalers</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Only include games where DLSS, FSR, or XeSS DLLs are detected.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Some games support upscalers but do not expose their DLLs in a detectable path. Those games will not appear in the list.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Show games without upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Remove</x:String>
     <x:String x:Key="TxtSave">Save</x:String>
@@ -253,6 +260,8 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtInstallSelected">Install Selected</x:String>
     <x:String x:Key="TxtNoGames">No Games</x:String>
     <x:String x:Key="TxtNoGamesFound">No games found. Please scan for games first.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">No compatible games detected</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">No games with upscalers (DLSS, FSR, or XeSS) were found. Enable 'Show games without upscalers' in Scan Sources, or disable 'Skip games without DLLs' when scanning to see all installed games.</x:String>
 
 
     <!-- SteamGridDB -->

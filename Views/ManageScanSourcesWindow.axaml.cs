@@ -10,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using OptiscalerClient.Helpers;
+using OptiscalerClient.Models;
 using OptiscalerClient.Services;
 
 namespace OptiscalerClient.Views
@@ -75,8 +76,7 @@ namespace OptiscalerClient.Views
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
 
-            var tglShowNonGameApps = this.FindControl<ToggleSwitch>("TglShowNonGameApps");
-            if (tglShowNonGameApps != null) tglShowNonGameApps.IsChecked = config.ShowNonGameEntries;
+            SetFilterMode(config.UpscalerFilter);
 
             var isWindows = OperatingSystem.IsWindows();
             var gridEpic = this.FindControl<Grid>("GridEpic");
@@ -93,6 +93,26 @@ namespace OptiscalerClient.Views
             _customFolders.Clear();
             _customFolders.AddRange(config.CustomFolders);
             RefreshCustomFoldersList();
+        }
+
+        private void SetFilterMode(UpscalerFilterMode mode)
+        {
+            var rb1 = this.FindControl<RadioButton>("RbFilterShowAll");
+            var rb2 = this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler");
+            var rb3 = this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler");
+            if (rb1 == null || rb2 == null || rb3 == null) return;
+            rb1.IsChecked = mode == UpscalerFilterMode.ShowAll;
+            rb2.IsChecked = mode == UpscalerFilterMode.HideWithoutUpscaler;
+            rb3.IsChecked = mode == UpscalerFilterMode.SkipWithoutUpscaler;
+        }
+
+        private UpscalerFilterMode GetSelectedFilterMode()
+        {
+            if (this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.HideWithoutUpscaler;
+            if (this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.SkipWithoutUpscaler;
+            return UpscalerFilterMode.ShowAll;
         }
 
         private void RefreshCustomFoldersList()
@@ -211,8 +231,6 @@ namespace OptiscalerClient.Views
             var tglEA = this.FindControl<ToggleSwitch>("TglEA");
             var tglUbisoft = this.FindControl<ToggleSwitch>("TglUbisoft");
 
-            var tglShowNonGameApps = this.FindControl<ToggleSwitch>("TglShowNonGameApps");
-
             _componentService.Config.ScanSources.ScanSteam = tglSteam?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanEpic = tglEpic?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanGOG = tglGOG?.IsChecked ?? true;
@@ -220,7 +238,7 @@ namespace OptiscalerClient.Views
             _componentService.Config.ScanSources.ScanEA = tglEA?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanUbisoft = tglUbisoft?.IsChecked ?? true;
             _componentService.Config.ScanSources.CustomFolders = _customFolders.ToList();
-            _componentService.Config.ScanSources.ShowNonGameEntries = tglShowNonGameApps?.IsChecked ?? false;
+            _componentService.Config.ScanSources.UpscalerFilter = GetSelectedFilterMode();
 
             _componentService.SaveConfiguration();
             Close(true);

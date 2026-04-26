@@ -200,6 +200,13 @@
     <x:String x:Key="TxtAddFolder">+ Adicionar pasta</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nenhuma pasta personalizada adicionada ainda.</x:String>
     <x:String x:Key="TxtFilterOptions">Opções de Filtro</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Escanear todos os jogos</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Detectar e exibir todos os jogos instalados de todas as fontes habilitadas.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Escanear tudo, ocultar sem upscalers</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Escanear tudo, mas ocultar automaticamente jogos sem DLSS, FSR ou XeSS detectáveis. Jogos ocultos permanecem na lista e podem ser exibidos no modo Organizar.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Ignorar jogos sem upscalers</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Incluir apenas jogos onde DLLs de DLSS, FSR ou XeSS sejam detectadas.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Alguns jogos suportam upscalers, mas não expõem suas DLLs em um caminho detectável. Esses jogos não aparecerão na lista.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Mostrar jogos sem upscalers (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Remover</x:String>
     <x:String x:Key="TxtSave">Salvar</x:String>
@@ -230,6 +237,8 @@
     <x:String x:Key="TxtInstallSelected">Instalar selecionados</x:String>
     <x:String x:Key="TxtNoGames">Sem jogos</x:String>
     <x:String x:Key="TxtNoGamesFound">Nenhum jogo encontrado. Por favor, escaneie os jogos primeiro.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Nenhum jogo compatível detectado</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Nenhum jogo com upscalers (DLSS, FSR ou XeSS) foi encontrado. Ative 'Mostrar jogos sem upscalers' em Fontes de Varredura, ou desative 'Ignorar jogos sem DLLs' ao escanear.</x:String>
 
 
     <!-- SteamGridDB -->

@@ -184,6 +184,13 @@
     <x:String x:Key="TxtAddFolder">+ 添加文件夹</x:String>
     <x:String x:Key="TxtNoCustomFolders">尚未添加自定义文件夹。</x:String>
     <x:String x:Key="TxtFilterOptions">筛选选项</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">扫描所有游戏</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">从所有已启用的来源检测并显示所有已安装的游戏。</x:String>
+    <x:String x:Key="TxtFilterHideTitle">扫描全部，隐藏无升频器的游戏</x:String>
+    <x:String x:Key="TxtFilterHideDesc">扫描所有内容，但自动隐藏没有可检测 DLSS、FSR 或 XeSS 的游戏。隐藏的游戏仍留在列表中，可从整理模式显示。</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">跳过没有升频器的游戏</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">仅包含检测到 DLSS、FSR 或 XeSS DLL 的游戏。</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">部分游戏支持升频器，但其 DLL 未暴露在可检测路径中，这些游戏将不会出现在列表中。</x:String>
     <x:String x:Key="TxtShowNonGameApps">显示没有升频器的游戏（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">移除</x:String>
     <x:String x:Key="TxtSave">保存</x:String>
@@ -214,6 +221,8 @@
     <x:String x:Key="TxtInstallSelected">安装所选项目</x:String>
     <x:String x:Key="TxtNoGames">无游戏</x:String>
     <x:String x:Key="TxtNoGamesFound">未找到游戏。请先扫描游戏。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">未检测到兼容游戏</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">未找到含有升频器（DLSS、FSR 或 XeSS）的游戏。在扫描源中启用"显示没有升频器的游戏"，或在扫描时禁用"跳过没有 DLL 的游戏"以查看所有已安装游戏。</x:String>
 
 
     <!-- SteamGridDB -->

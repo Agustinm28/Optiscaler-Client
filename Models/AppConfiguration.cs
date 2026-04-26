@@ -20,6 +20,22 @@ using System.Collections.Generic;
 namespace OptiscalerClient.Models
 {
     /// <summary>
+    /// Controls how the scanner handles games that have no detectable upscaler DLLs.
+    /// </summary>
+    public enum UpscalerFilterMode
+    {
+        /// <summary>Scan and show all games normally.</summary>
+        ShowAll = 0,
+        /// <summary>Scan all games, but automatically hide those without detectable upscalers.
+        /// Hidden games remain in the list and can be un-hidden from Organize mode.</summary>
+        HideWithoutUpscaler = 1,
+        /// <summary>Do not add games that have no detectable DLSS / FSR / XeSS DLLs to the list.
+        /// Warning: some games expose their upscaler DLLs outside the standard detection path
+        /// and will not appear even if they do support upscaling.</summary>
+        SkipWithoutUpscaler = 2,
+    }
+
+    /// <summary>
     /// Configuration for GitHub repositories
     /// </summary>
     public class RepositoryConfig
@@ -40,7 +56,7 @@ namespace OptiscalerClient.Models
         public bool ScanEA { get; set; } = true;
         public bool ScanUbisoft { get; set; } = true;
         public List<string> CustomFolders { get; set; } = new();
-        public bool ShowNonGameEntries { get; set; } = false;
+        public UpscalerFilterMode UpscalerFilter { get; set; } = UpscalerFilterMode.ShowAll;
     }
 
     /// <summary>

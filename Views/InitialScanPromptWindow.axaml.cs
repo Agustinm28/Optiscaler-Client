@@ -20,14 +20,14 @@ namespace OptiscalerClient.Views
         public ScanSourcesConfig ScanSources { get; }
         public List<string> DriveRoots { get; }
         public bool RefreshCoversOnly { get; }
-        public bool SkipGamesWithoutDlls { get; }
+        public UpscalerFilterMode UpscalerFilter { get; }
 
-        public InitialScanOptions(ScanSourcesConfig scanSources, List<string> driveRoots, bool refreshCoversOnly = false, bool skipGamesWithoutDlls = false)
+        public InitialScanOptions(ScanSourcesConfig scanSources, List<string> driveRoots, bool refreshCoversOnly = false, UpscalerFilterMode upscalerFilter = UpscalerFilterMode.ShowAll)
         {
             ScanSources = scanSources;
             DriveRoots = driveRoots;
             RefreshCoversOnly = refreshCoversOnly;
-            SkipGamesWithoutDlls = skipGamesWithoutDlls;
+            UpscalerFilter = upscalerFilter;
         }
     }
 
@@ -95,6 +95,28 @@ namespace OptiscalerClient.Views
             if (tglXbox != null) tglXbox.IsChecked = config.ScanXbox;
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
+
+            SetFilterMode(_componentService.Config.ScanSources.UpscalerFilter);
+        }
+
+        private void SetFilterMode(UpscalerFilterMode mode)
+        {
+            var rb1 = this.FindControl<RadioButton>("RbFilterShowAll");
+            var rb2 = this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler");
+            var rb3 = this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler");
+            if (rb1 == null || rb2 == null || rb3 == null) return;
+            rb1.IsChecked = mode == UpscalerFilterMode.ShowAll;
+            rb2.IsChecked = mode == UpscalerFilterMode.HideWithoutUpscaler;
+            rb3.IsChecked = mode == UpscalerFilterMode.SkipWithoutUpscaler;
+        }
+
+        private UpscalerFilterMode GetSelectedFilterMode()
+        {
+            if (this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.HideWithoutUpscaler;
+            if (this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.SkipWithoutUpscaler;
+            return UpscalerFilterMode.ShowAll;
         }
 
         private void LoadCustomFolders()
@@ -360,9 +382,9 @@ namespace OptiscalerClient.Views
             var pnl = this.FindControl<StackPanel>("PnlScanOptions");
             if (pnl != null)
                 pnl.IsEnabled = !isCoversOnly;
-            var tglSkipNoDlls = this.FindControl<ToggleSwitch>("TglSkipNoDlls");
-            if (tglSkipNoDlls != null)
-                tglSkipNoDlls.IsEnabled = !isCoversOnly;
+            var pnlFilter = this.FindControl<StackPanel>("PnlUpscalerFilter");
+            if (pnlFilter != null)
+                pnlFilter.IsEnabled = !isCoversOnly;
         }
 
         private void BtnStartScan_Click(object? sender, RoutedEventArgs e)
@@ -395,9 +417,9 @@ namespace OptiscalerClient.Views
                 .ToList();
 
             var refreshCoversOnly = this.FindControl<ToggleSwitch>("TglRefreshCoversOnly")?.IsChecked ?? false;
-            var skipNoDlls = this.FindControl<ToggleSwitch>("TglSkipNoDlls")?.IsChecked ?? false;
+            var filterMode = GetSelectedFilterMode();
 
-            Close(new InitialScanOptions(sources, selectedDrives, refreshCoversOnly, skipNoDlls));
+            Close(new InitialScanOptions(sources, selectedDrives, refreshCoversOnly, filterMode));
         }
 
         private void BtnClose_Click(object? sender, RoutedEventArgs e)

@@ -184,6 +184,13 @@
     <x:String x:Key="TxtAddFolder">+ Добавить папку</x:String>
     <x:String x:Key="TxtNoCustomFolders">Пользовательские папки еще не добавлены.</x:String>
     <x:String x:Key="TxtFilterOptions">Параметры фильтра</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Сканировать все игры</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Обнаруживать и показывать все установленные игры из всех включённых источников.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Сканировать всё, скрыть без апскейлеров</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Сканировать всё, но автоматически скрывать игры без обнаруживаемых DLSS, FSR или XeSS. Скрытые игры остаются в списке и могут быть показаны из режима «Организовать».</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Пропускать игры без апскейлеров</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Включать только игры, в которых обнаружены DLL-файлы DLSS, FSR или XeSS.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Некоторые игры поддерживают апскейлеры, но не раскрывают свои DLL-файлы в обнаруживаемом пути. Такие игры не появятся в списке.</x:String>
     <x:String x:Key="TxtShowNonGameApps">Показать игры без апскейлеров (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Удалить</x:String>
     <x:String x:Key="TxtSave">Сохранить</x:String>
@@ -214,6 +221,8 @@
     <x:String x:Key="TxtInstallSelected">Установить выбранные</x:String>
     <x:String x:Key="TxtNoGames">Нет игр</x:String>
     <x:String x:Key="TxtNoGamesFound">Игры не найдены. Сначала выполните сканирование.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Совместимые игры не обнаружены</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Игры с апскейлерами (DLSS, FSR или XeSS) не найдены. Включите 'Показывать игры без апскейлеров' в настройках источников сканирования или отключите 'Пропускать игры без DLL' при сканировании.</x:String>
 
 
     <!-- SteamGridDB -->

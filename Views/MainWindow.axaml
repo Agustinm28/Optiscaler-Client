@@ -1018,6 +1018,33 @@
                      </ListBox>
                  </ScrollViewer>
 
+                 <!-- Empty state: shown when scan returns no upscaler-compatible games -->
+                 <Border Name="PnlNoUpscalersFound"
+                         Grid.Row="3"
+                         IsVisible="False"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Margin="24">
+                     <StackPanel Spacing="16" HorizontalAlignment="Center">
+                         <TextBlock Text="🎮"
+                                    FontSize="52"
+                                    HorizontalAlignment="Center"
+                                    Opacity="0.35"/>
+                         <TextBlock Text="{DynamicResource TxtNoUpscalersFoundTitle}"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{StaticResource BrTextPrimary}"/>
+                         <TextBlock Text="{DynamicResource TxtNoUpscalersFoundHint}"
+                                    TextWrapping="Wrap"
+                                    MaxWidth="420"
+                                    TextAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{StaticResource BrTextSecondary}"
+                                    FontSize="{StaticResource FontSizeCaption}"/>
+                     </StackPanel>
+                 </Border>
+
                  <!-- Status Bar -->
                  <Border Grid.Row="4"
                          Background="{StaticResource BrBgDeep}"

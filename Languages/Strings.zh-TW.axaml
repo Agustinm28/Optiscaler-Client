@@ -184,6 +184,13 @@
     <x:String x:Key="TxtAddFolder">+ 新增資料夾</x:String>
     <x:String x:Key="TxtNoCustomFolders">尚未新增自訂資料夾。</x:String>
     <x:String x:Key="TxtFilterOptions">篩選選項</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">掃描所有遊戲</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">從所有已啟用的來源偵測並顯示所有已安裝的遊戲。</x:String>
+    <x:String x:Key="TxtFilterHideTitle">掃描全部，隱藏無升頻器的遊戲</x:String>
+    <x:String x:Key="TxtFilterHideDesc">掃描所有內容，但自動隱藏沒有可偵測 DLSS、FSR 或 XeSS 的遊戲。隱藏的遊戲仍留在清單中，可從整理模式顯示。</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">跳過沒有升頻器的遊戲</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">只包含偵測到 DLSS、FSR 或 XeSS DLL 的遊戲。</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">部分遊戲支援升頻器，但其 DLL 未暴露在可偵測路徑中，這些遊戲將不會出現在清單中。</x:String>
     <x:String x:Key="TxtShowNonGameApps">顯示沒有升頻器的遊戲（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">移除</x:String>
     <x:String x:Key="TxtSave">儲存</x:String>
@@ -214,6 +221,8 @@
     <x:String x:Key="TxtInstallSelected">安裝所選項目</x:String>
     <x:String x:Key="TxtNoGames">無遊戲</x:String>
     <x:String x:Key="TxtNoGamesFound">未找到遊戲。請先掃描遊戲。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">未偵測到相容遊戲</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">未找到含有升頻器（DLSS、FSR 或 XeSS）的遊戲。在掃描來源中啟用「顯示沒有升頻器的遊戲」，或在掃描時停用「跳過沒有 DLL 的遊戲」以查看所有已安裝遊戲。</x:String>
 
 
     <!-- SteamGridDB -->

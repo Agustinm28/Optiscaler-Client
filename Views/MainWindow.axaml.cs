@@ -83,6 +83,8 @@ namespace OptiscalerClient.Views
         private TextBox? _txtSearch;
         private TextBlock? _txtSearchPlaceholder;
         private TextBlock? _txtGpuInfo;
+        private Border? _pnlNoUpscalersFound;
+        private bool _hasScanned = false;
         private bool _isEditMode = false;
         private Game? _draggedGame;
 
@@ -186,6 +188,7 @@ namespace OptiscalerClient.Views
                 _txtSearch = this.FindControl<TextBox>("TxtSearch");
                 _txtSearchPlaceholder = this.FindControl<TextBlock>("TxtSearchPlaceholder");
                 _txtGpuInfo = this.FindControl<TextBlock>("TxtGpuInfo");
+                _pnlNoUpscalersFound = this.FindControl<Border>("PnlNoUpscalersFound");
 
                 if (_lstGames != null) _lstGames.ItemsSource = _games;
                 if (_lstGamesGrid != null) _lstGamesGrid.ItemsSource = _games;
@@ -219,7 +222,7 @@ namespace OptiscalerClient.Views
                         _componentService.Config.ScanDriveRoots = options.DriveRoots;
                         _componentService.Config.HasCompletedInitialScan = true;
                         _componentService.SaveConfiguration();
-                        await RunScanAsync(options.SkipGamesWithoutDlls);
+                        await RunScanAsync(options.UpscalerFilter);
                     }
 
                     // Never auto-scan on startup when there are no cached games.
@@ -365,6 +368,9 @@ namespace OptiscalerClient.Views
             {
                 _games.Add(game);
             }
+
+            if (_pnlNoUpscalersFound != null)
+                _pnlNoUpscalersFound.IsVisible = _hasScanned && _games.Count == 0;
         }
 
         private void RefreshGameLists()
@@ -3925,7 +3931,7 @@ namespace OptiscalerClient.Views
                 _componentService.Config.HasCompletedInitialScan = true;
                 _componentService.SaveConfiguration();
 
-                await RunScanAsync(options.SkipGamesWithoutDlls);
+                await RunScanAsync(options.UpscalerFilter);
             }
             catch (Exception ex) { DebugWindow.Log($"[MainWindow] Scan failed: {ex.Message}"); }
         }
@@ -3989,7 +3995,7 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private async Task RunScanAsync(bool skipGamesWithoutDlls = false)
+        private async Task RunScanAsync(UpscalerFilterMode upscalerFilter = UpscalerFilterMode.ShowAll)
         {
             if (_btnScan != null) _btnScan.IsEnabled = false;
             if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtScanningShort", "Scanning for games...");
@@ -4029,16 +4035,15 @@ namespace OptiscalerClient.Views
                 {
                     if (!_games.Any(g => g.InstallPath.Equals(scannedGame.InstallPath, StringComparison.OrdinalIgnoreCase)))
                     {
-                        // Skip games without detectable upscaling DLLs if the option is enabled
-                        if (skipGamesWithoutDlls &&
-                            string.IsNullOrEmpty(scannedGame.DlssVersion) &&
-                            string.IsNullOrEmpty(scannedGame.FsrVersion) &&
-                            string.IsNullOrEmpty(scannedGame.XessVersion) &&
-                            string.IsNullOrEmpty(scannedGame.DlssFrameGenVersion) &&
-                            !scannedGame.IsOptiscalerInstalled)
-                        {
+                        bool lacksUpscaler = string.IsNullOrEmpty(scannedGame.DlssVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.FsrVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.XessVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.DlssFrameGenVersion) &&
+                                             !scannedGame.IsOptiscalerInstalled;
+
+                        // SkipWithoutUpscaler: do not add the game at all
+                        if (upscalerFilter == UpscalerFilterMode.SkipWithoutUpscaler && lacksUpscaler)
                             continue;
-                        }
 
                         if (existingGames.TryGetValue(scannedGame.InstallPath, out var existing) &&
                             !string.IsNullOrEmpty(existing.CoverImageUrl) &&
@@ -4047,11 +4052,16 @@ namespace OptiscalerClient.Views
                             scannedGame.CoverImageUrl = existing.CoverImageUrl;
                         }
 
+                        // HideWithoutUpscaler: add the game but mark it hidden
+                        if (upscalerFilter == UpscalerFilterMode.HideWithoutUpscaler && lacksUpscaler)
+                            scannedGame.IsHidden = true;
+
                         _games.Add(scannedGame);
                     }
                 }
 
                 _allGames = _games.ToList();
+                _hasScanned = true;
                 ApplyFilter(_txtSearch?.Text);
 
                 var scanCompleteFormat = GetResourceString("TxtScanCompleteFormat", "Scan complete. Total games: {0}");

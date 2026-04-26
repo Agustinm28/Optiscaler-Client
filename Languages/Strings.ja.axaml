@@ -184,6 +184,13 @@
     <x:String x:Key="TxtAddFolder">+ フォルダーを追加</x:String>
     <x:String x:Key="TxtNoCustomFolders">カスタムフォルダーはまだ追加されていません。</x:String>
     <x:String x:Key="TxtFilterOptions">フィルターオプション</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">すべてのゲームをスキャン</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">有効なすべてのソースからインストール済みゲームをすべて検出して表示します。</x:String>
+    <x:String x:Key="TxtFilterHideTitle">すべてスキャン、アップスケーラーなしを非表示</x:String>
+    <x:String x:Key="TxtFilterHideDesc">すべてをスキャンしますが、検出可能な DLSS、FSR、XeSS のないゲームを自動的に非表示にします。非表示のゲームはリストに残り、整理モードから表示できます。</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">アップスケーラーのないゲームをスキップ</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">DLSS、FSR、または XeSS の DLL が検出されたゲームのみを含めます。</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">一部のゲームはアップスケーラーをサポートしていますが、DLL が検出可能なパスに公開されていません。そのようなゲームはリストに表示されません。</x:String>
     <x:String x:Key="TxtShowNonGameApps">アップスケーラーのないゲームを表示（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">削除</x:String>
     <x:String x:Key="TxtSave">保存</x:String>
@@ -214,6 +221,8 @@
     <x:String x:Key="TxtInstallSelected">選択したものをインストール</x:String>
     <x:String x:Key="TxtNoGames">ゲームなし</x:String>
     <x:String x:Key="TxtNoGamesFound">ゲームが見つかりませんでした。まずゲームをスキャンしてください。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">対応ゲームが見つかりませんでした</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">アップスケーラー（DLSS、FSR、XeSS）を持つゲームが見つかりませんでした。スキャンソースで「アップスケーラーのないゲームを表示」を有効にするか、スキャン時に「DLLのないゲームをスキップ」を無効にしてください。</x:String>
 
 
     <!-- SteamGridDB -->
