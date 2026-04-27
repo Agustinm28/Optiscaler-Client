@@ -35,17 +35,41 @@ namespace OptiscalerClient.Services
         {
             // OptiScaler core
             "OptiScaler.ini", "OptiScaler.log", "OptiScaler.dll",
-            "dxgi.dll", "winmm.dll", "d3d12.dll", "dbghelp.dll",
-            "version.dll", "wininet.dll", "winhttp.dll",
-            "nvngx.dll", "libxess.dll", "amdxcffx64.dll",
+            "setup_linux.sh", "setup_windows.bat",
+            @"D3D12_Optiscaler\", @"Licences\",
+            "!! README_EXTRACT ALL FILES TO GAME FOLDER !!.txt",
+            // "dxgi.dll", "winmm.dll", "d3d12.dll", "dbghelp.dll",
+            // "version.dll", "wininet.dll", "winhttp.dll",
+            // "nvngx.dll", "libxess.dll", "amdxcffx64.dll",
             // Fakenvapi
-            "nvapi64.dll", "fakenvapi.ini", "fakenvapi.log",
+            "nvapi64.dll", "fakenvapi.ini", "fakenvapi.log", "fakenvapi.dll",
             // NukemFG
             "dlssg_to_fsr3_amd_is_better.dll",
             // FSR 4 INT8 mod
             "amd_fidelityfx_upscaler_dx12.dll",
             // OptiPatcher
             @"plugins\OptiPatcher.asi"
+        };
+
+        private static readonly string[] KnownOptiscalerDirectories =
+        {
+            "D3D12_Optiscaler",
+            "Licenses",
+            "plugins",
+        };
+
+        // Sensitive files that OptiScaler may place in the game folder but that could also
+        // be native game files. Exposed publicly so the UI can present them as opt-in checkboxes.
+        public static readonly string[] SensitiveArtifacts =
+        {
+            "amd_fidelityfx_dx12.dll",
+            "amd_fidelityfx_framegeneration_dx12.dll",
+            "amd_fidelityfx_vk.dll",
+            "dxgi.dll",
+            "libxell.dll",
+            "libxess.dll",
+            "libxess_dx11.dll",
+            "libxess_fg.dll",
         };
 
         // Files that we want to track specifically for backup purposes if they exist in the game folder
@@ -687,6 +711,23 @@ namespace OptiscalerClient.Services
                     }
                     catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to remove directory '{installedDir}': {ex.Message}"); }
                 }
+
+                // Step 3b: Unconditionally remove known OptiScaler directories.
+                // These may still exist if they contained files not tracked in the manifest
+                // (e.g. after an update where the directory already existed pre-install).
+                foreach (var knownDir in KnownOptiscalerDirectories)
+                {
+                    var dirPath = Path.Combine(gameDir, knownDir);
+                    try
+                    {
+                        if (Directory.Exists(dirPath))
+                        {
+                            Directory.Delete(dirPath, true);
+                            DebugWindow.Log($"[Uninstall] Removed known OptiScaler directory: {knownDir}");
+                        }
+                    }
+                    catch (Exception ex) { DebugWindow.Log($"[Uninstall] Failed to remove known directory '{knownDir}': {ex.Message}"); }
+                }
             }
             else
             {
@@ -1085,20 +1126,122 @@ namespace OptiscalerClient.Services
         }
 
         /// <summary>
-        /// Final unconditional sweep that removes ALL known OptiScaler artifacts from the
-        /// game directory. This runs as the absolute last step of uninstall to guarantee a
-        /// clean game directory regardless of manifest state, interrupted installs, double
-        /// installs, or corrupted tracking data.
-        ///
-        /// By this point, the smart cleanup (manifest-based restore + ValidateAndHealPostUninstall)
-        /// has already attempted to restore game originals from backup. Any file still matching
-        /// a known artifact name is treated as an OptiScaler residue and deleted unconditionally.
-        ///
-        /// If a game shipped with files that share names with OptiScaler artifacts (e.g.
-        /// nvngx.dll, libxess.dll), they may be deleted — the user can restore them via
-        /// their game launcher's "Verify Files" feature.
+        /// Public entry point for the "Folder Cleanup" feature.
+        /// Unconditionally removes all known OptiScaler artifacts from the game directory,
+        /// marks the game as uninstalled, and deletes the external backup store entry.
+        /// Intended for recovering from corrupted or orphaned OptiScaler installations.
         /// </summary>
-        private void ForceRemoveAllArtifacts(string gameDir)
+        /// <param name="game">The game to clean up.</param>
+        /// <param name="selectedSensitiveFiles">
+        /// Subset of <see cref="SensitiveArtifacts"/> the user opted to delete.
+        /// Pass null or empty to skip all sensitive files.
+        /// </param>
+        public void ForceFolderCleanup(Game game, IEnumerable<string>? selectedSensitiveFiles = null)
+        {
+            string? gameDir = null;
+
+            // Priority 1: manifest's InstalledGameDirectory (most accurate — set during install).
+            var storeKey = game.InstallPath;
+            var manifest = _backupStore.HasValidBackup(storeKey) ? _backupStore.LoadManifest(storeKey) : null;
+            if (manifest?.InstalledGameDirectory != null && Directory.Exists(manifest.InstalledGameDirectory))
+                gameDir = manifest.InstalledGameDirectory;
+
+            // Priority 2: parent dir of the game executable (same as InstallOptiScaler step 1).
+            if (string.IsNullOrEmpty(gameDir) && !string.IsNullOrEmpty(game.ExecutablePath) && File.Exists(game.ExecutablePath))
+                gameDir = Path.GetDirectoryName(game.ExecutablePath);
+
+            // Priority 3: DetermineInstallDirectory — mirrors the exact logic used during install
+            // (detects Binaries/Win64, Phoenix subdirs, etc.).  This is the critical fallback that
+            // was missing and caused cleanup to target the wrong root directory.
+            if (string.IsNullOrEmpty(gameDir))
+            {
+                var detected = DetermineInstallDirectory(game);
+                if (!string.IsNullOrEmpty(detected) && Directory.Exists(detected))
+                    gameDir = detected;
+            }
+
+            // Priority 4: InstallPath root as last resort.
+            if (string.IsNullOrEmpty(gameDir) && !string.IsNullOrEmpty(game.InstallPath) && Directory.Exists(game.InstallPath))
+                gameDir = game.InstallPath;
+
+            if (string.IsNullOrEmpty(gameDir) || !Directory.Exists(gameDir))
+                throw new Exception($"Could not determine game directory for '{game.Name}'.");
+
+            DebugWindow.Log($"[FolderCleanup] Starting force cleanup for '{game.Name}' at: {gameDir}");
+
+            ForceRemoveAllArtifacts(gameDir, selectedSensitiveFiles);
+
+            // Delete the external backup store so future installs start fresh.
+            _backupStore.DeleteBackup(storeKey);
+
+            // Remove legacy OptiScalerBackup/ folder if still present.
+            var legacyBackupDir = Path.Combine(gameDir, BackupFolderName);
+            if (Directory.Exists(legacyBackupDir))
+            {
+                try { Directory.Delete(legacyBackupDir, true); }
+                catch (Exception ex) { DebugWindow.Log($"[FolderCleanup] Could not remove legacy backup dir: {ex.Message}"); }
+            }
+
+            // Mark the game as uninstalled and re-run the analyser so that FSR/XeSS/DLSS
+            // badge state is refreshed (e.g. if the user selected sensitive files for deletion
+            // those DLLs are now gone and the corresponding badges should disappear).
+            // We force IsOptiscalerInstalled = false AFTER AnalyzeGame so that any re-detection
+            // of OptiScaler by the analyser (e.g. because dxgi.dll was intentionally kept) does
+            // not create a "stuck-as-installed" loop.
+            game.IsOptiscalerInstalled = false;
+            game.OptiscalerVersion = null;
+            game.Fsr4ExtraVersion = null;
+
+            var analyzer = new GameAnalyzerService();
+            GameAnalyzerService.InvalidateCacheForPath(game.InstallPath);
+            analyzer.AnalyzeGame(game, forceRefresh: true);
+
+            // Override any OptiScaler re-detection from the analyser — files that remain
+            // are sensitive ones the user explicitly chose to keep, not a live installation.
+            game.IsOptiscalerInstalled = false;
+            game.OptiscalerVersion = null;
+            game.Fsr4ExtraVersion = null;
+
+            GameAnalyzerService.FlushCacheToDisk();
+
+            DebugWindow.Log($"[FolderCleanup] Completed for '{game.Name}'.");
+        }
+        
+        /// <summary>
+        /// Returns true if the given directory contains files that indicate a leftover or
+        /// corrupted OptiScaler installation (i.e. game is "not installed" but artifacts remain).
+        /// Used by the UI to prompt a cleanup before a fresh install.
+        /// </summary>
+        public static bool HasCorruptArtifacts(string gameDir)
+        {
+            if (string.IsNullOrEmpty(gameDir) || !Directory.Exists(gameDir))
+                return false;
+
+            // Core OptiScaler files that should never exist unless it was installed.
+            var indicators = new[]
+            {
+                "OptiScaler.ini", "OptiScaler.log", "OptiScaler.dll",
+                "setup_linux.sh", "setup_windows.bat",
+                "fakenvapi.ini",  "fakenvapi.log",  "fakenvapi.dll",
+                "dlssg_to_fsr3_amd_is_better.dll",
+            };
+
+            foreach (var file in indicators)
+                if (File.Exists(Path.Combine(gameDir, file)))
+                    return true;
+
+            // OptiScaler's exclusive subdirectory
+            if (Directory.Exists(Path.Combine(gameDir, "D3D12_Optiscaler")))
+                return true;
+
+            // OptiPatcher plugin
+            if (File.Exists(Path.Combine(gameDir, "plugins", "OptiPatcher.asi")))
+                return true;
+
+            return false;
+        }
+
+        private void ForceRemoveAllArtifacts(string gameDir, IEnumerable<string>? extraFilesToDelete = null)
         {
             var dirsToScan = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { gameDir };
             var phoenixDir = DetectCorrectInstallDirectory(gameDir);
@@ -1109,7 +1252,7 @@ namespace OptiscalerClient.Services
 
             foreach (var dir in dirsToScan)
             {
-                // Delete every known artifact unconditionally
+                // Delete every known artifact file unconditionally
                 foreach (var artifact in KnownOptiscalerArtifacts)
                 {
                     var fullPath = Path.Combine(dir, artifact);
@@ -1119,7 +1262,7 @@ namespace OptiscalerClient.Services
                         {
                             File.Delete(fullPath);
                             deletedCount++;
-                            DebugWindow.Log($"[Uninstall][ForceClean] Deleted: {artifact}");
+                            DebugWindow.Log($"[Uninstall][ForceClean] Deleted file: {artifact}");
                         }
                     }
                     catch (Exception ex)
@@ -1128,7 +1271,25 @@ namespace OptiscalerClient.Services
                     }
                 }
 
-                // Remove backup directory
+                // Delete every known OptiScaler directory unconditionally (including contents)
+                foreach (var knownDir in KnownOptiscalerDirectories)
+                {
+                    var fullPath = Path.Combine(dir, knownDir);
+                    try
+                    {
+                        if (Directory.Exists(fullPath))
+                        {
+                            Directory.Delete(fullPath, true);
+                            DebugWindow.Log($"[Uninstall][ForceClean] Deleted directory: {knownDir}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        DebugWindow.Log($"[Uninstall][ForceClean] Could not delete directory '{knownDir}': {ex.Message}");
+                    }
+                }
+
+                // Remove legacy OptiScalerBackup directory
                 var backupDir = Path.Combine(dir, BackupFolderName);
                 try
                 {
@@ -1143,23 +1304,30 @@ namespace OptiscalerClient.Services
                     DebugWindow.Log($"[Uninstall][ForceClean] Could not remove backup directory: {ex.Message}");
                 }
 
-                // Remove plugins directory if empty
-                var pluginsDir = Path.Combine(dir, "plugins");
-                try
+                // Delete user-selected sensitive files
+                if (extraFilesToDelete != null)
                 {
-                    if (Directory.Exists(pluginsDir) && !Directory.EnumerateFileSystemEntries(pluginsDir).Any())
+                    foreach (var sensitiveFile in extraFilesToDelete)
                     {
-                        Directory.Delete(pluginsDir, false);
-                        DebugWindow.Log("[Uninstall][ForceClean] Removed empty plugins directory.");
+                        var fullPath = Path.Combine(dir, sensitiveFile);
+                        try
+                        {
+                            if (File.Exists(fullPath))
+                            {
+                                File.Delete(fullPath);
+                                deletedCount++;
+                                DebugWindow.Log($"[Uninstall][ForceClean] Deleted sensitive file: {sensitiveFile}");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            DebugWindow.Log($"[Uninstall][ForceClean] Could not delete sensitive file '{sensitiveFile}': {ex.Message}");
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    DebugWindow.Log($"[Uninstall][ForceClean] Could not remove plugins directory: {ex.Message}");
                 }
             }
 
-            DebugWindow.Log($"[Uninstall][ForceClean] Final sweep completed. Artifacts removed: {deletedCount}");
+            DebugWindow.Log($"[Uninstall][ForceClean] Final sweep completed. Files removed: {deletedCount}");
         }
 
         /// <summary>

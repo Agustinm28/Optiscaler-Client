@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">確認解除安裝</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">您確定要解除安裝OptiScaler嗎？&#x0a;只有備份的原始檔案將被還原。</x:String>
     <x:String x:Key="TxtUninstall">✕ 解除安裝</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 清理資料夾</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">強制清理資料夾</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">這將強制刪除遊戲安裝資料夾中所有已知的 OptiScaler 檔案。&#x0a;&#x0a;當之前的 OptiScaler 安裝處於損毀或不完整狀態時，或者在重新安裝之前想要重設為乾淨狀態時，請使用此功能。</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; 敏感檔案 — 也可能屬於遊戲</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">以下檔案可能是遊戲的原生檔案。刪除它們可能會損毀遊戲。強烈建議之後透過啟動器進行檔案驗證（例如 Steam → 驗證遊戲檔案完整性）。僅選擇您要刪除的檔案：</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">資料夾清理完成。</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">資料夾清理失敗：{0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">偵測到損毀的安裝</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">在此遊戲的資料夾中發現了 OptiScaler 檔案，但該遊戲未被標記為已安裝。這通常表示之前的安裝未被正確解除安裝。&#x0a;&#x0a;強烈建議在安裝前清理資料夾以避免衝突。您可以立即清理、不清理繼續，或取消安裝。</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 清理後安裝</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">繼續安裝</x:String>
     <x:String x:Key="TxtVersionLbl">版本：</x:String>
     <x:String x:Key="TxtInjectionLbl">注入：</x:String>
     <x:String x:Key="TxtInstallOpti">✦ 自動安裝</x:String>

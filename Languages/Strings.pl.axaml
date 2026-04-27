@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Potwierdź odinstalowanie</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Czy na pewno chcesz odinstalować OptiScaler?&#x0a;Tylko oryginalne pliki z kopii zapasowej zostaną przywrócone.</x:String>
     <x:String x:Key="TxtUninstall">✕ Odinstaluj</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Wyczyść folder</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Wymuszone czyszczenie folderu</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Wszystkie znane pliki OptiScalera zostaną usunięte z folderu instalacyjnego gry.&#x0a;&#x0a;Użyj tej opcji, gdy poprzednia instalacja OptiScalera pozostała w uszkodzonym lub niekompletnym stanie, albo gdy chcesz przywrócić czysty stan przed ponowną instalacją.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Wrażliwe pliki — mogą należeć do gry</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Poniższe pliki mogą być natywnymi plikami gry. Ich usunięcie może uszkodzić grę. Zdecydowanie zaleca się uruchomienie weryfikacji plików w launcherze (np. Steam → Sprawdź integralność plików gry) po zakończeniu. Wybierz tylko te, które chcesz usunąć:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Czyszczenie folderu zakończone.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Czyszczenie folderu nie powiodło się: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Wykryto uszkodzoną instalację</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">W folderze gry znaleziono pliki OptiScalera, ale gra nie jest oznaczona jako zainstalowana. Oznacza to zazwyczaj, że poprzednia instalacja nie została prawidłowo odinstalowana.&#x0a;&#x0a;Zdecydowanie zaleca się wyczyszczenie folderu przed instalacją, aby uniknąć konfliktów. Możesz wyczyścić teraz, kontynuować bez czyszczenia lub anulować instalację.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Wyczyść i zainstaluj</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Kontynuuj mimo to</x:String>
     <x:String x:Key="TxtVersionLbl">Wersja:</x:String>
     <x:String x:Key="TxtInjectionLbl">Iniekcja:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Automatyczna instalacja</x:String>

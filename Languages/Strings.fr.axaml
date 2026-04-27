@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Confirmer la désinstallation</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Êtes-vous sûr de vouloir désinstaller OptiScaler ?&#x0a;Seuls les fichiers originaux sauvegardés seront restaurés.</x:String>
     <x:String x:Key="TxtUninstall">✕ Désinstaller</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Nettoyer le Dossier</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Nettoyage Forcé du Dossier</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Tous les fichiers OptiScaler connus seront supprimés du dossier d'installation du jeu.&#x0a;&#x0a;Utilisez ceci lorsqu'une installation précédente d'OptiScaler a été laissée dans un état corrompu ou incomplet, ou lorsque vous souhaitez réinitialiser à une base propre avant de réinstaller.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Fichiers sensibles — peuvent aussi appartenir au jeu</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Les fichiers ci-dessous pourraient être des fichiers natifs du jeu. Les supprimer peut endommager le jeu. Il est fortement recommandé d'exécuter la vérification de fichiers de votre lanceur (ex. Steam → Vérifier l'intégrité des fichiers du jeu) après. Sélectionnez uniquement ceux que vous souhaitez supprimer :</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Nettoyage du dossier terminé.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Échec du nettoyage du dossier : {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Installation Corrompue Détectée</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Des fichiers OptiScaler ont été trouvés dans le dossier de ce jeu, mais le jeu n'est pas marqué comme installé. Cela signifie généralement qu'une installation précédente n'a pas été correctement désinstallée.&#x0a;&#x0a;Il est fortement recommandé de nettoyer le dossier avant d'installer pour éviter les conflits. Vous pouvez nettoyer maintenant, continuer sans nettoyer, ou annuler l'installation.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Nettoyer puis Installer</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Continuer quand même</x:String>
     <x:String x:Key="TxtVersionLbl">Version :</x:String>
     <x:String x:Key="TxtInjectionLbl">Injection :</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Installation automatique</x:String>

@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Conferma disinstallazione</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Sei sicuro di voler disinstallare OptiScaler?&#x0a;Verranno ripristinati solo i file originali di backup.</x:String>
     <x:String x:Key="TxtUninstall">✕ Disinstalla</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Pulizia Cartella</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Pulizia Forzata Cartella</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Verranno rimossi tutti i file OptiScaler noti dalla cartella di installazione del gioco.&#x0a;&#x0a;Usalo quando una precedente installazione di OptiScaler è rimasta in uno stato corrotto o incompleto, o quando vuoi reimpostare a una base pulita prima di reinstallare.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; File sensibili — potrebbero appartenere anche al gioco</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">I file seguenti potrebbero essere file nativi del gioco. Eliminarli potrebbe danneggiare il gioco. Si consiglia vivamente di eseguire la verifica dei file del launcher (es. Steam → Verifica integrità file di gioco) in seguito. Seleziona solo quelli che vuoi rimuovere:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Pulizia cartella completata.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Pulizia cartella non riuscita: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Installazione Corrotta Rilevata</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Sono stati trovati file OptiScaler nella cartella di questo gioco, ma il gioco non è contrassegnato come installato. Ciò significa di solito che una precedente installazione non è stata disinstallata correttamente.&#x0a;&#x0a;Si consiglia vivamente di pulire la cartella prima di installare per evitare conflitti. Puoi pulire ora, continuare senza pulire, o annullare l'installazione.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Pulisci e Installa</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Continua comunque</x:String>
     <x:String x:Key="TxtVersionLbl">Versione:</x:String>
     <x:String x:Key="TxtInjectionLbl">Iniezione:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Installazione automatica</x:String>

@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Kaldırma İşlemini Onayla</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">OptiScaler'ı kaldırmak istediğinizden emin misiniz?&#x0a;Yalnızca yedeklenen orijinal dosyalar geri yüklenecektir.</x:String>
     <x:String x:Key="TxtUninstall">✕ Kaldır</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Klasörü Temizle</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Klasörü Zorla Temizle</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Tüm bilinen OptiScaler dosyaları oyunun kurulum klasöründen zorla kaldırılacak.&#x0a;&#x0a;Önceki bir OptiScaler kurulumu bozuk veya eksik bir durumda kalmışsa ya da yeniden kurmadan önce temiz bir başlangıç yapmak istediğinizde bunu kullanın.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Hassas dosyalar — oyuna ait olabilir</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Aşağıdaki dosyalar oyunun yerel dosyaları olabilir. Bunları silmek oyunu bozabilir. Daha sonra başlatıcınızın dosya doğrulamasını (ör. Steam → Oyun dosyalarının bütünlüğünü doğrula) çalıştırmanız şiddetle tavsiye edilir. Yalnızca kaldırmak istediklerinizi seçin:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Klasör temizleme tamamlandı.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Klasör temizleme başarısız: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Bozuk Kurulum Tespit Edildi</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Bu oyunun klasöründe OptiScaler dosyaları bulundu, ancak oyun kurulu olarak işaretlenmemiş. Bu genellikle önceki bir kurulumun düzgün kaldırılmadığı anlamına gelir.&#x0a;&#x0a;Çakışmaları önlemek için kurulumdan önce klasörü temizlemeniz şiddetle tavsiye edilir. Şimdi temizleyebilir, temizlemeden devam edebilir veya kurulumu iptal edebilirsiniz.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Temizle ve Yükle</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Yine de Devam Et</x:String>
     <x:String x:Key="TxtVersionLbl">Sürüm:</x:String>
     <x:String x:Key="TxtInjectionLbl">Enjeksiyon:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Otomatik Yükle</x:String>

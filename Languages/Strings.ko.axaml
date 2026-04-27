@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">제거 확인</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">OptiScaler를 제거하시겠습니까?&#x0a;백업된 원본 파일만 복원됩니다.</x:String>
     <x:String x:Key="TxtUninstall">✕ 제거</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 폴더 정리</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">폴더 강제 정리</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">게임 설치 폴더에서 알려진 모든 OptiScaler 파일을 강제로 제거합니다.&#x0a;&#x0a;이전 OptiScaler 설치가 손상되거나 불완전한 상태로 남아 있는 경우, 또는 재설치 전에 깨끗한 상태로 초기화하고 싶을 때 사용하세요.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; 민감한 파일 — 게임 파일일 수도 있습니다</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">아래 파일들은 게임의 기본 파일일 수 있습니다. 삭제하면 게임이 손상될 수 있습니다. 이후 런처의 파일 검증(예: Steam → 게임 파일 무결성 확인)을 실행하는 것을 강력히 권장합니다. 제거할 파일만 선택하세요:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">폴더 정리가 완료되었습니다.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">폴더 정리 실패: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">손상된 설치가 감지되었습니다</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">이 게임 폴더에서 OptiScaler 파일이 발견되었지만, 게임이 설치된 것으로 표시되지 않았습니다. 이는 일반적으로 이전 설치가 제대로 제거되지 않았음을 의미합니다.&#x0a;&#x0a;충돌을 피하기 위해 설치 전에 폴더를 정리하는 것을 강력히 권장합니다. 지금 정리, 정리 없이 계속, 또는 설치를 취소할 수 있습니다.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 정리 후 설치</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">그냥 계속</x:String>
     <x:String x:Key="TxtVersionLbl">버전:</x:String>
     <x:String x:Key="TxtInjectionLbl">주입:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ 자동 설치</x:String>

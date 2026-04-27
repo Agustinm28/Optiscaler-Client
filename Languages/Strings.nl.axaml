@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Bevestig Deïnstallatie</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Weet u zeker dat u OptiScaler wilt deïnstalleren?&#x0a;Alleen geback-upde originele bestanden worden hersteld.</x:String>
     <x:String x:Key="TxtUninstall">✕ Deïnstalleer</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Map opschonen</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Map geforceerd opschonen</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Alle bekende OptiScaler-bestanden worden geforceerd verwijderd uit de installatiemap van het spel.&#x0a;&#x0a;Gebruik dit wanneer een vorige OptiScaler-installatie in een beschadigde of onvolledige staat is achtergelaten, of wanneer u wilt terugkeren naar een schone basis vóór het opnieuw installeren.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Gevoelige bestanden — kunnen ook bij het spel horen</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">De onderstaande bestanden kunnen native spelbestanden zijn. Ze verwijderen kan het spel beschadigen. Het wordt sterk aanbevolen om de bestandsverificatie van uw launcher (bijv. Steam → Integriteit van spelbestanden verifiëren) daarna uit te voeren. Selecteer alleen de bestanden die u wilt verwijderen:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Map opschonen voltooid.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Map opschonen mislukt: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Beschadigde installatie gedetecteerd</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">OptiScaler-bestanden zijn gevonden in de map van dit spel, maar het spel is niet gemarkeerd als geïnstalleerd. Dit betekent meestal dat een eerdere installatie niet correct is verwijderd.&#x0a;&#x0a;Het wordt sterk aanbevolen de map op te schonen vóór het installeren om conflicten te vermijden. U kunt nu opschonen, doorgaan zonder opschonen, of de installatie annuleren.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Opschonen en installeren</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Toch doorgaan</x:String>
     <x:String x:Key="TxtVersionLbl">Versie:</x:String>
     <x:String x:Key="TxtInjectionLbl">Injectie:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Automatische installatie</x:String>

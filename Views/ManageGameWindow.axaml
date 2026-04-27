@@ -475,22 +475,32 @@
                                         IsVisible="False"
                                         Click="BtnUninstall_Click"/>
 
-                                <!-- Row 4, all columns : Install buttons right-aligned -->
-                                <StackPanel Name="InstallBtnGroup"
-                                            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                                            Orientation="Horizontal" Spacing="10"
-                                            HorizontalAlignment="Right">
-                                    <Button Name="BtnInstallManual"
-                                            Content="{DynamicResource TxtBtnManualInstall}"
-                                            Classes="BtnSuccess"
-                                            Padding="16,8"
-                                            Click="BtnInstallManual_Click"/>
-                                    <Button Name="BtnInstall"
-                                            Content="{DynamicResource TxtInstallOpti}"
-                                            Classes="BtnSuccess"
-                                            Padding="16,8"
-                                            Click="BtnInstall_Click"/>
-                                </StackPanel>
+                                <!-- Row 4, all columns : Install buttons right-aligned, Cleanup left-aligned -->
+                                <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                                    <!-- Cleanup button — left side -->
+                                    <Button Name="BtnFolderCleanup"
+                                            Content="{DynamicResource TxtFolderCleanup}"
+                                            Classes="BtnBase"
+                                            Padding="14,7"
+                                            HorizontalAlignment="Left"
+                                            Click="BtnFolderCleanup_Click"/>
+
+                                    <!-- Install buttons — right side -->
+                                    <StackPanel Name="InstallBtnGroup"
+                                                Orientation="Horizontal" Spacing="10"
+                                                HorizontalAlignment="Right">
+                                        <Button Name="BtnInstallManual"
+                                                Content="{DynamicResource TxtBtnManualInstall}"
+                                                Classes="BtnSuccess"
+                                                Padding="16,8"
+                                                Click="BtnInstallManual_Click"/>
+                                        <Button Name="BtnInstall"
+                                                Content="{DynamicResource TxtInstallOpti}"
+                                                Classes="BtnSuccess"
+                                                Padding="16,8"
+                                                Click="BtnInstall_Click"/>
+                                    </StackPanel>
+                                </Grid>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -514,6 +524,107 @@
                         <TextBlock Name="TxtToastMessage" Text="{DynamicResource TxtToastSuccess}" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Border>
+
+                <!-- FOLDER CLEANUP CONFIRMATION MODAL -->
+                <!-- CORRUPT INSTALL DETECTED MODAL -->
+                <Grid Name="BdConfirmCorruptInstall" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="22">
+                    <Border Background="{StaticResource BrBgElevated}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24,24,24,20"
+                            MaxWidth="600">
+                        <StackPanel Spacing="0">
+                            <!-- Title -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="&#x26A0;" Foreground="{StaticResource BrAccentWarm}" FontSize="22" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource TxtCorruptInstallTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Description -->
+                            <TextBlock Text="{DynamicResource TxtCorruptInstallMsg}"
+                                       Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
+                                       TextWrapping="Wrap" Margin="0,0,0,20"/>
+
+                            <!-- Action buttons: Cancel | Clean then Install | Continue anyway -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                                <Button Name="BtnCorruptCancel"   Content="{DynamicResource TxtCancel}"               Classes="BtnBase"   Padding="16,8" Click="BtnCorruptCancel_Click"/>
+                                <Button Name="BtnCorruptClean"    Content="{DynamicResource TxtCorruptInstallClean}"   Classes="BtnDanger" Padding="16,8" Click="BtnCorruptClean_Click"/>
+                                <Button Name="BtnCorruptContinue" Content="{DynamicResource TxtCorruptInstallContinue}" Classes="BtnBase"  Padding="16,8" Click="BtnCorruptContinue_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Name="BdConfirmFolderCleanup" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="21">
+                    <Border Background="{StaticResource BrBgElevated}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24,24,24,20"
+                            MaxWidth="600">
+                        <StackPanel Spacing="0">
+                            <!-- Title -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="&#x26A0;" Foreground="{StaticResource BrAccentWarm}" FontSize="22" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource TxtFolderCleanupTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Main description -->
+                            <TextBlock Text="{DynamicResource TxtFolderCleanupMsg}"
+                                       Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
+                                       TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+                            <!-- Sensitive files section -->
+                            <Border Background="{StaticResource BrBgSurface}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusMedium}"
+                                    Padding="12,10"
+                                    Margin="0,0,0,8">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{DynamicResource TxtFolderCleanupSensitiveHeader}"
+                                               FontWeight="SemiBold" FontSize="{StaticResource FontSizeBody}"
+                                               Foreground="{StaticResource BrAccentWarm}" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{DynamicResource TxtFolderCleanupSensitiveNote}"
+                                               Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeCaption}"
+                                               TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                                    <!-- Select All toggle -->
+                                    <CheckBox Name="ChkSensitiveSelectAll"
+                                              Content="Select / Deselect all"
+                                              FontSize="{StaticResource FontSizeCaption}"
+                                              Foreground="{StaticResource BrTextSecondary}"
+                                              IsChecked="False"
+                                              Margin="0,0,0,4"
+                                              Click="ChkSensitiveSelectAll_Click"/>
+
+                                    <!-- Per-file checkboxes — two-column grid (unchecked by default) -->
+                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                        <CheckBox Grid.Column="0" Grid.Row="0" Name="ChkSensitive_amd_fidelityfx_dx12"    Content="amd_fidelityfx_dx12.dll"             IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="0" Name="ChkSensitive_amd_fidelityfx_fg_dx12" Content="amd_fidelityfx_framegeneration_dx12.dll" IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="1" Name="ChkSensitive_amd_fidelityfx_vk"      Content="amd_fidelityfx_vk.dll"               IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="1" Name="ChkSensitive_dxgi"                   Content="dxgi.dll"                            IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="2" Name="ChkSensitive_libxell"                Content="libxell.dll"                         IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="2" Name="ChkSensitive_libxess"                Content="libxess.dll"                         IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="3" Name="ChkSensitive_libxess_dx11"           Content="libxess_dx11.dll"                    IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="3" Name="ChkSensitive_libxess_fg"             Content="libxess_fg.dll"                      IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Action buttons -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <Button Name="BtnConfirmFolderCleanupNo" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="16,8" Margin="0,0,10,0" Click="BtnConfirmFolderCleanupNo_Click"/>
+                                <Button Name="BtnConfirmFolderCleanupYes" Content="{DynamicResource TxtFolderCleanup}" Classes="BtnDanger" Padding="16,8" Click="BtnConfirmFolderCleanupYes_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
 
                 <!-- UNINSTALL CONFIRMATION MODAL -->
                 <Grid Name="BdConfirmUninstall" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="20">

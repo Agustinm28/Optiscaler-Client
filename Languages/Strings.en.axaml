@@ -99,6 +99,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Confirm Uninstall</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Are you sure you want to uninstall OptiScaler?&#x0a;Only backed-up original files will be restored.</x:String>
     <x:String x:Key="TxtUninstall">✕ Uninstall</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Folder Cleanup</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Force Folder Cleanup</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">This will forcefully remove all known OptiScaler files from the game's installation folder.&#x0a;&#x0a;Use this when a previous OptiScaler installation was left in a corrupted or incomplete state, or when you want to force-reset to a clean baseline before reinstalling.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Sensitive files — may also belong to the game</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">The files below could be native game files. Deleting them may break the game. It is strongly recommended to run your launcher's file verification (e.g. Steam → Verify integrity of game files) afterwards. Select only the ones you want to remove:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Folder cleanup completed.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Folder cleanup failed: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Corrupt Installation Detected</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">OptiScaler files were found in this game's folder, but the game is not marked as installed. This usually means a previous installation was not properly uninstalled.&#x0a;&#x0a;It is strongly recommended to clean the folder before installing to avoid conflicts. You can clean now, continue without cleaning, or cancel the installation.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Clean then Install</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Continue Anyway</x:String>
     <x:String x:Key="TxtVersionLbl">Version:</x:String>
     <x:String x:Key="TxtInjectionLbl">Injection:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Auto Install</x:String>

@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Подтвердить удаление</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Вы уверены, что хотите удалить OptiScaler?&#x0a;Будут восстановлены только оригинальные файлы из резервных копий.</x:String>
     <x:String x:Key="TxtUninstall">✕ Удалить</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Очистить папку</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Принудительная очистка папки</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Все известные файлы OptiScaler будут принудительно удалены из папки установки игры.&#x0a;&#x0a;Используйте это, когда предыдущая установка OptiScaler осталась в повреждённом или незавершённом состоянии, или когда вы хотите сбросить до чистого состояния перед переустановкой.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Чувствительные файлы — могут принадлежать игре</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Файлы ниже могут являться нативными файлами игры. Их удаление может повредить игру. Настоятельно рекомендуется запустить проверку файлов в лаунчере (например, Steam → Проверить целостность файлов игры) после. Выберите только те, которые хотите удалить:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Очистка папки завершена.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Ошибка очистки папки: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Обнаружена повреждённая установка</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">В папке этой игры обнаружены файлы OptiScaler, но игра не помечена как установленная. Обычно это означает, что предыдущая установка не была корректно удалена.&#x0a;&#x0a;Настоятельно рекомендуется очистить папку перед установкой, чтобы избежать конфликтов. Вы можете очистить сейчас, продолжить без очистки или отменить установку.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Очистить и установить</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Продолжить всё равно</x:String>
     <x:String x:Key="TxtVersionLbl">Версия:</x:String>
     <x:String x:Key="TxtInjectionLbl">Инъекция:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Автоматическая установка</x:String>

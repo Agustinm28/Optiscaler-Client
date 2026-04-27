@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">アンインストールを確認</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">OptiScalerをアンインストールしてもよろしいですか？&#x0a;バックアップされた元のファイルのみが復元されます。</x:String>
     <x:String x:Key="TxtUninstall">✕ アンインストール</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 フォルダをクリーンアップ</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">フォルダを強制クリーンアップ</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">ゲームのインストールフォルダから既知のすべてのOptiScalerファイルを削除します。&#x0a;&#x0a;以前のOptiScalerインストールが壊れた状態や不完全な状態で残っている場合、または再インストール前にクリーンな状態にリセットしたい場合に使用してください。</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; 注意が必要なファイル — ゲーム固有のファイルである可能性があります</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">以下のファイルはゲームのネイティブファイルである可能性があります。削除するとゲームが破損する可能性があります。その後、ランチャーのファイル検証（例：Steam → ゲームファイルの整合性を確認）を実行することを強くお勧めします。削除したいものだけを選択してください：</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">フォルダのクリーンアップが完了しました。</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">フォルダのクリーンアップに失敗しました: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">壊れたインストールが検出されました</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">このゲームのフォルダにOptiScalerのファイルが見つかりましたが、ゲームはインストール済みとしてマークされていません。これは通常、以前のインストールが正しくアンインストールされなかったことを意味します。&#x0a;&#x0a;競合を避けるため、インストール前にフォルダをクリーンアップすることを強くお勧めします。今すぐクリーンアップ、クリーンアップなしで続行、またはインストールをキャンセルできます。</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 クリーンアップしてインストール</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">そのまま続行</x:String>
     <x:String x:Key="TxtVersionLbl">バージョン：</x:String>
     <x:String x:Key="TxtInjectionLbl">インジェクション：</x:String>
     <x:String x:Key="TxtInstallOpti">✦ 自動インストール</x:String>

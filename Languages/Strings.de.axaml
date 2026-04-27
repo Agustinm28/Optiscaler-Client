@@ -96,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Deinstallation bestätigen</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Sind Sie sicher, dass Sie OptiScaler deinstallieren möchten?&#x0a;Nur gesicherte Originaldateien werden wiederhergestellt.</x:String>
     <x:String x:Key="TxtUninstall">✕ Deinstallieren</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Ordner bereinigen</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Ordner erzwungen bereinigen</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Alle bekannten OptiScaler-Dateien werden aus dem Spielverzeichnis entfernt.&#x0a;&#x0a;Verwenden Sie diese Option, wenn eine vorherige OptiScaler-Installation in einem beschädigten oder unvollständigen Zustand hinterlassen wurde, oder wenn Sie eine saubere Basis vor der Neuinstallation erstellen möchten.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Sensible Dateien — können auch zum Spiel gehören</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Die folgenden Dateien könnten native Spieldateien sein. Das Löschen kann das Spiel beschädigen. Es wird dringend empfohlen, die Dateiüberprüfung Ihres Launchers (z. B. Steam → Integrität der Spieldateien überprüfen) danach auszuführen. Wählen Sie nur die aus, die Sie entfernen möchten:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Ordnerbereinigung abgeschlossen.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Ordnerbereinigung fehlgeschlagen: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Beschädigte Installation erkannt</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Im Spielordner wurden OptiScaler-Dateien gefunden, obwohl das Spiel nicht als installiert markiert ist. Dies bedeutet normalerweise, dass eine vorherige Installation nicht ordnungsgemäß deinstalliert wurde.&#x0a;&#x0a;Es wird dringend empfohlen, den Ordner vor der Installation zu bereinigen, um Konflikte zu vermeiden. Sie können jetzt bereinigen, ohne Bereinigung fortfahren oder die Installation abbrechen.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Bereinigen und installieren</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Trotzdem fortfahren</x:String>
     <x:String x:Key="TxtVersionLbl">Version:</x:String>
     <x:String x:Key="TxtInjectionLbl">Injektion:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Automatische Installation</x:String>

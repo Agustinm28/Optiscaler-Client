@@ -61,6 +61,14 @@ namespace OptiscalerClient.Views
 
         public bool NeedsScan { get; private set; }
 
+        // TaskCompletionSource for the corrupt-install-detected modal (3-way: cancel/clean/continue).
+        private TaskCompletionSource<string>? _corruptInstallTcs;
+        // Set to true when the cleanup modal is opened from the corrupt-install flow.
+        // Causes the cleanup Yes/No handlers to resolve _corruptInstallTcs instead of
+        // running the cleanup inline, allowing ExecuteInstallAsync to drive the sequence.
+        private bool _cleanupIsPreInstall;
+        private List<string>? _preInstallCleanupSelectedFiles;
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
@@ -1162,6 +1170,43 @@ namespace OptiscalerClient.Views
                     overrideGameDir = System.IO.Path.GetDirectoryName(files[0].Path.LocalPath); 
                 }
 
+                // ── Pre-install corrupt artifact check (fresh installs only) ───────────────
+                // For updates the manifest already tracks everything; only fresh installs need
+                // this check because there is no manifest to tell us the state is clean.
+                if (!_game.IsOptiscalerInstalled)
+                {
+                    var checkService = new GameInstallationService();
+                    var checkDir = overrideGameDir ?? checkService.DetermineInstallDirectory(_game);
+                    if (!string.IsNullOrEmpty(checkDir) && Directory.Exists(checkDir)
+                        && GameInstallationService.HasCorruptArtifacts(checkDir))
+                    {
+                        var choice = await ShowCorruptInstallWarningAsync();
+                        if (choice == "cancel")
+                            return;
+
+                        if (choice == "clean")
+                        {
+                            try
+                            {
+                                var filesToClean = _preInstallCleanupSelectedFiles;
+                                _preInstallCleanupSelectedFiles = null;
+                                await Task.Run(() => checkService.ForceFolderCleanup(_game, filesToClean));
+                                NeedsScan = true;
+                                UpdateStatus();
+                            }
+                            catch (Exception cleanEx)
+                            {
+                                _preInstallCleanupSelectedFiles = null;
+                                var errTitle = GetResourceString("TxtError", "Error");
+                                await new ConfirmDialog(this, errTitle,
+                                    $"Cleanup before install failed:\n{cleanEx.Message}").ShowDialog<object>(this);
+                                return;
+                            }
+                        }
+                        // "continue" → fall through to normal install
+                    }
+                }
+
                 if (btnInstall != null) btnInstall.IsEnabled = false;
                 if (btnInstallManual != null) btnInstallManual.IsEnabled = false;
                 if (btnUninstall != null) btnUninstall.IsEnabled = false;
@@ -1541,6 +1586,208 @@ namespace OptiscalerClient.Views
             if (btnUninstall != null) btnUninstall.IsEnabled = false;
         }
 
+        private void BtnFolderCleanup_Click(object sender, RoutedEventArgs e)
+        {
+            // Reset all sensitive checkboxes to unchecked every time the dialog opens.
+            var sensitiveCheckboxNames = new[]
+            {
+                ("ChkSensitive_amd_fidelityfx_dx12",  "amd_fidelityfx_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_fg_dx12", "amd_fidelityfx_framegeneration_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_vk",    "amd_fidelityfx_vk.dll"),
+                ("ChkSensitive_dxgi",                  "dxgi.dll"),
+                ("ChkSensitive_libxell",               "libxell.dll"),
+                ("ChkSensitive_libxess",               "libxess.dll"),
+                ("ChkSensitive_libxess_dx11",          "libxess_dx11.dll"),
+                ("ChkSensitive_libxess_fg",            "libxess_fg.dll"),
+            };
+            foreach (var (name, _) in sensitiveCheckboxNames)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = false;
+            }
+            var chkAll = this.FindControl<CheckBox>("ChkSensitiveSelectAll");
+            if (chkAll != null) chkAll.IsChecked = false;
+
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = true;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = false;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = false;
+            if (btnUninstall != null) btnUninstall.IsEnabled = false;
+            if (btnCleanup != null) btnCleanup.IsEnabled = false;
+        }
+
+        private void ChkSensitiveSelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox chkAll) return;
+            bool check = chkAll.IsChecked == true;
+            var names = new[]
+            {
+                "ChkSensitive_amd_fidelityfx_dx12",
+                "ChkSensitive_amd_fidelityfx_fg_dx12",
+                "ChkSensitive_amd_fidelityfx_vk",
+                "ChkSensitive_dxgi",
+                "ChkSensitive_libxell",
+                "ChkSensitive_libxess",
+                "ChkSensitive_libxess_dx11",
+                "ChkSensitive_libxess_fg",
+            };
+            foreach (var name in names)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = check;
+            }
+        }
+
+        private void BtnConfirmFolderCleanupNo_Click(object sender, RoutedEventArgs e)
+        {
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = false;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = true;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = true;
+            if (btnUninstall != null) btnUninstall.IsEnabled = true;
+            if (btnCleanup != null) btnCleanup.IsEnabled = true;
+
+            // If we were shown from the corrupt-install flow, cancelling here cancels the install.
+            if (_cleanupIsPreInstall)
+            {
+                _cleanupIsPreInstall = false;
+                _preInstallCleanupSelectedFiles = null;
+                _corruptInstallTcs?.TrySetResult("cancel");
+                _corruptInstallTcs = null;
+            }
+        }
+
+        private async void BtnConfirmFolderCleanupYes_Click(object sender, RoutedEventArgs e)
+        {
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = false;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = true;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = true;
+            if (btnUninstall != null) btnUninstall.IsEnabled = true;
+            if (btnCleanup != null) btnCleanup.IsEnabled = true;
+
+            // Collect which sensitive files the user opted to delete.
+            var sensitiveMap = new[]
+            {
+                ("ChkSensitive_amd_fidelityfx_dx12",    "amd_fidelityfx_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_fg_dx12", "amd_fidelityfx_framegeneration_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_vk",      "amd_fidelityfx_vk.dll"),
+                ("ChkSensitive_dxgi",                    "dxgi.dll"),
+                ("ChkSensitive_libxell",                 "libxell.dll"),
+                ("ChkSensitive_libxess",                 "libxess.dll"),
+                ("ChkSensitive_libxess_dx11",            "libxess_dx11.dll"),
+                ("ChkSensitive_libxess_fg",              "libxess_fg.dll"),
+            };
+            var selectedSensitive = sensitiveMap
+                .Where(pair => this.FindControl<CheckBox>(pair.Item1)?.IsChecked == true)
+                .Select(pair => pair.Item2)
+                .ToList();
+
+            // If opened from the corrupt-install flow, store the selection and hand control
+            // back to ExecuteInstallAsync — it will run the cleanup then the install.
+            if (_cleanupIsPreInstall)
+            {
+                _cleanupIsPreInstall = false;
+                _preInstallCleanupSelectedFiles = selectedSensitive;
+                _corruptInstallTcs?.TrySetResult("clean");
+                _corruptInstallTcs = null;
+                return;
+            }
+
+            try
+            {
+                var installService = new GameInstallationService();
+                installService.ForceFolderCleanup(_game, selectedSensitive);
+
+                NeedsScan = true;
+                UpdateStatus();
+                LoadComponents();
+
+                var successMsg = GetResourceString("TxtFolderCleanupSuccess", "Folder cleanup completed.");
+                await ShowToastAsync(successMsg);
+            }
+            catch (Exception ex)
+            {
+                var failFormat = GetResourceString("TxtFolderCleanupFail", "Folder cleanup failed: {0}");
+                var titleMsg = GetResourceString("TxtError", "Error");
+                await new ConfirmDialog(this, titleMsg, string.Format(failFormat, ex.Message)).ShowDialog<object>(this);
+            }
+        }
+
+        // ── Corrupt-install-detected modal handlers ───────────────────────────────────────────
+
+        private Task<string> ShowCorruptInstallWarningAsync()
+        {
+            _corruptInstallTcs = new TaskCompletionSource<string>();
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = true;
+            return _corruptInstallTcs.Task;
+        }
+
+        private void BtnCorruptCancel_Click(object sender, RoutedEventArgs e)
+        {
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+            _corruptInstallTcs?.TrySetResult("cancel");
+            _corruptInstallTcs = null;
+        }
+
+        private void BtnCorruptClean_Click(object sender, RoutedEventArgs e)
+        {
+            // Close the corrupt-install modal and open the cleanup modal so the user can
+            // choose which sensitive files to include. The TCS is NOT resolved yet —
+            // BtnConfirmFolderCleanupYes/No_Click will resolve it once the user decides.
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+
+            _cleanupIsPreInstall = true;
+
+            // Open the cleanup modal (same path as BtnFolderCleanup_Click).
+            var sensitiveNames = new[]
+            {
+                "ChkSensitive_amd_fidelityfx_dx12", "ChkSensitive_amd_fidelityfx_fg_dx12",
+                "ChkSensitive_amd_fidelityfx_vk",   "ChkSensitive_dxgi",
+                "ChkSensitive_libxell",              "ChkSensitive_libxess",
+                "ChkSensitive_libxess_dx11",         "ChkSensitive_libxess_fg",
+            };
+            foreach (var name in sensitiveNames)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = false;
+            }
+            var chkAll = this.FindControl<CheckBox>("ChkSensitiveSelectAll");
+            if (chkAll != null) chkAll.IsChecked = false;
+
+            var bdCleanup = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdCleanup != null) bdCleanup.IsVisible = true;
+        }
+
+        private void BtnCorruptContinue_Click(object sender, RoutedEventArgs e)
+        {
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+            _corruptInstallTcs?.TrySetResult("continue");
+            _corruptInstallTcs = null;
+        }
+
         private void BtnConfirmUninstallNo_Click(object sender, RoutedEventArgs e)
         {
             var bdConfirmUninstall = this.FindControl<Grid>("BdConfirmUninstall");
@@ -1616,8 +1863,12 @@ namespace OptiscalerClient.Views
             var btnInstall = this.FindControl<Button>("BtnInstall");
             var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
             var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnFolderCleanup = this.FindControl<Button>("BtnFolderCleanup");
             var installBtnGroup = this.FindControl<StackPanel>("InstallBtnGroup");
             var pnlInstallOptions = this.FindControl<StackPanel>("PnlInstallOptions");
+
+            // Folder Cleanup is always available regardless of install state.
+            if (btnFolderCleanup != null) { btnFolderCleanup.IsVisible = true; btnFolderCleanup.IsEnabled = true; }
 
             if (_game.IsOptiscalerInstalled)
             {
