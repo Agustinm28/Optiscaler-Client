@@ -283,6 +283,29 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtSteamGridGuideStep1Prefix">Entrá a </x:String>
     <x:String x:Key="TxtSteamGridGuideStep1Suffix"> e iniciá sesión.</x:String>
 
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Red y Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Configura un proxy HTTP(S) para la API de GitHub y las conexiones de descarga.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Configura un proxy HTTP(S) o SOCKS5 para la API de GitHub y las conexiones de descarga. Déjalo en blanco para usar el proxy del sistema.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Usar proxy del sistema</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Si está activado, se usarán los ajustes de proxy del SO y las variables de entorno HTTP_PROXY / HTTPS_PROXY. Desactiva para establecer un proxy personalizado abajo.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Configuración del proxy</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Tipo</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.ejemplo.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Puerto</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">El proxy requiere autenticación</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Credenciales</x:String>
+    <x:String x:Key="TxtNetworkUsername">Usuario</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Opcional</x:String>
+    <x:String x:Key="TxtNetworkPassword">Contraseña</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Opcional</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Probar conexión</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Conectado</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Falló</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Probando…</x:String>
+
     <x:String x:Key="TxtViewGrid">Vista de cuadrícula</x:String>
     <x:String x:Key="TxtViewList">Vista de lista</x:String>
     <x:String x:Key="TxtLoadingResources">Cargando recursos...</x:String>

@@ -523,6 +523,28 @@
     <x:String x:Key="TxtDefaultBadge">デフォルト</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">現在のデフォルト: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">デフォルト未設定</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">ネットワークとプロキシ</x:String>
+    <x:String x:Key="TxtNetworkDesc">GitHub API とダウンロード接続のための HTTP(S) プロキシを設定します。</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">GitHub API とダウンロード接続のための HTTP(S) または SOCKS5 プロキシを設定します。システムプロキシを使用するには空のままにしてください。</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">システムプロキシを使用</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">有効にすると、OS のプロキシ設定と HTTP_PROXY / HTTPS_PROXY 環境変数が使用されます。カスタムプロキシを設定するには無効にしてください。</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">プロキシ設定</x:String>
+    <x:String x:Key="TxtNetworkProxyType">タイプ</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">ホスト</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">ポート</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">プロキシに認証が必要</x:String>
+    <x:String x:Key="TxtNetworkCredentials">資格情報</x:String>
+    <x:String x:Key="TxtNetworkUsername">ユーザー名</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">任意</x:String>
+    <x:String x:Key="TxtNetworkPassword">パスワード</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">任意</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">接続をテスト</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ 接続成功</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ 失敗</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">テスト中…</x:String>
 </ResourceDictionary>
 
 

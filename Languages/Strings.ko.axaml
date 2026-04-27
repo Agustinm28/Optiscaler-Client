@@ -523,6 +523,28 @@
     <x:String x:Key="TxtDefaultBadge">기본값</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">현재 기본값: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">기본값 없음</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">네트워크 및 프록시</x:String>
+    <x:String x:Key="TxtNetworkDesc">GitHub API 및 다운로드 연결을 위한 HTTP(S) 프록시를 구성합니다.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">GitHub API 및 다운로드 연결을 위한 HTTP(S) 또는 SOCKS5 프록시를 구성합니다. 시스템 프록시를 사용하려면 비워 두세요.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">시스템 프록시 사용</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">활성화하면 OS 프록시 설정과 HTTP_PROXY / HTTPS_PROXY 환경 변수를 사용합니다. 아래에서 사용자 지정 프록시를 설정하려면 비활성화하세요.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">프록시 구성</x:String>
+    <x:String x:Key="TxtNetworkProxyType">유형</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">호스트</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">포트</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">프록시 인증 필요</x:String>
+    <x:String x:Key="TxtNetworkCredentials">자격 증명</x:String>
+    <x:String x:Key="TxtNetworkUsername">사용자 이름</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">선택 사항</x:String>
+    <x:String x:Key="TxtNetworkPassword">비밀번호</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">선택 사항</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">연결 테스트</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ 연결됨</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ 실패</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">테스트 중…</x:String>
 </ResourceDictionary>
 
 

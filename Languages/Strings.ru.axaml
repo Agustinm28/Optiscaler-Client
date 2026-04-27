@@ -523,6 +523,28 @@
     <x:String x:Key="TxtDefaultBadge">ПО УМОЛЧАНИЮ</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">Текущее по умолчанию: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">Не установлено</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Сеть и прокси</x:String>
+    <x:String x:Key="TxtNetworkDesc">Настройте HTTP(S)-прокси для GitHub API и подключений загрузки.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Настройте HTTP(S) или SOCKS5 прокси для GitHub API и подключений загрузки. Оставьте пустым для использования системного прокси.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Использовать системный прокси</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Если включено, используются настройки прокси ОС и переменные окружения HTTP_PROXY / HTTPS_PROXY. Отключите, чтобы задать пользовательский прокси ниже.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Конфигурация прокси</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Тип</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Хост</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Порт</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Прокси требует аутентификации</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Учетные данные</x:String>
+    <x:String x:Key="TxtNetworkUsername">Имя пользователя</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Необязательно</x:String>
+    <x:String x:Key="TxtNetworkPassword">Пароль</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Необязательно</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Проверить подключение</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Подключено</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Не удалось</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Проверка…</x:String>
 </ResourceDictionary>
 
 

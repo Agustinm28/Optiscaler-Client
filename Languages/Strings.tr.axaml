@@ -523,6 +523,28 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtDefaultBadge">VARSAYILAN</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">Mevcut varsayılan: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">Varsayılan ayarlanmadı</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Ağ ve Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">GitHub API ve indirme bağlantıları için HTTP(S) proxy yapılandırın.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">GitHub API ve indirme bağlantıları için HTTP(S) veya SOCKS5 proxy yapılandırın. Sistem proxy'sini kullanmak için boş bırakın.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Sistem proxy'sini kullan</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Etkinse, işletim sistemi proxy ayarları ve HTTP_PROXY / HTTPS_PROXY ortam değişkenleri kullanılır. Özel proxy ayarlamak için devre dışı bırakın.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy Yapılandırması</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Tür</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.ornek.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Port</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy kimlik doğrulama gerektirir</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Kimlik bilgileri</x:String>
+    <x:String x:Key="TxtNetworkUsername">Kullanıcı adı</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">İsteğe bağlı</x:String>
+    <x:String x:Key="TxtNetworkPassword">Parola</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">İsteğe bağlı</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Bağlantıyı test et</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Bağlandı</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Başarısız</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Test ediliyor…</x:String>
 </ResourceDictionary>
 
 

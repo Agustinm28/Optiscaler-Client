@@ -523,6 +523,28 @@ Cette version n'est pas disponible en téléchargement. Vérifiez votre connexio
     <x:String x:Key="TxtDefaultBadge">PAR DÉFAUT</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">Par défaut actuel : {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">Aucun défaut défini</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Réseau et Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Configurez un proxy HTTP(S) pour l'API GitHub et les connexions de téléchargement.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Configurez un proxy HTTP(S) ou SOCKS5 pour l'API GitHub et les connexions de téléchargement. Laisser vide pour utiliser le proxy système.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Utiliser le proxy système</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Si activé, les paramètres proxy du système et les variables d'environnement HTTP_PROXY / HTTPS_PROXY sont utilisés. Désactivez pour définir un proxy personnalisé ci-dessous.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Configuration du proxy</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Type</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Hôte</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.exemple.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Port</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Le proxy nécessite une authentification</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Identifiants</x:String>
+    <x:String x:Key="TxtNetworkUsername">Nom d'utilisateur</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Optionnel</x:String>
+    <x:String x:Key="TxtNetworkPassword">Mot de passe</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Optionnel</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Tester la connexion</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Connecté</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Échec</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Test en cours…</x:String>
 </ResourceDictionary>
 
 

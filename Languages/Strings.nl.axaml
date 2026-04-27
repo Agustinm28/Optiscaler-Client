@@ -523,6 +523,28 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtDefaultBadge">STANDAARD</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">Huidige standaard: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">Geen standaard ingesteld</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Netwerk &amp; Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Configureer een HTTP(S)-proxy voor de GitHub API en downloadverbindingen.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Configureer een HTTP(S)- of SOCKS5-proxy voor de GitHub API en downloadverbindingen. Laat leeg om het systeemplug-in te gebruiken.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Systeemproxy gebruiken</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Wanneer ingeschakeld, worden de OS-proxyinstellingen en de omgevingsvariabelen HTTP_PROXY / HTTPS_PROXY gebruikt. Schakel uit om een aangepaste proxy in te stellen.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy-configuratie</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Type</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.voorbeeld.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Poort</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy vereist authenticatie</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Inloggegevens</x:String>
+    <x:String x:Key="TxtNetworkUsername">Gebruikersnaam</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Optioneel</x:String>
+    <x:String x:Key="TxtNetworkPassword">Wachtwoord</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Optioneel</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Verbinding testen</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Verbonden</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Mislukt</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Bezig met testen…</x:String>
 </ResourceDictionary>
 
 

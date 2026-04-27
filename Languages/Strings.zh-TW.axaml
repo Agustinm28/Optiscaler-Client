@@ -523,6 +523,28 @@
     <x:String x:Key="TxtDefaultBadge">預設</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">目前預設: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">未設定預設版本</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">網路與 Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">為 GitHub API 與下載連線配置 HTTP(S) 代理。</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">為 GitHub API 與下載連線配置 HTTP(S) 或 SOCKS5 代理。留空以使用系統代理。</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">使用系統代理</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">啟用時，使用作業系統的代理設定與 HTTP_PROXY / HTTPS_PROXY 環境變數。欲設定自訂代理請停用此項。</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">代理設定</x:String>
+    <x:String x:Key="TxtNetworkProxyType">類型</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">主機</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">連接埠</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">代理需要驗證</x:String>
+    <x:String x:Key="TxtNetworkCredentials">憑證</x:String>
+    <x:String x:Key="TxtNetworkUsername">使用者名稱</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">選填</x:String>
+    <x:String x:Key="TxtNetworkPassword">密碼</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">選填</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">測試連線</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ 已連線</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ 失敗</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">測試中…</x:String>
 </ResourceDictionary>
 
 
