@@ -100,12 +100,42 @@ namespace OptiscalerClient.Services
 
             DebugWindow.Log($"[Install] External backup store: {_backupStore.GetBackupRoot(storeKey)}");
 
+            // ── Capture prior manifest BEFORE overwriting (critical for update scenarios) ─────────
+            // When updating an existing install, SaveManifest will overwrite the committed manifest
+            // before any files are processed. Without this capture, the BackupFile calls below would
+            // overwrite original game file backups with OptiScaler's own DLLs, corrupting uninstall.
+            // Read the manifest ONCE to avoid redundant file reads (HasValidBackup + LoadManifest).
+            var priorManifest = _backupStore.LoadManifest(storeKey);
+            bool hasValidBackup = priorManifest != null &&
+                string.Equals(priorManifest.OperationStatus, "committed", StringComparison.OrdinalIgnoreCase);
+            if (!hasValidBackup) priorManifest = null; // only trust committed manifests
+
+            // Files the game originally owned (backed up during first install) — must NOT be overwritten.
+            var priorBackedUpOriginals = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // Files created by a previous OptiScaler install — must be deleted (not restored) on uninstall.
+            var priorCreatedByOptiScaler = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            if (priorManifest != null)
+            {
+                foreach (var r in priorManifest.FilesOverwritten)
+                    priorBackedUpOriginals.Add(r.RelativePath);
+                foreach (var f in priorManifest.BackedUpFiles)
+                    priorBackedUpOriginals.Add(f); // legacy v1 fallback
+                foreach (var r in priorManifest.FilesCreated)
+                    priorCreatedByOptiScaler.Add(r.RelativePath);
+                // Legacy v1: files listed in InstalledFiles but not backed up were created by OptiScaler.
+                foreach (var f in priorManifest.InstalledFiles)
+                    if (!priorBackedUpOriginals.Contains(f))
+                        priorCreatedByOptiScaler.Add(f);
+                DebugWindow.Log($"[Install] Update mode — preserving {priorBackedUpOriginals.Count} original game file backup(s), tracking {priorCreatedByOptiScaler.Count} OptiScaler-created file(s)");
+            }
+
             // ── Pre-install: detect and remove residues from previous dirty installs ──
             // If there is no valid external backup for this gameDir, any known OptiScaler
             // artifacts found in the game folder are residues (orphaned files from a previous
             // install that was never properly uninstalled). Back them up as original files
             // would corrupt the next uninstall, so we delete them first.
-            if (!_backupStore.HasValidBackup(storeKey))
+            if (!hasValidBackup)
             {
                 var componentService = new ComponentManagementService();
                 var cacheDirsForResidue = new List<string>();
@@ -156,6 +186,15 @@ namespace OptiscalerClient.Services
             manifest.ExpectedFinalMarkers.Add(injectionDllName);
             manifest.AppliedProfileName = profile?.Name;
 
+            // For updates, carry over directories installed by the prior run so they are removed
+            // on uninstall even though they already existed when this install started.
+            if (priorManifest != null)
+            {
+                foreach (var dir in priorManifest.InstalledDirectories)
+                    if (!manifest.InstalledDirectories.Contains(dir))
+                        manifest.InstalledDirectories.Add(dir);
+            }
+
             // Persist immediately as in-progress so crashes can be recovered later.
             _backupStore.SaveManifest(storeKey, manifest);
 
@@ -183,11 +222,17 @@ namespace OptiscalerClient.Services
             var injectionDllPath = Path.Combine(gameDir, injectionDllName);
             DebugWindow.Log($"[Install] Installing main DLL as: {injectionDllName}");
             var injectionExisted = File.Exists(injectionDllPath);
-            var injectionPreHash = injectionExisted ? ComputeSha256(injectionDllPath) : null;
 
-            // Backup existing file if it exists (into external store)
-            if (injectionExisted)
+            // Backup existing file if it exists (into external store).
+            // During an update, skip re-backing-up files that already have an original backup
+            // (priorBackedUpOriginals) or that were created by a previous OptiScaler install
+            // (priorCreatedByOptiScaler) — doing so would overwrite the original game file.
+            bool injIsOriginal = priorBackedUpOriginals.Contains(injectionDllName);
+            bool injIsOptiCreated = priorCreatedByOptiScaler.Contains(injectionDllName);
+            string? injectionPreHash = null;
+            if (injectionExisted && !injIsOriginal && !injIsOptiCreated)
             {
+                injectionPreHash = ComputeSha256(injectionDllPath); // only hash when we actually need it
                 _backupStore.BackupFile(storeKey, gameDir, injectionDllName);
                 manifest.BackedUpFiles.Add(injectionDllName);
                 DebugWindow.Log($"[Install] Backed up existing file: {injectionDllName}");
@@ -196,10 +241,12 @@ namespace OptiscalerClient.Services
             // Copy OptiScaler.dll as the injection DLL
             File.Copy(optiscalerMainDll, injectionDllPath, true);
             manifest.InstalledFiles.Add(injectionDllName);
+            // existedBefore=false for OptiScaler-created files forces them into FilesCreated (delete on uninstall).
+            // existedBefore=true for game-original files keeps them in FilesOverwritten (restore on uninstall).
             TrackManifestFileMutation(
                 manifest,
                 relativePath: injectionDllName,
-                existedBefore: injectionExisted,
+                existedBefore: injectionExisted && !injIsOptiCreated,
                 preInstallHash: injectionPreHash,
                 postInstallHash: ComputeSha256(injectionDllPath));
             DebugWindow.Log($"[Install] Installed main OptiScaler DLL");
@@ -237,11 +284,15 @@ namespace OptiscalerClient.Services
                     }
                 }
 
-                // Backup existing file if needed (into external store)
+                // Backup existing file if needed (into external store).
+                // During an update, skip files already protected by a prior install's backup.
                 bool existedBefore = File.Exists(destPath);
-                var preHash = existedBefore ? ComputeSha256(destPath) : null;
-                if (existedBefore)
+                bool fileIsOriginal = priorBackedUpOriginals.Contains(relativePath);
+                bool fileIsOptiCreated = priorCreatedByOptiScaler.Contains(relativePath);
+                string? preHash = null;
+                if (existedBefore && !fileIsOriginal && !fileIsOptiCreated)
                 {
+                    preHash = ComputeSha256(destPath); // only hash when we actually need it
                     _backupStore.BackupFile(storeKey, gameDir, relativePath);
                     manifest.BackedUpFiles.Add(relativePath);
                     DebugWindow.Log($"[Install] Backed up existing file: {relativePath}");
@@ -252,8 +303,8 @@ namespace OptiscalerClient.Services
                 TrackManifestFileMutation(
                     manifest,
                     relativePath: relativePath,
-                    existedBefore: existedBefore,
-                    preInstallHash: preHash,
+                    existedBefore: existedBefore && !fileIsOptiCreated,
+                    preInstallHash: (!fileIsOriginal && !fileIsOptiCreated) ? preHash : null,
                     postInstallHash: ComputeSha256(destPath));
                 additionalFileCount++;
             }
@@ -296,11 +347,15 @@ namespace OptiscalerClient.Services
                     {
                         var destPath = Path.Combine(gameDir, fileName);
                         var existedBefore = File.Exists(destPath);
-                        var preHash = existedBefore ? ComputeSha256(destPath) : null;
 
-                        // Backup if exists (into external store)
-                        if (existedBefore)
+                        // Backup if exists (into external store).
+                        // During an update, skip files already protected by a prior install's backup.
+                        bool fakeIsOriginal = priorBackedUpOriginals.Contains(fileName);
+                        bool fakeIsOptiCreated = priorCreatedByOptiScaler.Contains(fileName);
+                        string? preHash = null;
+                        if (existedBefore && !fakeIsOriginal && !fakeIsOptiCreated)
                         {
+                            preHash = ComputeSha256(destPath); // only hash when we actually need it
                             _backupStore.BackupFile(storeKey, gameDir, fileName);
                             manifest.BackedUpFiles.Add(fileName);
                             DebugWindow.Log($"[Install] Backed up existing Fakenvapi file: {fileName}");
@@ -311,8 +366,8 @@ namespace OptiscalerClient.Services
                         TrackManifestFileMutation(
                             manifest,
                             relativePath: fileName,
-                            existedBefore: existedBefore,
-                            preInstallHash: preHash,
+                            existedBefore: existedBefore && !fakeIsOptiCreated,
+                            preInstallHash: (!fakeIsOriginal && !fakeIsOptiCreated) ? preHash : null,
                             postInstallHash: ComputeSha256(destPath));
                         fakeFileCount++;
                         DebugWindow.Log($"[Install] Installed Fakenvapi file: {fileName}");
@@ -348,11 +403,15 @@ namespace OptiscalerClient.Services
                     {
                         var destPath = Path.Combine(gameDir, fileName);
                         var existedBefore = File.Exists(destPath);
-                        var preHash = existedBefore ? ComputeSha256(destPath) : null;
 
-                        // Backup if exists (into external store)
-                        if (existedBefore)
+                        // Backup if exists (into external store).
+                        // During an update, skip files already protected by a prior install's backup.
+                        bool nukemIsOriginal = priorBackedUpOriginals.Contains(fileName);
+                        bool nukemIsOptiCreated = priorCreatedByOptiScaler.Contains(fileName);
+                        string? preHash = null;
+                        if (existedBefore && !nukemIsOriginal && !nukemIsOptiCreated)
                         {
+                            preHash = ComputeSha256(destPath); // only hash when we actually need it
                             _backupStore.BackupFile(storeKey, gameDir, fileName);
                             manifest.BackedUpFiles.Add(fileName);
                             DebugWindow.Log($"[Install] Backed up existing NukemFG file: {fileName}");
@@ -363,8 +422,8 @@ namespace OptiscalerClient.Services
                         TrackManifestFileMutation(
                             manifest,
                             relativePath: fileName,
-                            existedBefore: existedBefore,
-                            preInstallHash: preHash,
+                            existedBefore: existedBefore && !nukemIsOptiCreated,
+                            preInstallHash: (!nukemIsOriginal && !nukemIsOptiCreated) ? preHash : null,
                             postInstallHash: ComputeSha256(destPath));
                         nukemFileCount++;
                         DebugWindow.Log($"[Install] Installed NukemFG file: {fileName}");
