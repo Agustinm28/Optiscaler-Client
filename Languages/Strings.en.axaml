@@ -478,7 +478,15 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll or nvngx.dll not found and other errors.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Use the button to clear the cache from the settings; that should solve most problems.</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Game folder is still dirty with OptiScaler files after uninstall</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">This happens when a previous installation was not properly tracked (e.g. a crash left orphan files). To fix it: use the Uninstall button in the app first, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.). After that, future installs and uninstalls will work correctly.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">This happens when a previous installation was not properly tracked (e.g. a crash left orphan files). Recommended steps:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">First, try the per-game Folder Cleanup utility in the app (Game → Force Folder Cleanup).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">If Folder Cleanup doesn't resolve the issue, click Uninstall in the app, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">The app will also detect corrupt installations by default and will prompt to clean the folder before installing when needed.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 not visible on Linux</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">If you are on Linux and FSR 4 does not appear as an option, consider the following:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">You need the latest AMD MESA drivers (version 25.2.0 or newer).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Install the latest version of OptiScaler available.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">It is recommended to use GE-Proton, which can be managed via Proton Plus or ProtonUp-Qt.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Default profile</x:String>

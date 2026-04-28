@@ -590,8 +590,60 @@
             {
               "label": "Game folder is still dirty with OptiScaler files after uninstall",
               "labelKey": "TxtHelpFaqDirtyFolderLabel",
-              "text": "This happens when a previous installation was not properly tracked (e.g. a crash left orphan files). To fix it: use the Uninstall button in the app first, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.). After that, future installs and uninstalls will work correctly.",
-              "textKey": "TxtHelpFaqDirtyFolderText"
+              "text": "This happens when a previous installation was not properly tracked (e.g. a crash left orphan files).",
+              "textKey": "TxtHelpFaqDirtyFolderText",
+              "items": [
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "First, try the per-game Folder Cleanup utility in the app (Game → Force Folder Cleanup).",
+                  "textKey": "TxtHelpFaqDirtyFolderStep1",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "If Folder Cleanup doesn't resolve the issue, click Uninstall in the app, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.).",
+                  "textKey": "TxtHelpFaqDirtyFolderStep2",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "The app will also detect corrupt installations by default and will prompt to clean the folder before installing when needed.",
+                  "textKey": "TxtHelpFaqDirtyFolderStep3",
+                  "type": "bullet-point"
+                }
+              ]
+            },
+            {
+              "label": "FSR 4 not visible on Linux",
+              "labelKey": "TxtHelpFaqFsr4LinuxLabel",
+              "text": "If you are on Linux and FSR 4 does not appear as an option, consider the following:",
+              "textKey": "TxtHelpFaqFsr4LinuxText",
+              "items": [
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "You need the latest AMD MESA drivers (version 25.2.0 or newer).",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep1",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "Install the latest version of OptiScaler available.",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep2",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "It is recommended to use GE-Proton, which can be managed via Proton Plus or ProtonUp-Qt.",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep3",
+                  "type": "bullet-point"
+                }
+              ]
             }
           ]
         }

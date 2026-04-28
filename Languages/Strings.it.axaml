@@ -452,7 +452,15 @@ Questa versione non è disponibile per il download. Controlla la tua connessione
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll o nvngx.dll non trovati e altri errori.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Usa il pulsante per svuotare la cache dalle impostazioni; dovrebbe risolvere la maggior parte dei problemi.</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">La cartella del gioco contiene ancora file di OptiScaler dopo la disinstallazione</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">Ciò accade quando un'installazione precedente non è stata tracciata correttamente (es. un crash ha lasciato file orfani). Per risolvere: usa prima il pulsante Disinstalla nell'app, poi elimina manualmente i file OptiScaler rimasti nella cartella del gioco (OptiScaler.dll, OptiScaler.ini, dxgi.dll se era il target di iniezione, nvapi64.dll, ecc.). Dopo di ciò, installazioni e disinstallazioni future funzioneranno correttamente.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Ciò accade quando un'installazione precedente non è stata tracciata correttamente (es. un crash ha lasciato file orfani). Passaggi consigliati:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Prima, prova l'utilità di Pulizia Cartella per ogni gioco nell'app (Gioco → Pulizia Forzata Cartella).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Se la Pulizia Cartella non risolve il problema, fai clic su Disinstalla nell'app e quindi elimina manualmente i file OptiScaler rimanenti nella cartella del gioco (OptiScaler.dll, OptiScaler.ini, dxgi.dll se era il target di iniezione, nvapi64.dll, ecc.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">L'app rileva anche le installazioni corrotte per impostazione predefinita e chiederà di pulire la cartella prima dell'installazione quando necessario.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 non visibile su Linux</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Se sei su Linux e FSR 4 non appare come opzione, considera quanto segue:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">Hai bisogno dei driver AMD MESA più recenti (versione 25.2.0 o superiore).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Installa l'ultima versione disponibile di OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Si raccomanda di usare GE-Proton, che può essere gestito tramite Proton Plus o ProtonUp-Qt.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Profilo predefinito</x:String>

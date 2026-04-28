@@ -452,7 +452,15 @@
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll или nvngx.dll не найдены и другие ошибки.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Воспользуйтесь кнопкой очистки кэша в настройках — это должно решить большинство проблем.</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">В папке игры после удаления остались файлы OptiScaler</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">Это происходит, когда предыдущая установка не была корректно отслежена (например, сбой оставил осиротевшие файлы). Чтобы исправить: сначала нажмите кнопку «Удалить» в приложении, затем вручную удалите оставшиеся файлы OptiScaler из папки игры (OptiScaler.dll, OptiScaler.ini, dxgi.dll если это была цель внедрения, nvapi64.dll и т.д.). После этого будущие установки и удаления будут работать корректно.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Это происходит, когда предыдущая установка не была корректно отслежена (например, сбой оставил осиротевшие файлы). Рекомендуемые шаги:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Сначала попробуйте утилиту очистки папки для каждой игры в приложении (Игра → Принудительная очистка папки).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Если это не решит проблему, нажмите Удалить в приложении, затем вручную удалите оставшиеся файлы OptiScaler из папки игры (OptiScaler.dll, OptiScaler.ini, dxgi.dll если это была цель внедрения, nvapi64.dll и т.д.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">Приложение также по умолчанию обнаруживает повреждённые установки и предложит очистить папку перед установкой при необходимости.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 не отображается в Linux</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Если вы используете Linux и FSR 4 не отображается как вариант, обратите внимание на следующее:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">Вам нужны последние драйверы AMD MESA (версия 25.2.0 или новее).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Установите последнюю доступную версию OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Рекомендуется использовать GE-Proton, которым можно управлять через Proton Plus или ProtonUp-Qt.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Профиль по умолчанию</x:String>

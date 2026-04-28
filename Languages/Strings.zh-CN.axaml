@@ -452,7 +452,15 @@
     <x:String x:Key="TxtHelpFaqDllLabel">未找到 Optiscaler.dll 或 nvngx.dll 及其他错误。</x:String>
     <x:String x:Key="TxtHelpFaqDllText">使用设置中的按钮清除缓存；这应该能解决大多数问题。</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">卸载后游戏文件夹中仍残留 OptiScaler 文件</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">这是因为之前的安装未被正确追踪（例如程序崩溃留下了孤立文件）。解决方法：先在应用中点击"卸载"按钮，然后手动删除游戏文件夹中残留的 OptiScaler 文件（OptiScaler.dll、OptiScaler.ini、如果是注入目标则包括 dxgi.dll、nvapi64.dll 等）。之后，未来的安装和卸载操作将正常运行。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">这是因为之前的安装未被正确追踪（例如程序崩溃留下了孤立文件）。建议步骤：</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">首先在应用中尝试每个游戏的“文件夹清理”工具（游戏 → 强制清理文件夹）。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">如果清理无效，请在应用中点击“卸载”，然后手动删除游戏文件夹中残留的 OptiScaler 文件（OptiScaler.dll、OptiScaler.ini，如果是注入目标则包括 dxgi.dll、nvapi64.dll 等）。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">应用默认会检测损坏的安装，并在需要时提示在安装前清理该文件夹。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">Linux 下 FSR 4 不可见</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">如果您在 Linux 上且 FSR 4 未显示为选项，请考虑以下几点：</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">您需要最新版本的 AMD MESA 驱动程序（25.2.0 或更高版本）。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">安装最新版本的 OptiScaler。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">建议使用 GE-Proton，可通过 Proton Plus 或 ProtonUp-Qt 进行管理。</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">默认配置文件</x:String>

@@ -452,7 +452,15 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll of nvngx.dll niet gevonden en andere fouten.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Gebruik de knop om de cache te wissen via de instellingen; dat zou de meeste problemen moeten oplossen.</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Spelmap bevat na verwijdering nog steeds OptiScaler-bestanden</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">Dit gebeurt wanneer een eerdere installatie niet correct is bijgehouden (bijv. een crash liet achtergelaten bestanden achter). Om het op te lossen: gebruik eerst de knop Verwijderen in de app en verwijder vervolgens handmatig de resterende OptiScaler-bestanden uit de spelmap (OptiScaler.dll, OptiScaler.ini, dxgi.dll als dat het injectiedoel was, nvapi64.dll, enz.). Daarna zullen toekomstige installaties en verwijderingen correct werken.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Dit gebeurt wanneer een eerdere installatie niet correct is bijgehouden (bijv. een crash liet bestanden achter). Aanbevolen stappen:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Probeer eerst de per-spel Map Opschonen in de app (Spel → Forceren Map Opschonen).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Als dat het probleem niet oplost, klik in de app op Verwijderen en verwijder vervolgens handmatig de resterende OptiScaler-bestanden uit de spelmap (OptiScaler.dll, OptiScaler.ini, dxgi.dll als dat het injectiedoel was, nvapi64.dll, enz.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">De app detecteert standaard corrupte installaties en zal vragen om de map te reinigen voordat u installeert indien nodig.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 niet zichtbaar op Linux</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Als u op Linux bent en FSR 4 niet als optie verschijnt, houd dan rekening met het volgende:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">U hebt de nieuwste AMD MESA-stuurprogramma's nodig (versie 25.2.0 of nieuwer).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Installeer de nieuwste beschikbare versie van OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Het wordt aanbevolen om GE-Proton te gebruiken, dat beheerd kan worden via Proton Plus of ProtonUp-Qt.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Standaardprofiel</x:String>

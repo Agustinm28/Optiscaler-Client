@@ -452,8 +452,14 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll veya nvngx.dll bulunamadı ve diğer hatalar.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Ayarlardan önbelleği temizleme düğmesini kullanın; bu çoğu sorunu çözecektir.</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Kaldırma işleminden sonra oyun klasöründe hâlâ OptiScaler dosyaları var</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">Bu, önceki bir kurulumun düzgün izlenmediği durumlarda oluşur (ör. bir kilitlenme artık dosyalar bıraktı). Düzeltmek için: önce uygulamada Kaldır düğmesini kullanın, ardından oyun klasöründe kalan OptiScaler dosyalarını (OptiScaler.dll, OptiScaler.ini, enjeksiyon hedefiyse dxgi.dll, nvapi64.dll vb.) manuel olarak silin. Bundan sonra, gelecekteki kurulum ve kaldırma işlemleri düzgün çalışacaktır.</x:String>
-
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Bu, önceki bir kurulum düzgün şekilde izlenmediğinde oluşur (ör. bir çökme geride yetim dosyalar bıraktı). Önerilen adımlar:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Önce uygulamadaki oyun bazlı Klasörü Temizleme aracını deneyin (Oyun → Klasörü Zorla Temizle).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Klasörü temizleme sorunu çözmezse uygulamada Kaldır'a tıklayın ve ardından oyun klasöründe kalan OptiScaler dosyalarını (OptiScaler.dll, OptiScaler.ini, enjeksiyon hedefiyse dxgi.dll, nvapi64.dll vb.) manuel olarak silin.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">Uygulama ayrıca varsayılan olarak bozuk kurulumları algılar ve gerekirse yüklemeden önce klasörü temizlemenizi önerir.</x:String>    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">Linux'ta FSR 4 görünmüyor</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Linux'tayken FSR 4 bir seçenek olarak görünmüyorsa şunları göz önünde bulundurun:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">En son AMD MESA sürücülerine (sürüm 25.2.0 veya daha yeni) ihtiyacınız var.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Mevcut en son OptiScaler sürümünü yükleyin.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Proton Plus veya ProtonUp-Qt aracılığıyla yönetilebilen GE-Proton kullanılması önerilir.</x:String>
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Varsayılan profil</x:String>
     <x:String x:Key="TxtHelpProfDefaultText">Bir oyunu yönetirken veya Hızlı Yükleme kullanırken varsayılan olarak seçilecek profili ayarlar.</x:String>

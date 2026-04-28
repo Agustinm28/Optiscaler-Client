@@ -452,7 +452,15 @@
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dllまたはnvngx.dllが見つからないおよびその他のエラー。</x:String>
     <x:String x:Key="TxtHelpFaqDllText">設定からキャッシュをクリアするボタンを使用してください。ほとんどの問題が解決するはずです。</x:String>
     <x:String x:Key="TxtHelpFaqDirtyFolderLabel">アンインストール後もゲームフォルダーにOptiScalerのファイルが残っている</x:String>
-    <x:String x:Key="TxtHelpFaqDirtyFolderText">これは以前のインストールが正しく追跡されなかった場合（例：クラッシュで孤立ファイルが残った）に発生します。修正方法：まずアプリの「アンインストール」ボタンを使用し、次にゲームフォルダーに残っているOptiScalerのファイル（OptiScaler.dll、OptiScaler.ini、インジェクション対象だった場合はdxgi.dll、nvapi64.dllなど）を手動で削除してください。その後、インストールとアンインストールは正常に機能します。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">これは以前のインストールが正しく追跡されなかった場合（例：クラッシュで孤立ファイルが残った）に発生します。推奨手順:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">まず、アプリ内のゲームごとの「フォルダのクリーンアップ」機能を試してください（ゲーム → フォルダの強制クリーンアップ）。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">フォルダのクリーンアップで解決しない場合は、アプリのアンインストールを実行し、その後ゲームフォルダに残っているOptiScalerファイル（OptiScaler.dll、OptiScaler.ini、インジェクション対象であればdxgi.dll、nvapi64.dllなど）を手動で削除してください。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">また、アプリはデフォルトで破損したインストールを検知し、必要に応じてインストール前にフォルダのクリーンアップを促します。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">LinuxでFSR 4が表示されない</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">LinuxでFSR 4がオプションに表示されない場合は、以下を確認してください：</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">最新のAMD MESAドライバー（バージョン25.2.0以降）が必要です。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">利用可能な最新バージョンのOptiScalerをインストールしてください。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">GE-Protonの使用を推奨します。Proton PlusまたはProtonUp-Qtで管理できます。</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">デフォルトプロフィール</x:String>
