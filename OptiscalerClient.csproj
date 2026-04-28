@@ -36,6 +36,15 @@
     <None Update="assets\configs\easy_profile_editor_schema.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="assets\configs\dlss_version_map.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\configs\fsr_version_map.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\configs\xess_version_map.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="assets\configs\help-pages.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

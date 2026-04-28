@@ -69,6 +69,10 @@ namespace OptiscalerClient.Views
         private bool _cleanupIsPreInstall;
         private List<string>? _preInstallCleanupSelectedFiles;
 
+        private static Dictionary<string, string>? _fsrVersionMap;
+        private static Dictionary<string, string>? _dlssVersionMap;
+        private static Dictionary<string, string>? _xessVersionMap;
+
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
@@ -1925,9 +1929,42 @@ namespace OptiscalerClient.Views
         {
             var components = new ObservableCollection<string>();
 
-            if (!string.IsNullOrEmpty(_game.DlssVersion)) components.Add($"NVIDIA DLSS: {_game.DlssVersion}");
-            if (!string.IsNullOrEmpty(_game.FsrVersion)) components.Add($"AMD FSR: {_game.FsrVersion}");
-            if (!string.IsNullOrEmpty(_game.XessVersion)) components.Add($"Intel XeSS: {_game.XessVersion}");
+            if (!string.IsNullOrEmpty(_game.DlssVersion))
+            {
+                var dlssMap = GetDlssVersionMap();
+                string dlssDisplay;
+                if (TryLookupVersionMap(dlssMap, _game.DlssVersion, out var dlssNormal))
+                    dlssDisplay = VersionDisplayEquals(dlssNormal, _game.DlssVersion)
+                        ? $"NVIDIA DLSS: {dlssNormal}"
+                        : $"NVIDIA DLSS: {dlssNormal} ({_game.DlssVersion})";
+                else
+                    dlssDisplay = $"NVIDIA DLSS: {_game.DlssVersion}";
+                components.Add(dlssDisplay);
+            }
+            if (!string.IsNullOrEmpty(_game.FsrVersion))
+            {
+                var fsrMap = GetFsrVersionMap();
+                string fsrDisplay;
+                if (TryLookupVersionMap(fsrMap, _game.FsrVersion, out var fsrNormal))
+                    fsrDisplay = VersionDisplayEquals(fsrNormal, _game.FsrVersion)
+                        ? $"AMD FSR: {fsrNormal}"
+                        : $"AMD FSR: {fsrNormal} ({_game.FsrVersion})";
+                else
+                    fsrDisplay = $"AMD FSR: {_game.FsrVersion}";
+                components.Add(fsrDisplay);
+            }
+            if (!string.IsNullOrEmpty(_game.XessVersion))
+            {
+                var xessMap = GetXessVersionMap();
+                string xessDisplay;
+                if (TryLookupVersionMap(xessMap, _game.XessVersion, out var xessNormal))
+                    xessDisplay = VersionDisplayEquals(xessNormal, _game.XessVersion)
+                        ? $"Intel XeSS: {xessNormal}"
+                        : $"Intel XeSS: {xessNormal} ({_game.XessVersion})";
+                else
+                    xessDisplay = $"Intel XeSS: {_game.XessVersion}";
+                components.Add(xessDisplay);
+            }
 
             if (_game.IsOptiscalerInstalled)
             {
@@ -1955,6 +1992,157 @@ namespace OptiscalerClient.Views
 
             var lstComponents = this.FindControl<ListBox>("LstComponents");
             if (lstComponents != null) lstComponents.ItemsSource = components;
+        }
+
+        private static Dictionary<string, string> GetFsrVersionMap()
+        {
+            if (_fsrVersionMap != null) return _fsrVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "fsr_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _fsrVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                     ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load FSR version map: {ex.Message}");
+            }
+            return _fsrVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> GetDlssVersionMap()
+        {
+            if (_dlssVersionMap != null) return _dlssVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "dlss_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _dlssVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                      ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load DLSS version map: {ex.Message}");
+            }
+            return _dlssVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> GetXessVersionMap()
+        {
+            if (_xessVersionMap != null) return _xessVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "xess_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _xessVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                      ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load XeSS version map: {ex.Message}");
+            }
+            return _xessVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Returns true when two version strings are display-equivalent:
+        /// exact string match, or one is the other with trailing ".0" components stripped
+        /// (e.g. "2.4.0" == "2.4.0.0").
+        /// </summary>
+        private static bool VersionDisplayEquals(string a, string b)
+        {
+            if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase)) return true;
+            static string Strip(string v)
+            {
+                while (v.EndsWith(".0")) v = v[..^2];
+                return v;
+            }
+            return string.Equals(Strip(a), Strip(b), StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Looks up a DLL version string in a version map.
+        /// 1. Exact match.
+        /// 2. Same-prefix match (all but last component), highest key ≤ dllVersion.
+        /// 3. Global nearest-below: highest key in the whole map that is ≤ dllVersion,
+        ///    only when the mapped value is the same as the nearest-above key (i.e. the
+        ///    version falls between two entries that map to the same value).
+        /// 4. Global nearest-below regardless of value (last resort).
+        /// </summary>
+        private static bool TryLookupVersionMap(Dictionary<string, string> map, string dllVersion, out string mappedVersion)
+        {
+            // 1. Exact match
+            if (map.TryGetValue(dllVersion, out mappedVersion!))
+                return true;
+
+            if (!Version.TryParse(dllVersion, out var gameVer))
+            {
+                mappedVersion = null!;
+                return false;
+            }
+
+            // Pre-parse all map keys into (Version, key, value) sorted ascending
+            var parsed = map.Keys
+                .Select(k => Version.TryParse(k, out var v) ? (ver: v, key: k) : default)
+                .Where(t => t.ver != null)
+                .OrderBy(t => t.ver)
+                .ToList();
+
+            // 2. Same-prefix approximate match
+            var parts = dllVersion.Split('.');
+            if (parts.Length >= 2)
+            {
+                var prefix = string.Join(".", parts, 0, parts.Length - 1) + ".";
+                var prefixCandidates = parsed
+                    .Where(t => t.key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (prefixCandidates.Count > 0)
+                {
+                    // Highest key <= gameVer
+                    var best = prefixCandidates.LastOrDefault(t => t.ver <= gameVer);
+                    if (best.key == null)
+                        best = prefixCandidates.First(); // all are above — take smallest
+
+                    if (map.TryGetValue(best.key, out mappedVersion!))
+                        return true;
+                }
+            }
+
+            // 3 & 4. Global nearest: find the highest key <= gameVer across the whole map
+            var below = parsed.LastOrDefault(t => t.ver <= gameVer);
+            var above = parsed.FirstOrDefault(t => t.ver > gameVer);
+
+            if (below.key != null)
+            {
+                // If the entries directly below and above map to the same value, it's safe
+                // to use that value (the game version sits between two entries of the same range).
+                if (above.key != null &&
+                    map.TryGetValue(below.key, out var belowVal) &&
+                    map.TryGetValue(above.key, out var aboveVal) &&
+                    belowVal == aboveVal)
+                {
+                    mappedVersion = belowVal;
+                    return true;
+                }
+
+                // Last resort: just use the nearest-below entry
+                if (map.TryGetValue(below.key, out mappedVersion!))
+                    return true;
+            }
+
+            mappedVersion = null!;
+            return false;
         }
 
         private void CmbOptiVersion_SelectionChanged(object? sender, SelectionChangedEventArgs e)
