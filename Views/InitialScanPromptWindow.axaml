@@ -228,12 +228,27 @@
                                             <TextBlock Grid.Column="0" Text="Steam" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglSteam" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <!-- TODO: Windows-only sources (Epic, GOG, Xbox, EA, Ubisoft) hidden temporarily -->
-                                        <ToggleSwitch Name="TglEpic"   IsVisible="False" IsChecked="False"/>
-                                        <ToggleSwitch Name="TglGOG"    IsVisible="False" IsChecked="False"/>
-                                        <ToggleSwitch Name="TglXbox"   IsVisible="False" IsChecked="False"/>
-                                        <ToggleSwitch Name="TglEA"     IsVisible="False" IsChecked="False"/>
-                                        <ToggleSwitch Name="TglUbisoft" IsVisible="False" IsChecked="False"/>
+                                        <!-- Windows-only sources; visibility set from code-behind -->
+                                        <Grid Name="GridEpic" ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="Epic Games" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
+                                            <ToggleSwitch Grid.Column="1" Name="TglEpic" OnContent="" OffContent="" IsChecked="True"/>
+                                        </Grid>
+                                        <Grid Name="GridGOG" ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="GOG Galaxy" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
+                                            <ToggleSwitch Grid.Column="1" Name="TglGOG" OnContent="" OffContent="" IsChecked="True"/>
+                                        </Grid>
+                                        <Grid Name="GridXbox" ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="Xbox (Microsoft Store)" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
+                                            <ToggleSwitch Grid.Column="1" Name="TglXbox" OnContent="" OffContent="" IsChecked="True"/>
+                                        </Grid>
+                                        <Grid Name="GridEA" ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="EA App" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
+                                            <ToggleSwitch Grid.Column="1" Name="TglEA" OnContent="" OffContent="" IsChecked="True"/>
+                                        </Grid>
+                                        <Grid Name="GridUbisoft" ColumnDefinitions="*,Auto">
+                                            <TextBlock Grid.Column="0" Text="Ubisoft Connect" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
+                                            <ToggleSwitch Grid.Column="1" Name="TglUbisoft" OnContent="" OffContent="" IsChecked="True"/>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
 
