@@ -188,6 +188,37 @@
           "Column": 0
         }
       ]
+    },
+    {
+      "Name": "Spoofing",
+      "Rows": 1,
+      "Columns": 2,
+      "Settings": [
+        {
+          "Key": "Dxgi",
+          "Label": "Enable GPU Spoofing (DXGI)",
+          "Tooltip": "Spoofs your GPU as Nvidia for DXGI. Required for DLSS to work on AMD/Intel GPUs. Auto enables it for AMD/Intel and disables it for Nvidia.",
+          "Options": [
+            { "Value": "auto", "Label": "Auto (recommended)" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 0,
+          "Column": 0
+        },
+        {
+          "Key": "StreamlineSpoofing",
+          "Label": "Streamline Spoofing",
+          "Tooltip": "Enables GPU spoofing for Streamline even if DXGI spoofing is disabled. Useful for DLSS/DLSS-G in games that use Nvidia's Streamline framework.",
+          "Options": [
+            { "Value": "auto", "Label": "Auto (recommended)" },
+            { "Value": "true", "Label": "Enabled" },
+            { "Value": "false", "Label": "Disabled" }
+          ],
+          "Row": 0,
+          "Column": 1
+        }
+      ]
     }
   ]
 }
