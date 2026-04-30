@@ -303,7 +303,8 @@
                                         Classes="BtnSecondary"
                                         Padding="20,10"
                                         Click="BtnClose_Click"/>
-                                <Button Content="{DynamicResource TxtInitialScanStart}"
+                                <Button Name="BtnStartScan"
+                                        Content="{DynamicResource TxtInitialScanStart}"
                                         Classes="BtnPrimary"
                                         Padding="20,10"
                                         Click="BtnStartScan_Click"/>

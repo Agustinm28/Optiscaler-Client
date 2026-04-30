@@ -52,7 +52,7 @@ namespace OptiscalerClient.Views
         private ObservableCollection<Game> _games;
         private List<Game> _allGames = new List<Game>();
         private readonly ComponentManagementService _componentService;
-        private readonly IGpuDetectionService _gpuService;
+        private IGpuDetectionService _gpuService;
 
         private GpuInfo? _lastDetectedGpu;
         private ScrollViewer? _gameListScrollViewer;
@@ -114,6 +114,18 @@ namespace OptiscalerClient.Views
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        /// <summary>
+        /// Test-only constructor. Injects a custom <see cref="IGpuDetectionService"/> instead
+        /// of the platform-default one so unit/headless tests can run without real hardware.
+        /// </summary>
+        internal MainWindow(IGpuDetectionService? gpuService) : this()
+        {
+            // Override the service assigned by the public constructor.
+            _gpuService = gpuService!;
+            // Reset cached GPU so the injected service is actually called.
+            _lastDetectedGpu = null;
         }
 
         public MainWindow()
