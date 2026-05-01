@@ -157,6 +157,12 @@ namespace OptiscalerClient.Models
         /// When this differs from the current AppVersion, the welcome window is shown again.
         /// </summary>
         public string? LastSeenAppVersion { get; set; } = null;
+
+        /// <summary>
+        /// UTC timestamp of the last successful GitHub API check.
+        /// Persisted so that the 15-minute cooldown survives app restarts.
+        /// </summary>
+        public DateTime? LastApiCheckTime { get; set; } = null;
     }
 
     /// <summary>

@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.ProxySettingsWindow"
         Title="Network &amp; Proxy"
-        Width="480"
+        Width="560"
         SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="None"

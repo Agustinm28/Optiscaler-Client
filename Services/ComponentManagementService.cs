@@ -56,6 +56,10 @@ namespace OptiscalerClient.Services
         private static string? _cachedFakenvapiVersion = null;
         private static string? _cachedNukemFGVersion = null;
         private static DateTime _lastApiCheckTime = DateTime.MinValue;
+        // Allows only one CheckForUpdatesAsync to run at a time across all instances.
+        // If a check is already in-flight, subsequent callers wait for it to finish
+        // rather than launching concurrent GitHub API requests.
+        private static readonly System.Threading.SemaphoreSlim _checkSemaphore = new(1, 1);
         // Persistent local cache of release metadata (version names + download URLs)
         private static OptiScalerReleasesCache _releasesCache = new();
         // Persistent local cache of OptiScaler Extras (FSR4 INT8 mod) release metadata
@@ -487,7 +491,7 @@ namespace OptiscalerClient.Services
         /// transient network errors. Does NOT retry on HTTP error status codes (e.g. 404).
         /// </summary>
         private static async Task<HttpResponseMessage> GetWithRetryAsync(
-            HttpClient client, string url,
+            Func<HttpClient> getClient, string url,
             int maxRetries = 3, int timeoutSeconds = 30,
             CancellationToken cancellationToken = default)
         {
@@ -499,7 +503,7 @@ namespace OptiscalerClient.Services
                 cts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds));
                 try
                 {
-                    var resp = await client.GetAsync(url, cts.Token);
+                    var resp = await getClient().GetAsync(url, cts.Token);
                     if ((int)resp.StatusCode == 403)
                         throw new GitHubRateLimitException();
                     return resp;
@@ -509,6 +513,7 @@ namespace OptiscalerClient.Services
                     throw; // propagate immediately, no retry
                 }
                 catch (Exception ex) when (ex is HttpRequestException
+                    || ex is ObjectDisposedException  // HttpClient replaced mid-flight; retry picks up the new client
                     || (ex is OperationCanceledException && !cancellationToken.IsCancellationRequested))
                 {
                     lastEx = ex is OperationCanceledException
@@ -545,7 +550,7 @@ namespace OptiscalerClient.Services
         /// Partial files are deleted before each retry.
         /// </summary>
         private static async Task StreamToFileAsync(
-            HttpClient client, string url, string destPath,
+            Func<HttpClient> getClient, string url, string destPath,
             IProgress<double>? progress = null, long estimatedBytes = 20 * 1024 * 1024,
             int maxRetries = 3, int timeoutSeconds = 120,
             CancellationToken cancellationToken = default)
@@ -563,7 +568,7 @@ namespace OptiscalerClient.Services
                 cts.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds));
                 try
                 {
-                    using var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                    using var response = await getClient().GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cts.Token);
                     response.EnsureSuccessStatusCode();
                     var totalBytes = response.Content.Headers.ContentLength ?? estimatedBytes;
                     long totalRead = 0;
@@ -598,26 +603,45 @@ namespace OptiscalerClient.Services
 
         public async Task CheckForUpdatesAsync()
         {
+            await _checkSemaphore.WaitAsync();
+            try
+            {
             LastError = null;
             try
             {
-                // To avoid spamming GitHub API (rate limits), only check every 15 minutes max per session.
-                // Also re-fetch if extras versions were never loaded yet.
-                if (_cachedOptiScalerVersions == null || _cachedExtrasVersions == null || _cachedOptiPatcherVersions == null ||
-                    (DateTime.Now - _lastApiCheckTime).TotalMinutes > 15)
+                // To avoid spamming GitHub API (rate limits), only check every 15 minutes max.
+                // _lastApiCheckTime covers in-session deduplication; _config.LastApiCheckTime
+                // persists across restarts so the cooldown survives app close/reopen.
+                var lastCheck = _config.LastApiCheckTime.HasValue && _config.LastApiCheckTime.Value > _lastApiCheckTime
+                    ? _config.LastApiCheckTime.Value
+                    : _lastApiCheckTime;
+
+                if ((_cachedOptiScalerVersions == null || _cachedOptiScalerVersions.Count == 0) ||
+                    (DateTime.Now - lastCheck).TotalMinutes > 15)
                 {
-                    DebugWindow.Log($"[ComponentCheck] Fetching updates from GitHub API (Rates: {(DateTime.Now - _lastApiCheckTime).ToString(@"hh\:mm\:ss")} since last check)");
+                    DebugWindow.Log($"[ComponentCheck] Fetching updates from GitHub API (last check: {(DateTime.Now - lastCheck).ToString(@"hh\:mm\:ss")} ago)");
+
+                    // Record the attempt time BEFORE making any calls so the cooldown
+                    // persists even when all requests fail with 403.
+                    _lastApiCheckTime = DateTime.Now;
+                    _config.LastApiCheckTime = DateTime.Now;
+                    SaveConfiguration();
+
                     try
                     {
-                        // Always fetch both stable and beta versions + extras
+                        // Stagger requests by 150 ms each to avoid triggering GitHub's burst
+                        // detection — all 5 requests still complete in under 1 second.
                         var optiVersionsTask = FetchAllReleasesWithUrlAsync(_config.OptiScaler, isBeta: false);
+                        await Task.Delay(150);
                         var optiBetasTask = FetchAllReleasesWithUrlAsync(_config.OptiScalerBetas, isBeta: true);
+                        await Task.Delay(150);
                         var fakeTask = FetchFakenvapiReleasesAsync();
-                        var nukemTask = CheckComponentUpdateAsync("NukemFG", _config.NukemFG);
+                        await Task.Delay(150);
                         var extrasTask = FetchExtrasReleasesAsync();
+                        await Task.Delay(150);
                         var optiPatcherTask = FetchOptiPatcherReleasesAsync();
 
-                        await Task.WhenAll(optiVersionsTask, optiBetasTask, fakeTask, nukemTask, extrasTask, optiPatcherTask);
+                        await Task.WhenAll(optiVersionsTask, optiBetasTask, fakeTask, extrasTask, optiPatcherTask);
 
                         var stableEntries = await optiVersionsTask;
                         var betaEntries = await optiBetasTask;
@@ -684,7 +708,6 @@ namespace OptiscalerClient.Services
                             RebuildInMemoryFakenvapiCache();
                         }
                         _cachedFakenvapiVersion = _cachedLatestFakenvapiVersion ?? _cachedFakenvapiVersion;
-                        _cachedNukemFGVersion = await nukemTask ?? _cachedNukemFGVersion;
 
                         var newOptiPatcher = await optiPatcherTask;
                         if (newOptiPatcher.Count > 0)
@@ -712,7 +735,6 @@ namespace OptiscalerClient.Services
                             RebuildInMemoryOptiPatcherCache();
                         }
 
-                        _lastApiCheckTime = DateTime.Now;
                     }
                     catch (Exception apiEx)
                     {
@@ -750,6 +772,11 @@ namespace OptiscalerClient.Services
                 LastError = ex;
                 throw;
             }
+            }
+            finally
+            {
+                _checkSemaphore.Release();
+            }
         }
 
         private async Task<string?> CheckComponentUpdateAsync(string componentName, RepositoryConfig config)
@@ -757,7 +784,7 @@ namespace OptiscalerClient.Services
             try
             {
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -799,31 +826,9 @@ namespace OptiscalerClient.Services
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
                 DebugWindow.Log($"[FetchVersions] GET {url}");
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 DebugWindow.Log($"[FetchVersions] {repoLabel} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
-
-                string? actualLatestTag = null;
-                if (!isBeta)
-                {
-                    try
-                    {
-                        var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                        var latestResponse = await GetWithRetryAsync(_httpClient, latestUrl);
-                        if (latestResponse.IsSuccessStatusCode)
-                        {
-                            var latestJson = await latestResponse.Content.ReadAsStringAsync();
-                            using var latestDoc = JsonDocument.Parse(latestJson);
-                            if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
-                            {
-                                actualLatestTag = tag.GetString();
-                                if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
-                                    actualLatestTag = actualLatestTag.Substring(1);
-                            }
-                        }
-                    }
-                    catch (Exception ex) { DebugWindow.Log($"[FetchVersions] Failed to resolve latest tag: {ex.Message}"); }
-                }
 
                 var json = await response.Content.ReadAsStringAsync();
                 using var doc = JsonDocument.Parse(json);
@@ -871,15 +876,7 @@ namespace OptiscalerClient.Services
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(actualLatestTag))
-                        {
-                            if (string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase))
-                            {
-                                isThisLatestStable = true;
-                                latestStableMarked = true;
-                            }
-                        }
-                        else if (!latestStableMarked && !isPrerelease)
+                        if (!latestStableMarked && !isPrerelease)
                         {
                             isThisLatestStable = true;
                             latestStableMarked = true;
@@ -923,7 +920,7 @@ namespace OptiscalerClient.Services
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
                 DebugWindow.Log($"[FetchVersions] GET {url}");
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 DebugWindow.Log($"[FetchVersions] {repoLabel} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -979,7 +976,7 @@ namespace OptiscalerClient.Services
                 }
 
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 DebugWindow.Log($"[ExtrasVersions] GET {url} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -1093,7 +1090,7 @@ namespace OptiscalerClient.Services
                     try
                     {
                         var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
-                        var response = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
+                        var response = await GetWithRetryAsync(() => _httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
                         if (!response.IsSuccessStatusCode) continue;
 
                         var json = await response.Content.ReadAsStringAsync();
@@ -1130,7 +1127,7 @@ namespace OptiscalerClient.Services
             try
             {
                 // Stream download with retry and per-attempt timeout
-                await StreamToFileAsync(_httpClient, downloadUrl, tempZip, progress, 20 * 1024 * 1024);
+                await StreamToFileAsync(() => _httpClient, downloadUrl, tempZip, progress, 20 * 1024 * 1024);
 
                 // Extract only the target DLL with path validation (off the UI thread)
                 DebugWindow.Log($"[ExtrasDownload] Extracting from {Path.GetFileName(tempZip)}");
@@ -1298,28 +1295,8 @@ namespace OptiscalerClient.Services
                     return entries;
                 }
 
-                // Resolve the actual latest tag from GitHub
-                string? actualLatestTag = null;
-                try
-                {
-                    var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                    var latestResp = await GetWithRetryAsync(_httpClient, latestUrl, maxRetries: 2, timeoutSeconds: 15);
-                    if (latestResp.IsSuccessStatusCode)
-                    {
-                        var latestJson = await latestResp.Content.ReadAsStringAsync();
-                        using var latestDoc = JsonDocument.Parse(latestJson);
-                        if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
-                        {
-                            actualLatestTag = tag.GetString();
-                            if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
-                                actualLatestTag = actualLatestTag.Substring(1);
-                        }
-                    }
-                }
-                catch (Exception ex) { DebugWindow.Log($"[FakenvapiVersions] Failed to resolve latest tag: {ex.Message}"); }
-
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 DebugWindow.Log($"[FakenvapiVersions] GET {url} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -1368,11 +1345,7 @@ namespace OptiscalerClient.Services
                     if (downloadUrl == null && element.TryGetProperty("zipball_url", out var zipballProp))
                         downloadUrl = zipballProp.GetString();
 
-                    bool isLatest;
-                    if (!string.IsNullOrEmpty(actualLatestTag))
-                        isLatest = string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase);
-                    else
-                        isLatest = !latestMarked;
+                    bool isLatest = !latestMarked;
 
                     entries.Add(new FakenvapiReleaseEntry
                     {
@@ -1435,7 +1408,7 @@ namespace OptiscalerClient.Services
                     try
                     {
                         var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
-                        var resp = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
+                        var resp = await GetWithRetryAsync(() => _httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
                         if (!resp.IsSuccessStatusCode) continue;
 
                         var json = await resp.Content.ReadAsStringAsync();
@@ -1476,7 +1449,7 @@ namespace OptiscalerClient.Services
             try
             {
                 DebugWindow.Log($"[FakenvapiDownload] Downloading {downloadUrl}");
-                await StreamToFileAsync(_httpClient, downloadUrl, tempFile, progress);
+                await StreamToFileAsync(() => _httpClient, downloadUrl, tempFile, progress);
 
                 if (Directory.Exists(cacheDir))
                     Directory.Delete(cacheDir, true);
@@ -1569,28 +1542,8 @@ namespace OptiscalerClient.Services
                     return entries;
                 }
 
-                // First, resolve the actual latest tag from GitHub
-                string? actualLatestTag = null;
-                try
-                {
-                    var latestUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                    var latestResp = await GetWithRetryAsync(_httpClient, latestUrl, maxRetries: 2, timeoutSeconds: 15);
-                    if (latestResp.IsSuccessStatusCode)
-                    {
-                        var latestJson = await latestResp.Content.ReadAsStringAsync();
-                        using var latestDoc = JsonDocument.Parse(latestJson);
-                        if (latestDoc.RootElement.TryGetProperty("tag_name", out var tag))
-                        {
-                            actualLatestTag = tag.GetString();
-                            if (actualLatestTag != null && actualLatestTag.StartsWith("v", StringComparison.OrdinalIgnoreCase))
-                                actualLatestTag = actualLatestTag.Substring(1);
-                        }
-                    }
-                }
-                catch (Exception ex) { DebugWindow.Log($"[OptiPatcherVersions] Failed to resolve latest tag: {ex.Message}"); }
-
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases?per_page=30";
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 DebugWindow.Log($"[OptiPatcherVersions] GET {url} → HTTP {(int)response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
@@ -1634,12 +1587,8 @@ namespace OptiscalerClient.Services
                         }
                     }
 
-                    // Mark as latest: use actualLatestTag if available, otherwise first in list
-                    bool isLatest;
-                    if (!string.IsNullOrEmpty(actualLatestTag))
-                        isLatest = string.Equals(version, actualLatestTag, StringComparison.OrdinalIgnoreCase);
-                    else
-                        isLatest = !latestMarked;
+                    // Mark the first entry in the sorted list as latest
+                    bool isLatest = !latestMarked;
 
                     entries.Add(new OptiPatcherReleaseEntry
                     {
@@ -1701,7 +1650,7 @@ namespace OptiscalerClient.Services
                     try
                     {
                         var apiUrl = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/tags/{prefix}{version}";
-                        var response = await GetWithRetryAsync(_httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
+                        var response = await GetWithRetryAsync(() => _httpClient, apiUrl, maxRetries: 2, timeoutSeconds: 15);
                         if (!response.IsSuccessStatusCode) continue;
 
                         var json = await response.Content.ReadAsStringAsync();
@@ -1735,7 +1684,7 @@ namespace OptiscalerClient.Services
             Directory.CreateDirectory(cacheDir);
 
             DebugWindow.Log($"[OptiPatcherDownload] Downloading {downloadUrl}");
-            await StreamToFileAsync(_httpClient, downloadUrl, asiPath, progress, 5 * 1024 * 1024);
+            await StreamToFileAsync(() => _httpClient, downloadUrl, asiPath, progress, 5 * 1024 * 1024);
 
             if (!File.Exists(asiPath))
                 throw new Exception("OptiPatcher.asi was not downloaded correctly.");
@@ -1842,14 +1791,14 @@ namespace OptiscalerClient.Services
                     // Try stable repo with v prefix
                     var url = $"https://api.github.com/repos/{_config.OptiScaler.RepoOwner}/{_config.OptiScaler.RepoName}/releases/tags/v{version}";
                     DebugWindow.Log($"[Download] Trying stable repo (with v prefix): {url}");
-                    response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
+                    response = await GetWithRetryAsync(() => _httpClient, url, maxRetries: 2, timeoutSeconds: 20);
 
                     if (!response.IsSuccessStatusCode)
                     {
                         // Try stable repo without v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScaler.RepoOwner}/{_config.OptiScaler.RepoName}/releases/tags/{version}";
                         DebugWindow.Log($"[Download] Trying stable repo (without v prefix): {url}");
-                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
+                        response = await GetWithRetryAsync(() => _httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                     }
 
                     if (!response.IsSuccessStatusCode)
@@ -1857,7 +1806,7 @@ namespace OptiscalerClient.Services
                         // Try beta repo with v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScalerBetas.RepoOwner}/{_config.OptiScalerBetas.RepoName}/releases/tags/v{version}";
                         DebugWindow.Log($"[Download] Trying beta repo (with v prefix): {url}");
-                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
+                        response = await GetWithRetryAsync(() => _httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                         repoSource = " (beta repo)";
                     }
 
@@ -1866,7 +1815,7 @@ namespace OptiscalerClient.Services
                         // Try beta repo without v prefix
                         url = $"https://api.github.com/repos/{_config.OptiScalerBetas.RepoOwner}/{_config.OptiScalerBetas.RepoName}/releases/tags/{version}";
                         DebugWindow.Log($"[Download] Trying beta repo (without v prefix): {url}");
-                        response = await GetWithRetryAsync(_httpClient, url, maxRetries: 2, timeoutSeconds: 20);
+                        response = await GetWithRetryAsync(() => _httpClient, url, maxRetries: 2, timeoutSeconds: 20);
                         repoSource = " (beta repo)";
                     }
 
@@ -1941,7 +1890,7 @@ namespace OptiscalerClient.Services
                 try
                 {
                     // Stream download with retry and per-attempt timeout
-                    await StreamToFileAsync(_httpClient, downloadUrl, tempZip, progress);
+                    await StreamToFileAsync(() => _httpClient, downloadUrl, tempZip, progress);
 
                     // Extract with path traversal validation (off the UI thread)
                     DebugWindow.Log($"[Extract] Starting extraction of {Path.GetFileName(tempZip)} to {extractPath}");
@@ -2082,7 +2031,7 @@ namespace OptiscalerClient.Services
             {
                 // Get release info (with retry)
                 var url = $"https://api.github.com/repos/{config.RepoOwner}/{config.RepoName}/releases/latest";
-                var response = await GetWithRetryAsync(_httpClient, url);
+                var response = await GetWithRetryAsync(() => _httpClient, url);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -2121,7 +2070,7 @@ namespace OptiscalerClient.Services
                 {
                     // Stream download with retry and per-attempt timeout
                     DebugWindow.Log($"[Download] Streaming {componentName} from {Path.GetFileName(downloadUrl)}");
-                    await StreamToFileAsync(_httpClient, downloadUrl, tempZip);
+                    await StreamToFileAsync(() => _httpClient, downloadUrl, tempZip);
 
                     // Extract with path traversal validation
                     if (Directory.Exists(extractPath))

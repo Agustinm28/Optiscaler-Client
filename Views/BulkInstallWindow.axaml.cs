@@ -166,7 +166,9 @@ public partial class BulkInstallWindow : Window
     {
         if (_componentService.OptiScalerAvailableVersions.Count == 0)
         {
-            await _componentService.CheckForUpdatesAsync();
+            try { await _componentService.CheckForUpdatesAsync(); }
+            catch (GitHubRateLimitException) { /* rate limited — populate from cache */ }
+            catch (Exception) { /* network error — populate from cache */ }
         }
 
         Dispatcher.UIThread.Post(() =>

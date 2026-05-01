@@ -268,11 +268,21 @@ namespace OptiscalerClient.Views
             PopulateProfileSelector(profileService, profiles, _lastSelectedProfileName ?? _defaultProfileName);
             PopulateVersionSelectors(componentService);
 
-            // Refresh from GitHub API in background
-            await componentService.CheckForUpdatesAsync();
-
-            // Re-populate version selectors with updated data from API
-            PopulateVersionSelectors(componentService);
+            // Wait for the GitHub API check (may block if startup check is in-flight,
+            // which is intentional — the semaphore prevents concurrent fetches and ensures
+            // we get fresh data before the second populate).
+            // Always re-populate selectors afterwards, even if the check threw.
+            try
+            {
+                await componentService.CheckForUpdatesAsync();
+            }
+            catch (GitHubRateLimitException) { /* rate limited — show whatever is cached */ }
+            catch (Exception) { /* network error — show whatever is cached */ }
+            finally
+            {
+                // Re-populate version selectors with updated data from API (or from cache if API was skipped/failed)
+                PopulateVersionSelectors(componentService);
+            }
         }
 
         /// <summary>
