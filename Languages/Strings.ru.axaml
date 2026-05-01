@@ -564,6 +564,13 @@
     <x:String x:Key="TxtNetworkTestOk">✓ Подключено</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ Не удалось</x:String>
     <x:String x:Key="TxtNetworkTestTesting">Проверка…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Журнал изменений</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Полный список изменений и новых функций этой версии доступен на GitHub.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Посмотреть журнал изменений на GitHub</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Начало работы</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Настоятельно рекомендую ознакомиться со встроенным руководством во вкладке «Помощь», чтобы разобраться в приложении или решить конкретные вопросы.</x:String>
 </ResourceDictionary>
 
 

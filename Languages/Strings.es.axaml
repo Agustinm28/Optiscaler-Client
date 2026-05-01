@@ -566,6 +566,13 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtDefaultBadge">PREDETERMINADO</x:String>
     <x:String x:Key="TxtCurrentDefaultFormat">Predeterminado actual: {0}</x:String>
     <x:String x:Key="TxtNoDefaultSet">Sin versión predeterminada</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Historial de Cambios</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Podés ver la lista completa de cambios y novedades de esta versión en GitHub.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Ver historial en GitHub</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Guía de Inicio</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Te recomiendo encarecidamente revisar la guía integrada en la pestaña de Ayuda para orientarte con la app o resolver cualquier duda puntual.</x:String>
 </ResourceDictionary>
 
 

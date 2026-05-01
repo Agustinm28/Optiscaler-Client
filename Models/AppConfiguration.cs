@@ -151,6 +151,12 @@ namespace OptiscalerClient.Models
         /// When this matches the current AppVersion, the migration step is skipped entirely.
         /// </summary>
         public string? LastMigratedAppVersion { get; set; } = null;
+
+        /// <summary>
+        /// Version of the app that was running when the user last saw the welcome/changelog popup.
+        /// When this differs from the current AppVersion, the welcome window is shown again.
+        /// </summary>
+        public string? LastSeenAppVersion { get; set; } = null;
     }
 
     /// <summary>

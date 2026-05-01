@@ -564,6 +564,13 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtNetworkTestOk">✓ Verbunden</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ Fehlgeschlagen</x:String>
     <x:String x:Key="TxtNetworkTestTesting">Test läuft…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Änderungsprotokoll</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Die vollständige Liste der Änderungen und neuen Funktionen dieser Version ist auf GitHub verfügbar.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Änderungsprotokoll auf GitHub anzeigen</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Erste Schritte</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Ich empfehle dringend, die integrierte Anleitung im Tab „Hilfe“ aufzurufen, um sich mit der App vertraut zu machen oder spezifische Fragen zu klären.</x:String>
 </ResourceDictionary>
 
 

@@ -564,6 +564,13 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtNetworkTestOk">✓ Verbonden</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ Mislukt</x:String>
     <x:String x:Key="TxtNetworkTestTesting">Bezig met testen…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Wijzigingslogboek</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">De volledige lijst van wijzigingen en nieuwe functies van deze versie is beschikbaar op GitHub.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Bekijk wijzigingslogboek op GitHub</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Aan de slag</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Ik raad sterk aan om de ingebouwde handleiding in het tabblad Help te raadplegen om vertrouwd te raken met de app of specifieke vragen te beantwoorden.</x:String>
 </ResourceDictionary>
 
 

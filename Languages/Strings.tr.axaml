@@ -562,6 +562,13 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtNetworkTestOk">✓ Bağlandı</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ Başarısız</x:String>
     <x:String x:Key="TxtNetworkTestTesting">Test ediliyor…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Değişiklik Günlüğü</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Bu sürümün tüm değişikliklerinin ve yeni özelliklerinin tam listesini GitHub&apos;da görebilirsiniz.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; GitHub&apos;da değişiklik günlüğünü görüntüle</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Başlarken</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Uygulamaya alışmak veya belirli sorularınızı çözmek için Yardım sekmesindeki yerleşik kılavuzu incelemenizi şiddetle tavsiye ederim.</x:String>
 </ResourceDictionary>
 
 

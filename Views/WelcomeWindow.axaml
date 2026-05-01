@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="OptiscalerClient.Views.WelcomeWindow"
+        Title="Welcome"
+        Width="620"
+        Height="660"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Panel Margin="16" Name="RootPanel" Opacity="0">
+        <Border CornerRadius="12"
+                Background="{StaticResource BrBgBase}"
+                BoxShadow="0 10 30 0 #A0000000">
+
+            <Grid>
+                <!-- Subtle border overlay (never clipped) -->
+                <Border CornerRadius="12"
+                        BorderBrush="{StaticResource BrBorderSubtle}"
+                        BorderThickness="1"
+                        ZIndex="10"
+                        IsHitTestVisible="False"/>
+
+                <Border CornerRadius="12"
+                        Background="Transparent"
+                        ClipToBounds="True">
+
+                    <Grid RowDefinitions="Auto, *, Auto">
+
+                        <!-- Title Bar -->
+                        <Border Grid.Row="0"
+                                Name="TitleBar"
+                                Background="{StaticResource BrBgDeep}"
+                                Padding="24,18"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel>
+                                <TextBlock Text="{DynamicResource TxtHelpGSWelcomeTitle}"
+                                           FontSize="18"
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                <TextBlock Name="TxtVersionDisplay"
+                                           FontSize="12"
+                                           Foreground="{StaticResource BrAccent}"
+                                           Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Content -->
+                        <ScrollViewer Grid.Row="1" Padding="0">
+                            <StackPanel Spacing="12" Margin="24,18">
+                                <!-- Disclaimer card -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrWarning}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="16,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtHelpDisclaimerTitle}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrWarning}"/>
+                                        <TextBlock Text="{DynamicResource TxtHelpDisclaimerContent}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   LineHeight="18"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Changelog card -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="16,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtWelcomeChangelogTitle}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <TextBlock Text="{DynamicResource TxtWelcomeChangelogContent}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   LineHeight="18"/>
+                                        <Button Content="{DynamicResource TxtWelcomeChangelogLink}"
+                                                Classes="BtnBase"
+                                                HorizontalAlignment="Left"
+                                                Padding="12,5"
+                                                FontSize="11"
+                                                Margin="0,4,0,0"
+                                                Click="BtnOpenChangelog_Click"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Guide recommendation card -->
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="16,12">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="{DynamicResource TxtWelcomeGuideTitle}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrAccent}"/>
+                                        <TextBlock Text="{DynamicResource TxtWelcomeGuideContent}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="12"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   LineHeight="18"/>
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+                        </ScrollViewer>
+
+                        <!-- Footer -->
+                        <Border Grid.Row="2"
+                                Padding="24,18"
+                                Background="{StaticResource BrBgDeep}"
+                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                BorderThickness="0,1,0,0">
+                            <Button Name="BtnGotIt"
+                                    Content="{DynamicResource TxtGotIt}"
+                                    Classes="BtnPrimary"
+                                    HorizontalAlignment="Right"
+                                    Padding="24,10"
+                                    FontSize="13"
+                                    Click="BtnClose_Click"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Panel>
+</Window>

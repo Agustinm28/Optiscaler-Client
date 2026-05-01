@@ -218,6 +218,15 @@ namespace OptiscalerClient.Views
 
                 UpdateAnimationsState(_componentService.Config.AnimationsEnabled);
 
+                // Show welcome/changelog popup when the app version changes (or on first run)
+                if (_componentService.Config.LastSeenAppVersion != App.AppVersion)
+                {
+                    var welcome = new WelcomeWindow(this);
+                    await welcome.ShowDialog(this);
+                    _componentService.Config.LastSeenAppVersion = App.AppVersion;
+                    _componentService.SaveConfiguration();
+                }
+
                 if (!hadSavedGames)
                 {
                     if (_componentService.Config.HasCompletedInitialScan)

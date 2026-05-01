@@ -562,6 +562,13 @@
     <x:String x:Key="TxtNetworkTestOk">✓ 已連線</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ 失敗</x:String>
     <x:String x:Key="TxtNetworkTestTesting">測試中…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">更新日誌</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">此版本的完整變更和新功能列表可在 GitHub 上查看。</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; 在 GitHub 上查看更新日誌</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">快速入門</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">強烈建議查看說明選項卡中的內建指南，以便熟悉應用程式或解答特定問題。</x:String>
 </ResourceDictionary>
 
 

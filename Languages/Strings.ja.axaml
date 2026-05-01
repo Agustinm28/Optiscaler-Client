@@ -564,6 +564,13 @@
     <x:String x:Key="TxtNetworkTestOk">✓ 接続成功</x:String>
     <x:String x:Key="TxtNetworkTestFail">✗ 失敗</x:String>
     <x:String x:Key="TxtNetworkTestTesting">テスト中…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">変更履歴</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">このバージョンの変更点と新機能の完全なリストはGitHubで確認できます。</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; GitHubで変更履歴を見る</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">はじめに</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">アプリに慣れるため、または特定の質問を解決するために、ヘルプタブの組み込みガイドを確認することを強くお勧めします。</x:String>
 </ResourceDictionary>
 
 
