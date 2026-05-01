@@ -166,6 +166,7 @@ namespace OptiscalerClient.Views
         public ManageGameWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _game = null!;
             _gpuService = null!;
         }
@@ -173,6 +174,7 @@ namespace OptiscalerClient.Views
         public ManageGameWindow(Window owner, Game game)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _game = game;
             _ownerWindow = owner;
             _originalCoverPath = game.CoverImageUrl;
@@ -1041,6 +1043,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);
@@ -2170,6 +2173,14 @@ namespace OptiscalerClient.Views
             }
             var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
             var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
+
+            // Do not re-enable these controls when the selected OptiScaler version already
+            // bundles fakenvapi and nukemfg (>= 0.9). UpdateCheckboxStatesForVersion owns
+            // the disabled state for those versions.
+            var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
+            var selectedOptiTag = (cmbOptiVersion?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+            if (IsVersionGreaterOrEqual(selectedOptiTag, 0, 9))
+                return;
 
             if (gpu != null && gpu.Vendor == GpuVendor.NVIDIA)
             {

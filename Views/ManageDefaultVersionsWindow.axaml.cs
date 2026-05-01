@@ -23,12 +23,14 @@ namespace OptiscalerClient.Views
         public ManageDefaultVersionsWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public ManageDefaultVersionsWindow(Window owner, ComponentManagementService componentService)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
 
             _gpuService = PlatformServiceFactory.CreateGpuDetectionService();

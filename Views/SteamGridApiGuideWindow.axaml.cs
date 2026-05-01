@@ -15,11 +15,13 @@ namespace OptiscalerClient.Views
         public SteamGridApiGuideWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
         }
 
         public SteamGridApiGuideWindow(Window? owner)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
 
             Opacity = 0;
 
@@ -70,6 +72,7 @@ namespace OptiscalerClient.Views
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
 
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
 

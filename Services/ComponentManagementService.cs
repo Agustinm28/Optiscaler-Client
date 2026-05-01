@@ -1263,7 +1263,21 @@ namespace OptiscalerClient.Services
             }
             _cachedLatestFakenvapiVersion = _fakenvapiCache.Releases.FirstOrDefault(r => r.IsLatest)?.Version
                 ?? _fakenvapiCache.Releases.FirstOrDefault()?.Version;
-            _cachedFakenvapiVersions = _fakenvapiCache.Releases.Select(r => r.Version).Distinct().ToList();
+
+            static Version parseFakenvapiVer(string v)
+            {
+                var clean = v.TrimStart('v');
+                var dash = clean.IndexOf('-');
+                if (dash >= 0) clean = clean[..dash];
+                return Version.TryParse(clean, out var p) ? p : new Version(0, 0);
+            }
+
+            _cachedFakenvapiVersions = _fakenvapiCache.Releases
+                .Select(r => r.Version)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderByDescending(v => parseFakenvapiVer(v))
+                .ThenByDescending(v => v, StringComparer.OrdinalIgnoreCase)
+                .ToList();
             DebugWindow.Log($"[FakenvapiCache] Rebuilt in-memory: {_cachedFakenvapiVersions.Count} version(s), latest={_cachedLatestFakenvapiVersion}");
         }
 
@@ -2406,7 +2420,18 @@ namespace OptiscalerClient.Services
                     versions.Add(Path.GetFileName(dir));
                 }
             }
-            return versions.OrderByDescending(v => v).ToList();
+            static Version parseNukemVer(string v)
+            {
+                var clean = v.TrimStart('v');
+                var dash = clean.IndexOf('-');
+                if (dash >= 0) clean = clean[..dash];
+                return Version.TryParse(clean, out var p) ? p : new Version(0, 0);
+            }
+
+            return versions
+                .OrderByDescending(v => parseNukemVer(v))
+                .ThenByDescending(v => v, StringComparer.OrdinalIgnoreCase)
+                .ToList();
         }
 
         public void DeleteNukemFGCache(string version)

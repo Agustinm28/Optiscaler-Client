@@ -23,12 +23,14 @@ namespace OptiscalerClient.Views
         public ManageScanSourcesWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public ManageScanSourcesWindow(Window owner, ComponentManagementService componentService)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
 
             this.Opacity = 0;

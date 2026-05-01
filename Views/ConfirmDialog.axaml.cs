@@ -17,11 +17,13 @@ namespace OptiscalerClient.Views
         public ConfirmDialog()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
         }
 
         public ConfirmDialog(Window? owner, string title, string message, bool isAlert = false, string? iconOverride = null)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             
             // 100% Flicker-free startup strategy:
             // 1. Invisible and at targeted position before becoming visible.
@@ -109,6 +111,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);

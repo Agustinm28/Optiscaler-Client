@@ -524,5 +524,12 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                CornerRadius="12"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Panel>
 </Window>

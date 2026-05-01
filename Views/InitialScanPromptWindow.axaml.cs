@@ -40,12 +40,14 @@ namespace OptiscalerClient.Views
         public InitialScanPromptWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public InitialScanPromptWindow(Window owner, ComponentManagementService componentService, bool isFirstTime = true)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
 
             this.Opacity = 0;

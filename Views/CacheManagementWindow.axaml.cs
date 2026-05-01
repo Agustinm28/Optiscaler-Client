@@ -27,6 +27,7 @@ namespace OptiscalerClient.Views
         public CacheManagementWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
@@ -38,6 +39,7 @@ namespace OptiscalerClient.Views
         public CacheManagementWindow(string initialSection)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
             _currentSection = initialSection;
 
@@ -61,6 +63,7 @@ namespace OptiscalerClient.Views
         public CacheManagementWindow(Window owner, string initialSection = "opti-stable")
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
             _currentSection = initialSection;
 
@@ -950,6 +953,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);

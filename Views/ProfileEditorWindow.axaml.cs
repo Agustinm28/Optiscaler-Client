@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using OptiscalerClient.Helpers;
 using OptiscalerClient.Models;
 using OptiscalerClient.Services;
 
@@ -40,6 +41,7 @@ namespace OptiscalerClient.Views
         public ProfileEditorWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _profile = OptiScalerProfile.CreateEmpty();
             _isNewProfile = true;
             SetupWindow();
@@ -48,6 +50,7 @@ namespace OptiscalerClient.Views
         public ProfileEditorWindow(OptiScalerProfile profile, bool isNewProfile = false)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _profile = profile;
             _isNewProfile = isNewProfile;
             SetupWindow();

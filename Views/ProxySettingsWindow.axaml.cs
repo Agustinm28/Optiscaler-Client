@@ -33,12 +33,14 @@ namespace OptiscalerClient.Views
         public ProxySettingsWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public ProxySettingsWindow(Window owner, ComponentManagementService componentService)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
 
             this.Opacity = 0;

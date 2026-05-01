@@ -1888,5 +1888,11 @@
             </Border>
         </Grid>
 
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                Grid.ColumnSpan="2"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Grid>
 </Window>

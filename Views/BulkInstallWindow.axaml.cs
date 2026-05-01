@@ -38,6 +38,7 @@ public partial class BulkInstallWindow : Window
     public BulkInstallWindow()
     {
         InitializeComponent();
+        DialogDimHelper.Register(this);
 
         // Initialize fields to avoid nullable warnings
         _componentService = null!;
@@ -55,6 +56,7 @@ public partial class BulkInstallWindow : Window
         Window? owner = null)
     {
         InitializeComponent();
+        DialogDimHelper.Register(this);
 
         _componentService = componentService;
         _installService = installService;

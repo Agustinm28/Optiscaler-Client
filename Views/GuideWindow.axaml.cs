@@ -16,11 +16,13 @@ namespace OptiscalerClient.Views
         public GuideWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
         }
 
         public GuideWindow(Window? owner)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             
             // 100% Flicker-free startup strategy:
             this.Opacity = 0;
@@ -71,6 +73,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);
