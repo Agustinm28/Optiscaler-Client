@@ -21,6 +21,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -29,6 +30,7 @@ using OptiscalerClient.Models;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Avalonia.Controls.Shapes;
+
 using Avalonia.Layout;
 using OptiscalerClient.Services;
 using Avalonia.Markup.Xaml;
@@ -42,9 +44,14 @@ namespace OptiscalerClient.Views
     public partial class ManageGameWindow : Window
     {
         private readonly Game _game;
-        private readonly IGpuDetectionService _gpuService;
+        private readonly IGpuDetectionService? _gpuService;
         private Window? _ownerWindow;
         private HashSet<string> _betaVersions = new();
+        private HashSet<string> _customVersions = new();
+        private bool _optiShowingBeta;
+        private bool _optiShowingCustom;
+        private bool _optiTabInitialized;
+        private ComponentManagementService? _cachedComponentService;
         private string? _pendingCoverPath;
         private readonly string? _originalCoverPath;
         private const string NewProfileTag = "__NEW_PROFILE__";
@@ -53,6 +60,18 @@ namespace OptiscalerClient.Views
         private string? _defaultProfileName;
 
         public bool NeedsScan { get; private set; }
+
+        // TaskCompletionSource for the corrupt-install-detected modal (3-way: cancel/clean/continue).
+        private TaskCompletionSource<string>? _corruptInstallTcs;
+        // Set to true when the cleanup modal is opened from the corrupt-install flow.
+        // Causes the cleanup Yes/No handlers to resolve _corruptInstallTcs instead of
+        // running the cleanup inline, allowing ExecuteInstallAsync to drive the sequence.
+        private bool _cleanupIsPreInstall;
+        private List<string>? _preInstallCleanupSelectedFiles;
+
+        private static Dictionary<string, string>? _fsrVersionMap;
+        private static Dictionary<string, string>? _dlssVersionMap;
+        private static Dictionary<string, string>? _xessVersionMap;
 
         private void InitializeComponent()
         {
@@ -147,6 +166,7 @@ namespace OptiscalerClient.Views
         public ManageGameWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _game = null!;
             _gpuService = null!;
         }
@@ -154,6 +174,7 @@ namespace OptiscalerClient.Views
         public ManageGameWindow(Window owner, Game game)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _game = game;
             _ownerWindow = owner;
             _originalCoverPath = game.CoverImageUrl;
@@ -172,14 +193,7 @@ namespace OptiscalerClient.Views
                 this.Position = new PixelPoint((int)Math.Max(0, x), (int)Math.Max(0, y));
             }
 
-            if (OperatingSystem.IsWindows())
-            {
-                _gpuService = new WindowsGpuDetectionService();
-            }
-            else
-            {
-                _gpuService = null!;
-            }
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
             SetupUI();
 
@@ -254,11 +268,21 @@ namespace OptiscalerClient.Views
             PopulateProfileSelector(profileService, profiles, _lastSelectedProfileName ?? _defaultProfileName);
             PopulateVersionSelectors(componentService);
 
-            // Refresh from GitHub API in background
-            await componentService.CheckForUpdatesAsync();
-
-            // Re-populate version selectors with updated data from API
-            PopulateVersionSelectors(componentService);
+            // Wait for the GitHub API check (may block if startup check is in-flight,
+            // which is intentional — the semaphore prevents concurrent fetches and ensures
+            // we get fresh data before the second populate).
+            // Always re-populate selectors afterwards, even if the check threw.
+            try
+            {
+                await componentService.CheckForUpdatesAsync();
+            }
+            catch (GitHubRateLimitException) { /* rate limited — show whatever is cached */ }
+            catch (Exception) { /* network error — show whatever is cached */ }
+            finally
+            {
+                // Re-populate version selectors with updated data from API (or from cache if API was skipped/failed)
+                PopulateVersionSelectors(componentService);
+            }
         }
 
         /// <summary>
@@ -268,102 +292,128 @@ namespace OptiscalerClient.Views
         /// </summary>
         private void PopulateVersionSelectors(ComponentManagementService componentService)
         {
+            _cachedComponentService = componentService;
+            _betaVersions = componentService.BetaVersions;
+            _customVersions = componentService.CustomVersions;
+
+            // Show/hide Custom tab based on whether custom versions exist
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+            var gridTabs = this.FindControl<Grid>("GridOptiTabs");
+            bool hasCustom = _customVersions.Count > 0;
+            if (btnCustom != null) btnCustom.IsVisible = hasCustom;
+            if (gridTabs != null)
+                gridTabs.ColumnDefinitions = hasCustom
+                    ? new ColumnDefinitions("*,*,*")
+                    : new ColumnDefinitions("*,*");
+
+            // Determine initial tab only on the first load
+            if (!_optiTabInitialized)
+            {
+                var configDefault = componentService.Config.DefaultOptiScalerVersion;
+                _optiShowingBeta = !string.IsNullOrEmpty(configDefault) && _betaVersions.Contains(configDefault);
+                _optiShowingCustom = !string.IsNullOrEmpty(configDefault) && _customVersions.Contains(configDefault);
+                if (_optiShowingCustom) _optiShowingBeta = false;
+                _optiTabInitialized = true;
+            }
+
+            UpdateOptiChannelButtons();
+            PopulateOptiVersionCombo(componentService);
+
+            // ── Populate FSR4 INT8 Extras selector ────────────────────────────
+            PopulateExtrasComboBox(componentService);
+
+            // ── Populate OptiPatcher selector ─────────────────────────────────
+            PopulateOptiPatcherComboBox(componentService);
+
+            // ── Populate NukemFG selector ─────────────────────────────────────
+            PopulateNukemFGComboBox(componentService);
+
+            // ── Populate Fakenvapi selector ───────────────────────────────────
+            PopulateFakenvapiComboBox(componentService);
+        }
+
+        // ── OptiScaler tab selector ──────────────────────────────────────────
+
+        private void PopulateOptiVersionCombo(ComponentManagementService componentService)
+        {
             var allVersions = componentService.OptiScalerAvailableVersions;
             var betaVersions = componentService.BetaVersions;
+            var customVersions = _customVersions;
+            var latestStable = componentService.LatestStableVersion;
             var latestBeta = componentService.LatestBetaVersion;
-            var showBetaVersions = componentService.Config.ShowBetaVersions;
+
+            string? latestInChannel = _optiShowingCustom ? null : (_optiShowingBeta ? latestBeta : latestStable);
+            string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
 
             var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
             if (cmbOptiVersion == null) return;
 
-            // Unregister before modifying to avoid spurious events
             cmbOptiVersion.SelectionChanged -= CmbOptiVersion_SelectionChanged;
             cmbOptiVersion.Items.Clear();
 
-            if (allVersions.Count == 0)
+            if (allVersions.Count == 0 && !_optiShowingCustom)
             {
                 cmbOptiVersion.Items.Add(GetResourceString("TxtNoOptiDetected", "No version detected"));
                 cmbOptiVersion.SelectedIndex = 0;
                 cmbOptiVersion.IsEnabled = false;
                 cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
+                return;
+            }
 
-                // Still populate extras/patcher (they have their own "no versions" fallback)
-                PopulateExtrasComboBox(componentService);
-                PopulateOptiPatcherComboBox(componentService);
+            System.Collections.Generic.List<string> versionsToShow;
+            if (_optiShowingCustom)
+                versionsToShow = allVersions.Where(v => customVersions.Contains(v)).ToList();
+            else
+                versionsToShow = allVersions.Where(v => !customVersions.Contains(v) && betaVersions.Contains(v) == _optiShowingBeta).ToList();
+
+            if (versionsToShow.Count == 0)
+            {
+                cmbOptiVersion.Items.Add(new ComboBoxItem { Content = "No versions available", Tag = "none" });
+                cmbOptiVersion.SelectedIndex = 0;
+                cmbOptiVersion.IsEnabled = false;
+                cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
                 return;
             }
 
             cmbOptiVersion.IsEnabled = true;
-            _betaVersions = betaVersions;
 
-            var stableVersions = allVersions.Where(v => !betaVersions.Contains(v)).ToList();
-            var otherBetas = allVersions.Where(v => betaVersions.Contains(v) && v != latestBeta).ToList();
-
-            int selectedIndex = 0;
-            int currentIndex = 0;
-
-            // Determine what is truly "latest" - only stable versions get LATEST badge
-            bool hasBeta = !string.IsNullOrEmpty(latestBeta);
-
-            // 1. Latest beta at top (if present) - NO LATEST badge for beta
-            if (hasBeta && latestBeta != null)
+            foreach (var ver in versionsToShow)
             {
-                cmbOptiVersion.Items.Add(BuildVersionItem(latestBeta, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            var latestStable = componentService.LatestStableVersion;
-
-            // 2. Stable versions — mark latest stable based on GitHub's API
-            bool isLatestStableMarked = false;
-            foreach (var ver in stableVersions)
-            {
-                bool shouldMarkAsLatest = false;
-
-                if (!string.IsNullOrEmpty(latestStable))
+                bool isLatest = string.Equals(ver, latestInChannel, StringComparison.OrdinalIgnoreCase);
+                ComboBoxItem cbi;
+                if (isLatest)
                 {
-                    shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
+                    var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+                    stack.Children.Add(new TextBlock { Text = ver, VerticalAlignment = VerticalAlignment.Center });
+                    stack.Children.Add(new Border
+                    {
+                        CornerRadius = new CornerRadius(4),
+                        Background = new SolidColorBrush(Color.Parse(latestBadgeColor)),
+                        Padding = new Thickness(5, 1),
+                        Child = new TextBlock { Text = "LATEST", FontSize = 10, Foreground = Brushes.White, FontWeight = FontWeight.Bold, VerticalAlignment = VerticalAlignment.Center }
+                    });
+                    cbi = new ComboBoxItem { Content = stack, Tag = ver };
                 }
                 else
                 {
-                    shouldMarkAsLatest = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
+                    cbi = new ComboBoxItem { Content = ver, Tag = ver };
                 }
-
-                if (shouldMarkAsLatest)
-                {
-                    isLatestStableMarked = true;
-                }
-
-                // Select default version based on user preference
-                if (showBetaVersions && hasBeta)
-                {
-                    // User prefers latest beta - select the latest beta (index 0)
-                    selectedIndex = 0;
-                }
-                else if (shouldMarkAsLatest)
-                {
-                    // User prefers stable - select the latest stable version
-                    selectedIndex = currentIndex;
-                }
-
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: shouldMarkAsLatest));
-                currentIndex++;
+                cmbOptiVersion.Items.Add(cbi);
             }
 
-            // 3. Remaining betas at end
-            foreach (var ver in otherBetas)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            // Override with user-configured default version if set
+            // Select version: try to match config default if it's in this channel, else select first (latest)
+            int selectedIndex = 0;
             var configDefault = componentService.Config.DefaultOptiScalerVersion;
-            if (!string.IsNullOrEmpty(configDefault))
+            bool defaultInChannel = !string.IsNullOrEmpty(configDefault) &&
+                (_optiShowingCustom
+                    ? customVersions.Contains(configDefault)
+                    : !customVersions.Contains(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta);
+            if (defaultInChannel)
             {
                 for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
                 {
-                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci && string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
+                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci &&
+                        string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
                     {
                         selectedIndex = i;
                         break;
@@ -372,18 +422,68 @@ namespace OptiscalerClient.Views
             }
 
             cmbOptiVersion.SelectedIndex = selectedIndex;
-
-            // Update checkbox states based on initial selection
             UpdateCheckboxStatesForVersion(cmbOptiVersion);
-
-            // Wire SelectionChanged here so it only fires on user interaction, not during init
             cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
+        }
 
-            // ── Populate FSR4 INT8 Extras selector ────────────────────────────
-            PopulateExtrasComboBox(componentService);
+        private void UpdateOptiChannelButtons()
+        {
+            var btnStable = this.FindControl<Button>("BtnOptiStable");
+            var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+            if (btnStable == null || btnBeta == null) return;
 
-            // ── Populate OptiPatcher selector ─────────────────────────────────
-            PopulateOptiPatcherComboBox(componentService);
+            void SetActive(Button b) { b.Classes.Remove("BtnSecondary"); b.Classes.Add("BtnPrimary"); }
+            void SetInactive(Button b) { b.Classes.Remove("BtnPrimary"); b.Classes.Add("BtnSecondary"); }
+
+            if (_optiShowingCustom)
+            {
+                SetInactive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetActive(btnCustom);
+            }
+            else if (_optiShowingBeta)
+            {
+                SetInactive(btnStable);
+                SetActive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
+            }
+            else
+            {
+                SetActive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
+            }
+        }
+
+        private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
+        {
+            if (!_optiShowingBeta && !_optiShowingCustom) return;
+            _optiShowingBeta = false;
+            _optiShowingCustom = false;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
+        }
+
+        private void BtnOptiBeta_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_optiShowingBeta) return;
+            _optiShowingBeta = true;
+            _optiShowingCustom = false;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
+        }
+
+        private void BtnOptiCustom_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_optiShowingCustom) return;
+            _optiShowingCustom = true;
+            _optiShowingBeta = false;
+            UpdateOptiChannelButtons();
+            if (_cachedComponentService != null)
+                PopulateOptiVersionCombo(_cachedComponentService);
         }
 
         /// <summary>
@@ -430,7 +530,7 @@ namespace OptiscalerClient.Views
 
             // Determine default selection
             bool isRdna4 = false;
-            if (OperatingSystem.IsWindows() && _gpuService != null)
+            if (_gpuService != null)
             {
                 try
                 {
@@ -534,6 +634,121 @@ namespace OptiscalerClient.Views
             cmb.SelectedIndex = targetIndex;
         }
 
+        /// <summary>
+        /// Populates CmbNukemFGVersion with cached NukemFG versions + "None" + "Manage versions…" option.
+        /// </summary>
+        private void PopulateNukemFGComboBox(ComponentManagementService componentService)
+        {
+            var cmb = this.FindControl<ComboBox>("CmbNukemFGVersion");
+            if (cmb == null) return;
+
+            cmb.Items.Clear();
+
+            // Option 0: None (default — opt-in)
+            cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+            var versions = componentService.GetDownloadedNukemFGVersions();
+            foreach (var ver in versions)
+            {
+                cmb.Items.Add(new ComboBoxItem { Content = ver, Tag = ver });
+            }
+
+            // Last option: Manage versions...
+            cmb.Items.Add(new ComboBoxItem { Content = "Manage versions…", Tag = "__manage__" });
+
+            // Pre-select configured default
+            var savedNukemFG = componentService.Config.DefaultNukemFGVersion;
+            cmb.SelectedIndex = 0;
+            if (!string.IsNullOrEmpty(savedNukemFG) && !savedNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                for (int i = 1; i < cmb.Items.Count; i++)
+                {
+                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedNukemFG)
+                    {
+                        cmb.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            cmb.SelectionChanged += (s, e) =>
+            {
+                if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+                {
+                    // Reset selection to None
+                    cmb.SelectedIndex = 0;
+                    // Open CacheManagementWindow
+                    var cacheWindow = new CacheManagementWindow("nukemfg");
+                    cacheWindow.ShowDialog(this);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Populates CmbFakenvapiVersion with available Fakenvapi versions + "None" + "Manage versions…".
+        /// Shows a "latest" badge on the latest version.
+        /// </summary>
+        private void PopulateFakenvapiComboBox(ComponentManagementService componentService)
+        {
+            var cmb = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            if (cmb == null) return;
+
+            cmb.Items.Clear();
+
+            // Option 0: None (default — opt-in)
+            cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+            var versions = componentService.FakenvapiAvailableVersions;
+            foreach (var ver in versions)
+            {
+                var isLatest = ver == componentService.LatestFakenvapiVersion;
+                cmb.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: isLatest));
+            }
+
+            // Last option: Manage versions…
+            cmb.Items.Add(new ComboBoxItem { Content = "Manage versions…", Tag = "__manage__" });
+
+            // Pre-select configured default
+            var savedFakenvapi = componentService.Config.DefaultFakenvapiVersion;
+            cmb.SelectedIndex = 0;
+            if (!string.IsNullOrEmpty(savedFakenvapi) && !savedFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase))
+            {
+                for (int i = 1; i < cmb.Items.Count; i++)
+                {
+                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedFakenvapi)
+                    {
+                        cmb.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            cmb.SelectionChanged += (s, e) =>
+            {
+                if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+                {
+                    cmb.SelectedIndex = 0;
+                    var cacheWindow = new CacheManagementWindow("fakenvapi");
+                    cacheWindow.ShowDialog(this);
+                }
+            };
+        }
+
+        private void CheckIfAntiCheat()
+        {
+            const string anticheatName = "start_protected_game.exe";
+            var anticheatPanel = this.FindControl<Border>("EasyAntiCheat");
+
+            bool antiCheatFound = !string.IsNullOrEmpty(_game?.InstallPath) &&
+                         File.Exists(System.IO.Path.Combine(_game.InstallPath, anticheatName));
+
+            if (anticheatPanel != null)
+            {
+                anticheatPanel.IsVisible = antiCheatFound;
+                anticheatPanel.IsEnabled = antiCheatFound;
+            }
+        }
+
         private void UpdateCheckboxStatesForVersion(ComboBox? cmb)
         {
             if (cmb == null) return;
@@ -545,44 +760,44 @@ namespace OptiscalerClient.Views
             // regardless of whether it's a beta or stable build.
             bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
 
-            var chkFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+            var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
             var betaInfoPanel = this.FindControl<Border>("BetaInfoPanel");
 
-            // Show or hide beta info panel as before
+            // Show info panel for betas and stable >= 0.9 (both include Fakenvapi/NukemFG)
             if (betaInfoPanel != null)
             {
-                betaInfoPanel.IsVisible = isBeta;
+                betaInfoPanel.IsVisible = isBeta || includedInPackage;
             }
 
             if (includedInPackage)
             {
                 // For versions >= 0.9 the files are included; disable and clear selections
-                if (chkFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkFakenvapi.IsEnabled = false;
-                    chkFakenvapi.IsChecked = false;
-                    ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+                    cmbFakenvapi.IsEnabled = false;
+                    cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbFakenvapi, "Included in OptiScaler 0.9+");
                 }
-                if (chkNukemFG != null)
+                if (cmbNukemFG != null)
                 {
-                    chkNukemFG.IsEnabled = false;
-                    chkNukemFG.IsChecked = false;
-                    ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+                    cmbNukemFG.IsEnabled = false;
+                    cmbNukemFG.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbNukemFG, "Included in OptiScaler 0.9+");
                 }
             }
             else
             {
                 // For older versions (< 0.9) allow user to toggle these options regardless of beta
-                if (chkFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkFakenvapi.IsEnabled = true;
-                    ToolTip.SetTip(chkFakenvapi, null);
+                    cmbFakenvapi.IsEnabled = true;
+                    ToolTip.SetTip(cmbFakenvapi, null);
                 }
-                if (chkNukemFG != null)
+                if (cmbNukemFG != null)
                 {
-                    chkNukemFG.IsEnabled = true;
-                    ToolTip.SetTip(chkNukemFG, null);
+                    cmbNukemFG.IsEnabled = true;
+                    ToolTip.SetTip(cmbNukemFG, null);
                 }
             }
         }
@@ -619,6 +834,8 @@ namespace OptiscalerClient.Views
             UpdateStatus();
             LoadComponents();
             ConfigureAdditionalComponents();
+            CheckIfAntiCheat();
+
         }
 
         private void TrySetCoverImage(Image? image, string? coverPath)
@@ -836,6 +1053,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);
@@ -863,8 +1081,7 @@ namespace OptiscalerClient.Views
                     return;
                 }
 
-                // Robust way on Windows
-                Process.Start("explorer.exe", $"\"{dirToOpen}\"");
+                PlatformServiceFactory.CreateShellService().OpenFolder(dirToOpen);
             }
             catch (Exception ex)
             {
@@ -895,8 +1112,22 @@ namespace OptiscalerClient.Views
             var prgDownload = this.FindControl<ProgressBar>("PrgDownload");
             var txtProgressState = this.FindControl<TextBlock>("TxtProgressState");
             var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
-            var chkInstallFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkInstallNukemFG   = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+
+            // Read selected Fakenvapi version before any async work
+            var cmbFakenvapiVersion = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var selectedFakenvapiItem = cmbFakenvapiVersion?.SelectedItem as ComboBoxItem;
+            var selectedFakenvapiVersion = selectedFakenvapiItem?.Tag?.ToString();
+            bool installFakenvapi = !string.IsNullOrEmpty(selectedFakenvapiVersion) &&
+                                    !selectedFakenvapiVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                    selectedFakenvapiVersion != "__manage__";
+
+            // Read selected NukemFG version before any async work
+            var cmbNukemFGVersion = this.FindControl<ComboBox>("CmbNukemFGVersion");
+            var selectedNukemFGItem = cmbNukemFGVersion?.SelectedItem as ComboBoxItem;
+            var selectedNukemFGVersion = selectedNukemFGItem?.Tag?.ToString();
+            bool installNukemFG = !string.IsNullOrEmpty(selectedNukemFGVersion) &&
+                                  !selectedNukemFGVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                  selectedNukemFGVersion != "__manage__";
 
             // Read selected Extras (FSR4 INT8) version before any async work
             var selectedExtrasItem = cmbExtrasVersion?.SelectedItem as ComboBoxItem;
@@ -953,7 +1184,44 @@ namespace OptiscalerClient.Views
                     });
 
                     if (files == null || !files.Any()) return; // User cancelled
-                    overrideGameDir = System.IO.Path.GetDirectoryName(files[0].Path.LocalPath);
+                    overrideGameDir = System.IO.Path.GetDirectoryName(files[0].Path.LocalPath); 
+                }
+
+                // ── Pre-install corrupt artifact check (fresh installs only) ───────────────
+                // For updates the manifest already tracks everything; only fresh installs need
+                // this check because there is no manifest to tell us the state is clean.
+                if (!_game.IsOptiscalerInstalled)
+                {
+                    var checkService = new GameInstallationService();
+                    var checkDir = overrideGameDir ?? checkService.DetermineInstallDirectory(_game);
+                    if (!string.IsNullOrEmpty(checkDir) && Directory.Exists(checkDir)
+                        && GameInstallationService.HasCorruptArtifacts(checkDir))
+                    {
+                        var choice = await ShowCorruptInstallWarningAsync();
+                        if (choice == "cancel")
+                            return;
+
+                        if (choice == "clean")
+                        {
+                            try
+                            {
+                                var filesToClean = _preInstallCleanupSelectedFiles;
+                                _preInstallCleanupSelectedFiles = null;
+                                await Task.Run(() => checkService.ForceFolderCleanup(_game, filesToClean));
+                                NeedsScan = true;
+                                UpdateStatus();
+                            }
+                            catch (Exception cleanEx)
+                            {
+                                _preInstallCleanupSelectedFiles = null;
+                                var errTitle = GetResourceString("TxtError", "Error");
+                                await new ConfirmDialog(this, errTitle,
+                                    $"Cleanup before install failed:\n{cleanEx.Message}").ShowDialog<object>(this);
+                                return;
+                            }
+                        }
+                        // "continue" → fall through to normal install
+                    }
                 }
 
                 if (btnInstall != null) btnInstall.IsEnabled = false;
@@ -1020,7 +1288,7 @@ namespace OptiscalerClient.Views
                     });
                     var msgFormat = GetResourceString("TxtDownloadErrorPrefix", "Failed to download OptiScaler: {0}");
                     var title = GetResourceString("TxtError", "Error");
-                    await new ConfirmDialog(this, title, string.Format(msgFormat, ex.Message)).ShowDialog<object>(this);
+                    await new ConfirmDialog(this, title, string.Format(msgFormat, ex.Message)).ShowDialog<Object>(this);
                     return;
                 }
                 finally
@@ -1034,21 +1302,21 @@ namespace OptiscalerClient.Views
                     });
                 }
 
-                var fakeCacheDir = componentService.GetFakenvapiCachePath();
-                var nukemCacheDir = componentService.GetNukemFGCachePath();
+                var fakeCacheDir = installFakenvapi
+                    ? componentService.GetFakenvapiCachePath(selectedFakenvapiVersion!)
+                    : componentService.GetFakenvapiCachePath();
+                var nukemCacheDir = installNukemFG
+                    ? componentService.GetNukemFGCachePath(selectedNukemFGVersion!)
+                    : componentService.GetNukemFGCachePath();
 
                 var selectedItem = cmbInjectionMethod?.SelectedItem as ComboBoxItem;
                 var injectionMethod = selectedItem?.Tag?.ToString() ?? "dxgi.dll";
 
-                bool installFakenvapi = chkInstallFakenvapi?.IsChecked == true;
-                bool installNukemFG = chkInstallNukemFG?.IsChecked == true;
-
-                if (installFakenvapi && (!Directory.Exists(fakeCacheDir) || Directory.GetFiles(fakeCacheDir).Length == 0))
+                // Download Fakenvapi if not cached yet
+                if (installFakenvapi && !componentService.IsFakenvapiCached(selectedFakenvapiVersion!))
                 {
                     try
                     {
-                        await componentService.CheckForUpdatesAsync();
-
                         Dispatcher.UIThread.Post(() =>
                         {
                             if (btnInstall != null) btnInstall.IsEnabled = false;
@@ -1056,11 +1324,14 @@ namespace OptiscalerClient.Views
                             if (btnUninstall != null) btnUninstall.IsEnabled = false;
                             if (cmbOptiVersion != null) cmbOptiVersion.IsEnabled = false;
                             if (bdProgress != null) bdProgress.IsVisible = true;
-                            if (txtProgressState != null) txtProgressState.Text = "Downloading Fakenvapi...";
-                            if (prgDownload != null) prgDownload.IsIndeterminate = true;
+                            if (txtProgressState != null) txtProgressState.Text = $"Downloading Fakenvapi v{selectedFakenvapiVersion}...";
+                            if (prgDownload != null) prgDownload.IsIndeterminate = false;
                         });
 
-                        await componentService.DownloadAndExtractFakenvapiAsync();
+                        var fakeProgress = new Progress<double>(p =>
+                            Dispatcher.UIThread.Post(() => { if (prgDownload != null) prgDownload.Value = p; }));
+
+                        fakeCacheDir = await componentService.DownloadFakenvapiAsync(selectedFakenvapiVersion!, fakeProgress);
                     }
                     catch (Exception ex)
                     {
@@ -1081,13 +1352,10 @@ namespace OptiscalerClient.Views
                     }
                 }
 
-                if (installNukemFG && (!Directory.Exists(nukemCacheDir) || Directory.GetFiles(nukemCacheDir).Length == 0))
+                if (installNukemFG && (!Directory.Exists(nukemCacheDir) || !File.Exists(System.IO.Path.Combine(nukemCacheDir, "dlssg_to_fsr3_amd_is_better.dll"))))
                 {
-                    bool provided = await componentService.ProvideNukemFGManuallyAsync(isUpdate: false);
-                    if (!provided || !Directory.Exists(nukemCacheDir) || Directory.GetFiles(nukemCacheDir).Length == 0)
-                    {
-                        return;
-                    }
+                    await new ConfirmDialog(this, "Error", $"NukemFG version '{selectedNukemFGVersion}' is not available in cache.\nPlease import it first via Manage versions.").ShowDialog<object>(this);
+                    return;
                 }
 
                 // Show extraction status
@@ -1317,7 +1585,7 @@ namespace OptiscalerClient.Views
                 {
                     if (bdProgress != null) bdProgress.IsVisible = false;
                 });
-                await new ConfirmDialog(this, "Error", $"Installation failed: {ex.Message}").ShowDialog<object>(this);
+                await new ConfirmDialog(this, "Error", $"Installation failed: {ex.Message}"). ShowDialog<object>(this);
             }
         }
 
@@ -1333,6 +1601,208 @@ namespace OptiscalerClient.Views
             if (btnInstall != null) btnInstall.IsEnabled = false;
             if (btnInstallManual != null) btnInstallManual.IsEnabled = false;
             if (btnUninstall != null) btnUninstall.IsEnabled = false;
+        }
+
+        private void BtnFolderCleanup_Click(object sender, RoutedEventArgs e)
+        {
+            // Reset all sensitive checkboxes to unchecked every time the dialog opens.
+            var sensitiveCheckboxNames = new[]
+            {
+                ("ChkSensitive_amd_fidelityfx_dx12",  "amd_fidelityfx_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_fg_dx12", "amd_fidelityfx_framegeneration_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_vk",    "amd_fidelityfx_vk.dll"),
+                ("ChkSensitive_dxgi",                  "dxgi.dll"),
+                ("ChkSensitive_libxell",               "libxell.dll"),
+                ("ChkSensitive_libxess",               "libxess.dll"),
+                ("ChkSensitive_libxess_dx11",          "libxess_dx11.dll"),
+                ("ChkSensitive_libxess_fg",            "libxess_fg.dll"),
+            };
+            foreach (var (name, _) in sensitiveCheckboxNames)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = false;
+            }
+            var chkAll = this.FindControl<CheckBox>("ChkSensitiveSelectAll");
+            if (chkAll != null) chkAll.IsChecked = false;
+
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = true;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = false;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = false;
+            if (btnUninstall != null) btnUninstall.IsEnabled = false;
+            if (btnCleanup != null) btnCleanup.IsEnabled = false;
+        }
+
+        private void ChkSensitiveSelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox chkAll) return;
+            bool check = chkAll.IsChecked == true;
+            var names = new[]
+            {
+                "ChkSensitive_amd_fidelityfx_dx12",
+                "ChkSensitive_amd_fidelityfx_fg_dx12",
+                "ChkSensitive_amd_fidelityfx_vk",
+                "ChkSensitive_dxgi",
+                "ChkSensitive_libxell",
+                "ChkSensitive_libxess",
+                "ChkSensitive_libxess_dx11",
+                "ChkSensitive_libxess_fg",
+            };
+            foreach (var name in names)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = check;
+            }
+        }
+
+        private void BtnConfirmFolderCleanupNo_Click(object sender, RoutedEventArgs e)
+        {
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = false;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = true;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = true;
+            if (btnUninstall != null) btnUninstall.IsEnabled = true;
+            if (btnCleanup != null) btnCleanup.IsEnabled = true;
+
+            // If we were shown from the corrupt-install flow, cancelling here cancels the install.
+            if (_cleanupIsPreInstall)
+            {
+                _cleanupIsPreInstall = false;
+                _preInstallCleanupSelectedFiles = null;
+                _corruptInstallTcs?.TrySetResult("cancel");
+                _corruptInstallTcs = null;
+            }
+        }
+
+        private async void BtnConfirmFolderCleanupYes_Click(object sender, RoutedEventArgs e)
+        {
+            var bdConfirm = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdConfirm != null) bdConfirm.IsVisible = false;
+
+            var btnInstall = this.FindControl<Button>("BtnInstall");
+            var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
+            var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnCleanup = this.FindControl<Button>("BtnFolderCleanup");
+
+            if (btnInstall != null) btnInstall.IsEnabled = true;
+            if (btnInstallManual != null) btnInstallManual.IsEnabled = true;
+            if (btnUninstall != null) btnUninstall.IsEnabled = true;
+            if (btnCleanup != null) btnCleanup.IsEnabled = true;
+
+            // Collect which sensitive files the user opted to delete.
+            var sensitiveMap = new[]
+            {
+                ("ChkSensitive_amd_fidelityfx_dx12",    "amd_fidelityfx_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_fg_dx12", "amd_fidelityfx_framegeneration_dx12.dll"),
+                ("ChkSensitive_amd_fidelityfx_vk",      "amd_fidelityfx_vk.dll"),
+                ("ChkSensitive_dxgi",                    "dxgi.dll"),
+                ("ChkSensitive_libxell",                 "libxell.dll"),
+                ("ChkSensitive_libxess",                 "libxess.dll"),
+                ("ChkSensitive_libxess_dx11",            "libxess_dx11.dll"),
+                ("ChkSensitive_libxess_fg",              "libxess_fg.dll"),
+            };
+            var selectedSensitive = sensitiveMap
+                .Where(pair => this.FindControl<CheckBox>(pair.Item1)?.IsChecked == true)
+                .Select(pair => pair.Item2)
+                .ToList();
+
+            // If opened from the corrupt-install flow, store the selection and hand control
+            // back to ExecuteInstallAsync — it will run the cleanup then the install.
+            if (_cleanupIsPreInstall)
+            {
+                _cleanupIsPreInstall = false;
+                _preInstallCleanupSelectedFiles = selectedSensitive;
+                _corruptInstallTcs?.TrySetResult("clean");
+                _corruptInstallTcs = null;
+                return;
+            }
+
+            try
+            {
+                var installService = new GameInstallationService();
+                installService.ForceFolderCleanup(_game, selectedSensitive);
+
+                NeedsScan = true;
+                UpdateStatus();
+                LoadComponents();
+
+                var successMsg = GetResourceString("TxtFolderCleanupSuccess", "Folder cleanup completed.");
+                await ShowToastAsync(successMsg);
+            }
+            catch (Exception ex)
+            {
+                var failFormat = GetResourceString("TxtFolderCleanupFail", "Folder cleanup failed: {0}");
+                var titleMsg = GetResourceString("TxtError", "Error");
+                await new ConfirmDialog(this, titleMsg, string.Format(failFormat, ex.Message)).ShowDialog<object>(this);
+            }
+        }
+
+        // ── Corrupt-install-detected modal handlers ───────────────────────────────────────────
+
+        private Task<string> ShowCorruptInstallWarningAsync()
+        {
+            _corruptInstallTcs = new TaskCompletionSource<string>();
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = true;
+            return _corruptInstallTcs.Task;
+        }
+
+        private void BtnCorruptCancel_Click(object sender, RoutedEventArgs e)
+        {
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+            _corruptInstallTcs?.TrySetResult("cancel");
+            _corruptInstallTcs = null;
+        }
+
+        private void BtnCorruptClean_Click(object sender, RoutedEventArgs e)
+        {
+            // Close the corrupt-install modal and open the cleanup modal so the user can
+            // choose which sensitive files to include. The TCS is NOT resolved yet —
+            // BtnConfirmFolderCleanupYes/No_Click will resolve it once the user decides.
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+
+            _cleanupIsPreInstall = true;
+
+            // Open the cleanup modal (same path as BtnFolderCleanup_Click).
+            var sensitiveNames = new[]
+            {
+                "ChkSensitive_amd_fidelityfx_dx12", "ChkSensitive_amd_fidelityfx_fg_dx12",
+                "ChkSensitive_amd_fidelityfx_vk",   "ChkSensitive_dxgi",
+                "ChkSensitive_libxell",              "ChkSensitive_libxess",
+                "ChkSensitive_libxess_dx11",         "ChkSensitive_libxess_fg",
+            };
+            foreach (var name in sensitiveNames)
+            {
+                var chk = this.FindControl<CheckBox>(name);
+                if (chk != null) chk.IsChecked = false;
+            }
+            var chkAll = this.FindControl<CheckBox>("ChkSensitiveSelectAll");
+            if (chkAll != null) chkAll.IsChecked = false;
+
+            var bdCleanup = this.FindControl<Grid>("BdConfirmFolderCleanup");
+            if (bdCleanup != null) bdCleanup.IsVisible = true;
+        }
+
+        private void BtnCorruptContinue_Click(object sender, RoutedEventArgs e)
+        {
+            var bd = this.FindControl<Grid>("BdConfirmCorruptInstall");
+            if (bd != null) bd.IsVisible = false;
+            _corruptInstallTcs?.TrySetResult("continue");
+            _corruptInstallTcs = null;
         }
 
         private void BtnConfirmUninstallNo_Click(object sender, RoutedEventArgs e)
@@ -1410,8 +1880,12 @@ namespace OptiscalerClient.Views
             var btnInstall = this.FindControl<Button>("BtnInstall");
             var btnInstallManual = this.FindControl<Button>("BtnInstallManual");
             var btnUninstall = this.FindControl<Button>("BtnUninstall");
+            var btnFolderCleanup = this.FindControl<Button>("BtnFolderCleanup");
             var installBtnGroup = this.FindControl<StackPanel>("InstallBtnGroup");
             var pnlInstallOptions = this.FindControl<StackPanel>("PnlInstallOptions");
+
+            // Folder Cleanup is always available regardless of install state.
+            if (btnFolderCleanup != null) { btnFolderCleanup.IsVisible = true; btnFolderCleanup.IsEnabled = true; }
 
             if (_game.IsOptiscalerInstalled)
             {
@@ -1468,9 +1942,42 @@ namespace OptiscalerClient.Views
         {
             var components = new ObservableCollection<string>();
 
-            if (!string.IsNullOrEmpty(_game.DlssVersion)) components.Add($"NVIDIA DLSS: {_game.DlssVersion}");
-            if (!string.IsNullOrEmpty(_game.FsrVersion)) components.Add($"AMD FSR: {_game.FsrVersion}");
-            if (!string.IsNullOrEmpty(_game.XessVersion)) components.Add($"Intel XeSS: {_game.XessVersion}");
+            if (!string.IsNullOrEmpty(_game.DlssVersion))
+            {
+                var dlssMap = GetDlssVersionMap();
+                string dlssDisplay;
+                if (TryLookupVersionMap(dlssMap, _game.DlssVersion, out var dlssNormal))
+                    dlssDisplay = VersionDisplayEquals(dlssNormal, _game.DlssVersion)
+                        ? $"NVIDIA DLSS: {dlssNormal}"
+                        : $"NVIDIA DLSS: {dlssNormal} ({_game.DlssVersion})";
+                else
+                    dlssDisplay = $"NVIDIA DLSS: {_game.DlssVersion}";
+                components.Add(dlssDisplay);
+            }
+            if (!string.IsNullOrEmpty(_game.FsrVersion))
+            {
+                var fsrMap = GetFsrVersionMap();
+                string fsrDisplay;
+                if (TryLookupVersionMap(fsrMap, _game.FsrVersion, out var fsrNormal))
+                    fsrDisplay = VersionDisplayEquals(fsrNormal, _game.FsrVersion)
+                        ? $"AMD FSR: {fsrNormal}"
+                        : $"AMD FSR: {fsrNormal} ({_game.FsrVersion})";
+                else
+                    fsrDisplay = $"AMD FSR: {_game.FsrVersion}";
+                components.Add(fsrDisplay);
+            }
+            if (!string.IsNullOrEmpty(_game.XessVersion))
+            {
+                var xessMap = GetXessVersionMap();
+                string xessDisplay;
+                if (TryLookupVersionMap(xessMap, _game.XessVersion, out var xessNormal))
+                    xessDisplay = VersionDisplayEquals(xessNormal, _game.XessVersion)
+                        ? $"Intel XeSS: {xessNormal}"
+                        : $"Intel XeSS: {xessNormal} ({_game.XessVersion})";
+                else
+                    xessDisplay = $"Intel XeSS: {_game.XessVersion}";
+                components.Add(xessDisplay);
+            }
 
             if (_game.IsOptiscalerInstalled)
             {
@@ -1500,6 +2007,157 @@ namespace OptiscalerClient.Views
             if (lstComponents != null) lstComponents.ItemsSource = components;
         }
 
+        private static Dictionary<string, string> GetFsrVersionMap()
+        {
+            if (_fsrVersionMap != null) return _fsrVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "fsr_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _fsrVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                     ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load FSR version map: {ex.Message}");
+            }
+            return _fsrVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> GetDlssVersionMap()
+        {
+            if (_dlssVersionMap != null) return _dlssVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "dlss_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _dlssVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                      ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load DLSS version map: {ex.Message}");
+            }
+            return _dlssVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static Dictionary<string, string> GetXessVersionMap()
+        {
+            if (_xessVersionMap != null) return _xessVersionMap;
+            try
+            {
+                var path = System.IO.Path.Combine(AppContext.BaseDirectory, "assets", "configs", "xess_version_map.json");
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _xessVersionMap = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                                      ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[ManageGame] Failed to load XeSS version map: {ex.Message}");
+            }
+            return _xessVersionMap ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Returns true when two version strings are display-equivalent:
+        /// exact string match, or one is the other with trailing ".0" components stripped
+        /// (e.g. "2.4.0" == "2.4.0.0").
+        /// </summary>
+        private static bool VersionDisplayEquals(string a, string b)
+        {
+            if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase)) return true;
+            static string Strip(string v)
+            {
+                while (v.EndsWith(".0")) v = v[..^2];
+                return v;
+            }
+            return string.Equals(Strip(a), Strip(b), StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Looks up a DLL version string in a version map.
+        /// 1. Exact match.
+        /// 2. Same-prefix match (all but last component), highest key ≤ dllVersion.
+        /// 3. Global nearest-below: highest key in the whole map that is ≤ dllVersion,
+        ///    only when the mapped value is the same as the nearest-above key (i.e. the
+        ///    version falls between two entries that map to the same value).
+        /// 4. Global nearest-below regardless of value (last resort).
+        /// </summary>
+        private static bool TryLookupVersionMap(Dictionary<string, string> map, string dllVersion, out string mappedVersion)
+        {
+            // 1. Exact match
+            if (map.TryGetValue(dllVersion, out mappedVersion!))
+                return true;
+
+            if (!Version.TryParse(dllVersion, out var gameVer))
+            {
+                mappedVersion = null!;
+                return false;
+            }
+
+            // Pre-parse all map keys into (Version, key, value) sorted ascending
+            var parsed = map.Keys
+                .Select(k => Version.TryParse(k, out var v) ? (ver: v, key: k) : default)
+                .Where(t => t.ver != null)
+                .OrderBy(t => t.ver)
+                .ToList();
+
+            // 2. Same-prefix approximate match
+            var parts = dllVersion.Split('.');
+            if (parts.Length >= 2)
+            {
+                var prefix = string.Join(".", parts, 0, parts.Length - 1) + ".";
+                var prefixCandidates = parsed
+                    .Where(t => t.key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (prefixCandidates.Count > 0)
+                {
+                    // Highest key <= gameVer
+                    var best = prefixCandidates.LastOrDefault(t => t.ver <= gameVer);
+                    if (best.key == null)
+                        best = prefixCandidates.First(); // all are above — take smallest
+
+                    if (map.TryGetValue(best.key, out mappedVersion!))
+                        return true;
+                }
+            }
+
+            // 3 & 4. Global nearest: find the highest key <= gameVer across the whole map
+            var below = parsed.LastOrDefault(t => t.ver <= gameVer);
+            var above = parsed.FirstOrDefault(t => t.ver > gameVer);
+
+            if (below.key != null)
+            {
+                // If the entries directly below and above map to the same value, it's safe
+                // to use that value (the game version sits between two entries of the same range).
+                if (above.key != null &&
+                    map.TryGetValue(below.key, out var belowVal) &&
+                    map.TryGetValue(above.key, out var aboveVal) &&
+                    belowVal == aboveVal)
+                {
+                    mappedVersion = belowVal;
+                    return true;
+                }
+
+                // Last resort: just use the nearest-below entry
+                if (map.TryGetValue(below.key, out mappedVersion!))
+                    return true;
+            }
+
+            mappedVersion = null!;
+            return false;
+        }
+
         private void CmbOptiVersion_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             var cmb = sender as ComboBox;
@@ -1519,32 +2177,40 @@ namespace OptiscalerClient.Views
         {
             var componentService = new ComponentManagementService();
             GpuInfo? gpu = null;
-            if (OperatingSystem.IsWindows() && _gpuService != null)
+            if (_gpuService != null)
             {
                 gpu = GpuSelectionHelper.GetPreferredGpu(_gpuService, componentService.Config.DefaultGpuId);
             }
-            var chkInstallFakenvapi = this.FindControl<ToggleSwitch>("ChkInstallFakenvapi");
-            var chkInstallNukemFG = this.FindControl<ToggleSwitch>("ChkInstallNukemFG");
+            var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+            var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
+
+            // Do not re-enable these controls when the selected OptiScaler version already
+            // bundles fakenvapi and nukemfg (>= 0.9). UpdateCheckboxStatesForVersion owns
+            // the disabled state for those versions.
+            var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
+            var selectedOptiTag = (cmbOptiVersion?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
+            if (IsVersionGreaterOrEqual(selectedOptiTag, 0, 9))
+                return;
 
             if (gpu != null && gpu.Vendor == GpuVendor.NVIDIA)
             {
-                if (chkInstallFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkInstallFakenvapi.IsEnabled = false;
-                    chkInstallFakenvapi.IsChecked = false;
-                    ToolTip.SetTip(chkInstallFakenvapi, "Fakenvapi is not required for NVIDIA GPUs");
+                    cmbFakenvapi.IsEnabled = false;
+                    cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                    ToolTip.SetTip(cmbFakenvapi, "Fakenvapi is not required for NVIDIA GPUs");
                 }
             }
             else
             {
-                if (chkInstallFakenvapi != null)
+                if (cmbFakenvapi != null)
                 {
-                    chkInstallFakenvapi.IsEnabled = true;
-                    ToolTip.SetTip(chkInstallFakenvapi, "Required for AMD/Intel GPUs to enable DLSS FG with Nukem mod");
+                    cmbFakenvapi.IsEnabled = true;
+                    ToolTip.SetTip(cmbFakenvapi, "Required for AMD/Intel GPUs to enable DLSS FG with Nukem mod");
                 }
             }
 
-            if (chkInstallNukemFG != null) chkInstallNukemFG.IsEnabled = true;
+            if (cmbNukemFG != null) cmbNukemFG.IsEnabled = true;
         }
 
         private string GetResourceString(string key, string fallback)

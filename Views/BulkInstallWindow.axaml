@@ -133,14 +133,17 @@
                             CornerRadius="0,0,0,12">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>   <!-- Settings -->
-                                <RowDefinition Height="*"/>      <!-- Spacer -->
+                                <RowDefinition Height="*"/>      <!-- Settings (scrollable) -->
+                                <RowDefinition Height="Auto"/>   <!-- Spacer removed, settings is now * -->
                                 <RowDefinition Height="Auto"/>   <!-- Progress -->
                                 <RowDefinition Height="Auto"/>   <!-- Action buttons -->
                             </Grid.RowDefinitions>
 
                             <!-- Installation Settings -->
-                            <StackPanel Grid.Row="0" Margin="16,20,16,4" Spacing="14">
+                            <ScrollViewer Grid.Row="0"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="16,20,16,4" Spacing="14">
                                 <TextBlock Text="{DynamicResource TxtInstallationSettings}"
                                            FontSize="13"
                                            FontWeight="SemiBold"
@@ -165,6 +168,39 @@
                                                        Margin="0,-1,0,0"/>
                                         </Border>
                                     </StackPanel>
+                                    <Grid Name="GridOptiTabs" ColumnDefinitions="*,*">
+                                        <Button Name="BtnOptiStable"
+                                                Grid.Column="0"
+                                                Content="Stable"
+                                                Classes="BtnPrimary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="0,0,2,0"
+                                                Click="BtnOptiStable_Click"/>
+                                        <Button Name="BtnOptiBeta"
+                                                Grid.Column="1"
+                                                Content="Beta"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                Click="BtnOptiBeta_Click"/>
+                                        <Button Name="BtnOptiCustom"
+                                                Grid.Column="2"
+                                                Content="Custom"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                IsVisible="False"
+                                                Click="BtnOptiCustom_Click"/>
+                                    </Grid>
                                     <ComboBox Name="CmbOptiVersion"
                                               HorizontalAlignment="Stretch"
                                               Classes="BtnSelector"
@@ -280,17 +316,62 @@
                                 <Border Height="1" Background="{StaticResource BrBorderSubtle}" Margin="0,2"/>
 
                                 <!-- Fakenvapi -->
-                                <CheckBox Name="ChkFakenvapi"
-                                          Content="{DynamicResource TxtInstallFakenvapi}"
-                                          Foreground="{StaticResource BrTextPrimary}"
-                                          FontSize="12"/>
+                                <StackPanel Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="Fakenvapi:"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="14" Height="14"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtTooltipFakenvapi}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="9" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbFakenvapiVersion"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              Background="{StaticResource BrBgBase}"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
 
                                 <!-- NukemFG -->
-                                <CheckBox Name="ChkNukemFG"
-                                          Content="{DynamicResource TxtInstallNukemFG}"
-                                          Foreground="{StaticResource BrTextPrimary}"
-                                          FontSize="12"/>
+                                <StackPanel Spacing="5">
+                                    <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                        <TextBlock Text="NukemFG:"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="12"
+                                                   VerticalAlignment="Center"/>
+                                        <Border Background="{StaticResource BrBgElevated}"
+                                                BorderBrush="{StaticResource BrBorderSubtle}"
+                                                BorderThickness="1" CornerRadius="8"
+                                                Width="14" Height="14"
+                                                ToolTip.ShowDelay="100" Cursor="Help"
+                                                ToolTip.Tip="{DynamicResource TxtTooltipNukemFG}">
+                                            <TextBlock Text="?" Foreground="{StaticResource BrTextSecondary}"
+                                                       FontSize="9" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Margin="0,-1,0,0"/>
+                                        </Border>
+                                    </StackPanel>
+                                    <ComboBox Name="CmbNukemFGVersion"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              Background="{StaticResource BrBgBase}"
+                                              VerticalContentAlignment="Center"/>
+                                </StackPanel>
                             </StackPanel>
+                            </ScrollViewer>
 
                             <!-- Progress Bar -->
                             <Border Grid.Row="2"
@@ -443,5 +524,12 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                CornerRadius="12"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Panel>
 </Window>

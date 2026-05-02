@@ -31,14 +31,14 @@
             <Setter Property="Height" Value="48"/>
             <Setter Property="Width" Value="48"/>
             <Setter Property="Margin" Value="0,4"/>
-            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"/>
+            <Setter Property="FontFamily" Value="{StaticResource FontIcons}"/>
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Background="{TemplateBinding Background}" CornerRadius="8">
                         <Grid>
                             <Border Name="Indicator" Width="3" Height="24" HorizontalAlignment="Left" VerticalAlignment="Center" Background="{StaticResource BrAccent}" IsVisible="False" CornerRadius="1.5" Margin="2,0,0,0"/>
-                            <TextBlock Text="{TemplateBinding Content}" FontFamily="{TemplateBinding FontFamily}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{TemplateBinding ToolTip.Tip}"/>
+                            <TextBlock Text="{TemplateBinding Content}" FontFamily="{StaticResource FontIcons}" FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center" ToolTip.Tip="{TemplateBinding ToolTip.Tip}"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
@@ -165,14 +165,14 @@
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Center">
                     <Image Source="avares://OptiscalerClient/assets/icon.png" Width="32" Height="32" Margin="0,0,0,24" RenderOptions.BitmapInterpolationMode="HighQuality"/>
 
-                    <RadioButton Name="NavGames" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xE7FC;" ToolTip.Tip="Games" IsChecked="True" Click="NavGames_Click"/>
-                    <RadioButton Name="NavProfiles" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xE734;" ToolTip.Tip="Profiles" Click="NavProfiles_Click"/>
+                    <RadioButton Name="NavGames" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xEEB9;" ToolTip.Tip="Games" IsChecked="True" Click="NavGames_Click"/>
+                    <RadioButton Name="NavProfiles" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xF710;" ToolTip.Tip="Profiles" Click="NavProfiles_Click"/>
                 </StackPanel>
 
                 <!-- Bottom actions: Settings, Help -->
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                    <RadioButton Name="NavHelp" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xE897;" ToolTip.Tip="{DynamicResource TxtAboutTitle}" Click="NavHelp_Click"/>
-                    <RadioButton Name="NavSettings" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xE713;" ToolTip.Tip="{DynamicResource TxtSettingsTitle}" Click="NavSettings_Click"/>
+                    <RadioButton Name="NavHelp" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xF639;" ToolTip.Tip="{DynamicResource TxtAboutTitle}" Click="NavHelp_Click"/>
+                    <RadioButton Name="NavSettings" GroupName="SidebarNav" Classes="NavBtnStyle" Content="&#xF6AA;" ToolTip.Tip="{DynamicResource TxtSettingsTitle}" Click="NavSettings_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -190,6 +190,7 @@
                      </Transitions>
                  </Grid.Transitions>
                  <Grid.RowDefinitions>
+                     <RowDefinition Height="Auto"/>
                      <RowDefinition Height="Auto"/>
                      <RowDefinition Height="Auto"/>
                      <RowDefinition Height="*"/>
@@ -227,10 +228,21 @@
                                      Click="BtnAddManual_Click"/>
 
                              <Button Name="BtnBulkInstall"
-                                     Content="{DynamicResource TxtBtnBulkInstall}"
                                      Classes="BtnBase"
                                      Padding="14,7"
-                                     Click="BtnBulkInstall_Click"/>
+                                     Click="BtnBulkInstall_Click">
+                                 <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <Path Data="M13 0 L5 9 H11 L9 16 L17 7 H11 Z"
+                                          Fill="{StaticResource BrTextPrimary}"
+                                          Stretch="Uniform"
+                                          Width="10" Height="14"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,6,0"/>
+                                     <TextBlock Text="{DynamicResource TxtBtnBulkInstall}"
+                                                VerticalAlignment="Center"
+                                                Foreground="{StaticResource BrTextPrimary}"/>
+                                 </StackPanel>
+                             </Button>
                          </StackPanel>
 
                          <!-- Middle: Search Bar -->
@@ -253,8 +265,8 @@
                                  </TextBox.Styles>
                              </TextBox>
                              <TextBlock IsHitTestVisible="False"
-                                        Text="&#xE721;"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        Text="&#xF68F;"
+                                        FontFamily="{StaticResource FontIcons}"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         VerticalAlignment="Center"
                                         HorizontalAlignment="Left"
@@ -324,8 +336,8 @@
                                              ToolTip.Tip="{DynamicResource TxtOrganizeGamesTooltip}"
                                              Click="BtnEditMode_Click">
                                             <Grid Width="18" Height="18">
-                                                <TextBlock Text="&#xE70F;"
-                                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                <TextBlock Text="&#xF3DD;"
+                                                           FontFamily="{StaticResource FontIcons}"
                                                            FontSize="14"
                                                            Foreground="{StaticResource BrTextPrimary}"
                                                            VerticalAlignment="Center"
@@ -363,11 +375,11 @@
                              <ColumnDefinition Width="Auto"/>
                          </Grid.ColumnDefinitions>
                          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-                             <TextBlock Text="&#xE70F;"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                        FontSize="14"
-                                        Foreground="{StaticResource BrAccent}"
-                                        VerticalAlignment="Center"/>
+                            <TextBlock Text="&#xF3DD;"
+                                       FontFamily="{StaticResource FontIcons}"
+                                       FontSize="14"
+                                       Foreground="{StaticResource BrAccent}"
+                                       VerticalAlignment="Center"/>
                              <TextBlock Text="{DynamicResource TxtOrganizeModeBanner}"
                                         Foreground="{StaticResource BrAccent}"
                                         FontWeight="SemiBold"
@@ -383,7 +395,7 @@
                                         Foreground="{StaticResource BrTextSecondary}"
                                         VerticalAlignment="Center"/>
                              <TextBlock Text="{DynamicResource TxtOrganizeModeHideShow}"
-                                        FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        FontFamily="{StaticResource FontIcons}"
                                         Foreground="{StaticResource BrTextSecondary}"
                                         FontSize="11"
                                         VerticalAlignment="Center"/>
@@ -396,9 +408,31 @@
                      </Grid>
                  </Border>
 
+                 <!-- Linux Steam-only notice -->
+                 <!-- <Border Name="LinuxNotice"
+                         Grid.Row="2"
+                         IsVisible="False"
+                         Background="#1A3B6B"
+                         BorderBrush="#2E5FA3"
+                         BorderThickness="0,0,0,1"
+                         Padding="24,10">
+                     <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                         <TextBlock Text="&#xE783;"
+                                    FontFamily="{StaticResource FontIcons}"
+                                    FontSize="16"
+                                    Foreground="#90B8F8"
+                                    VerticalAlignment="Center"/>
+                         <TextBlock Text="{DynamicResource TxtLinuxSteamOnlyNotice}"
+                                    Foreground="#C8DEFF"
+                                    FontSize="13"
+                                    VerticalAlignment="Center"
+                                    TextWrapping="Wrap"/>
+                     </StackPanel>
+                 </Border> -->
+
                  <!-- Game List -->
                  <ScrollViewer Name="GameListScrollViewer"
-                               Grid.Row="2"
+                               Grid.Row="3"
                                VerticalScrollBarVisibility="Auto"
                                HorizontalScrollBarVisibility="Disabled"
                                PointerWheelChanged="GameListScrollViewer_PointerWheelChanged">
@@ -522,33 +556,6 @@
                                                                 FontWeight="SemiBold"/>
                                                  </Border>
 
-                                                 <!-- FSR badge -->
-                                                 <Border Background="#2E1A1A"
-                                                         BorderBrush="#5A2D2D"
-                                                         BorderThickness="1"
-                                                         CornerRadius="6"
-                                                         Padding="10,3" Margin="0,0,6,0"
-                                                         IsVisible="{Binding FsrVersion, Converter={StaticResource NullToVisibilityConverter}}">
-                                                     <TextBlock Text="FSR"
-                                                                Foreground="#E07070"
-                                                                FontSize="{StaticResource FontSizeCaption}"
-                                                                FontWeight="SemiBold"/>
-                                                 </Border>
-
-                                                 <!-- XeSS badge -->
-                                                 <Border Background="#1A1E2E"
-                                                         BorderBrush="#2D3A5A"
-                                                         BorderThickness="1"
-                                                         CornerRadius="6"
-                                                         Padding="10,3" Margin="0,0,6,0"
-                                                         IsVisible="{Binding XessVersion, Converter={StaticResource NullToVisibilityConverter}}">
-                                                     <TextBlock Text="XeSS"
-                                                                Foreground="#7080E0"
-                                                                FontSize="{StaticResource FontSizeCaption}"
-                                                                FontWeight="SemiBold"/>
-                                                 </Border>
-
-                                                 <!-- OptiScaler badge (violet) -->
                                                  <Border Background="#1E1530"
                                                          BorderBrush="{StaticResource BrAccent}"
                                                          BorderThickness="1"
@@ -574,7 +581,7 @@
                                          <!-- Actions -->
                                          <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                                              <Button Content="&#xE74D;"
-                                                     FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                     FontFamily="{StaticResource FontIcons}"
                                                      Foreground="{StaticResource BrTextSecondary}"
                                                      Background="Transparent"
                                                      BorderThickness="0"
@@ -607,8 +614,8 @@
                                                     Click="BtnManage_Click">
                                                 <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center" Margin="0,0,0,0">
                                                     <TextBlock Grid.Column="0"
-                                                               Text="&#xE713;"
-                                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                               Text="&#xF6AA;"
+                                                               FontFamily="{StaticResource FontIcons}"
                                                                FontSize="15"
                                                                Foreground="{StaticResource BrTextPrimary}"
                                                                VerticalAlignment="Center"
@@ -635,7 +642,8 @@
                                                         PointerPressed="DragHandle_PointerPressed"
                                                         Margin="0,0,4,0">
                                                     <TextBlock Text="&#x283F;"
-                                                               FontSize="16"
+                                                               FontSize="20"
+                                                               TextAlignment="Center"
                                                                Foreground="{StaticResource BrTextSecondary}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"/>
@@ -689,8 +697,8 @@
                                                         </Style>
                                                     </Button.Styles>
                                                     <TextBlock Name="TxtHideIcon"
-                                                               Text="&#xE7B3;"
-                                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                               Text="&#xE5F2;"
+                                                               FontFamily="{StaticResource FontIcons}"
                                                                FontSize="16"
                                                                Foreground="{StaticResource BrTextSecondary}"
                                                                HorizontalAlignment="Center"
@@ -707,7 +715,7 @@
 
                  <!-- Game Grid -->
                  <ScrollViewer Name="GameGridScrollViewer"
-                               Grid.Row="2"
+                               Grid.Row="3"
                                VerticalScrollBarVisibility="Auto"
                                HorizontalScrollBarVisibility="Disabled"
                                PointerWheelChanged="GameListScrollViewer_PointerWheelChanged"
@@ -805,7 +813,7 @@
 
                                                          <Button Grid.Column="1"
                                                                  Content="&#xE74D;"
-                                                                 FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                                 FontFamily="{StaticResource FontIcons}"
                                                                  Foreground="{StaticResource BrTextSecondary}"
                                                                  Background="#BF10131A"
                                                                  BorderBrush="{StaticResource BrBorderSubtle}"
@@ -924,8 +932,8 @@
                                                 <Button.Content>
                                                     <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
                                                         <TextBlock Grid.Column="0"
-                                                                   Text="&#xE713;"
-                                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                                   Text="&#xF6AA;"
+                                                                   FontFamily="{StaticResource FontIcons}"
                                                                    FontSize="14"
                                                                    Foreground="{StaticResource BrTextPrimary}"
                                                                    VerticalAlignment="Center"
@@ -957,7 +965,8 @@
                                                         HorizontalAlignment="Center">
                                                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
                                                         <TextBlock Text="&#x283F;"
-                                                                   FontSize="28"
+                                                                   FontSize="32"
+                                                                   TextAlignment="Center"
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    HorizontalAlignment="Center"
                                                                    VerticalAlignment="Center"/>
@@ -973,8 +982,8 @@
                                                         Click="BtnToggleHide_Click">
                                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                                         <TextBlock Name="TxtHideIconGrid"
-                                                                   Text="&#xE7B3;"
-                                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                                                   Text="&#xE5F2;"
+                                                                   FontFamily="{StaticResource FontIcons}"
                                                                    FontSize="14"
                                                                    Foreground="{StaticResource BrTextSecondary}"
                                                                    VerticalAlignment="Center"/>
@@ -993,8 +1002,37 @@
                      </ListBox>
                  </ScrollViewer>
 
+                 <!-- Empty state: shown when scan returns no upscaler-compatible games -->
+                 <Border Name="PnlNoUpscalersFound"
+                         Grid.Row="3"
+                         IsVisible="False"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Center"
+                         Margin="24">
+                     <StackPanel Spacing="16" HorizontalAlignment="Center">
+                         <TextBlock Text="&#xEEB9;"
+                                    FontFamily="{StaticResource FontIcons}"
+                                    FontSize="44"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{StaticResource BrTextSecondary}"
+                                    Opacity="0.4"/>
+                         <TextBlock Text="{DynamicResource TxtNoUpscalersFoundTitle}"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{StaticResource BrTextPrimary}"/>
+                         <TextBlock Text="{DynamicResource TxtNoUpscalersFoundHint}"
+                                    TextWrapping="Wrap"
+                                    MaxWidth="420"
+                                    TextAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Foreground="{StaticResource BrTextSecondary}"
+                                    FontSize="{StaticResource FontSizeCaption}"/>
+                     </StackPanel>
+                 </Border>
+
                  <!-- Status Bar -->
-                 <Border Grid.Row="3"
+                 <Border Grid.Row="4"
                          Background="{StaticResource BrBgDeep}"
                          BorderBrush="{StaticResource BrBorderSubtle}"
                          BorderThickness="0,1,0,0"
@@ -1007,7 +1045,7 @@
 
                  <!-- Ghost canvas: floating drag visuals sit here, above all content -->
                  <Canvas Name="DragGhostCanvas"
-                         Grid.Row="0" Grid.RowSpan="4"
+                         Grid.Row="0" Grid.RowSpan="5"
                          IsHitTestVisible="False"
                          ZIndex="100"/>
 
@@ -1412,11 +1450,19 @@
                                     </StackPanel>
                                     <Button Name="BtnManageCache"
                                             Grid.Column="1"
-                                            Content="{DynamicResource TxtManage}"
                                             Classes="BtnBase"
                                             Padding="16,8"
                                             VerticalAlignment="Center"
-                                            Click="BtnManageCache_Click"/>
+                                            Click="BtnManageCache_Click">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="&#xF419;"
+                                                       FontFamily="{StaticResource FontIcons}"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="Manage"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
                             </Border>
 
@@ -1445,44 +1491,19 @@
                                     </StackPanel>
                                     <Button Name="BtnManageScanSources"
                                             Grid.Column="1"
-                                            Content="{DynamicResource TxtManage}"
                                             Classes="BtnBase"
                                             Padding="16,8"
                                             VerticalAlignment="Center"
-                                            Click="BtnManageScanSources_Click"/>
-                                </Grid>
-                            </Border>
-
-                            <!-- Default Versions -->
-                            <Border Background="{StaticResource BrBgCard}"
-                                    BorderBrush="{StaticResource BrBorderSubtle}"
-                                    BorderThickness="1"
-                                    CornerRadius="{StaticResource RadiusLarge}"
-                                    Padding="20,16"
-                                    Margin="0,0,16,16"
-                                    HorizontalAlignment="Left">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                                        <TextBlock Text="{DynamicResource TxtDefaultVersionsTitle}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{StaticResource BrTextPrimary}"/>
-                                        <TextBlock Text="{DynamicResource TxtDefaultVersionsDesc}"
-                                                   Foreground="{StaticResource BrTextSecondary}"
-                                                   TextWrapping="Wrap"
-                                                   Margin="0,4,16,0"
-                                                   FontSize="{StaticResource FontSizeCaption}"/>
-                                    </StackPanel>
-                                    <Button Name="BtnManageDefaultVersions"
-                                            Grid.Column="1"
-                                            Content="{DynamicResource TxtManage}"
-                                            Classes="BtnBase"
-                                            Padding="16,8"
-                                            VerticalAlignment="Center"
-                                            Click="BtnManageDefaultVersions_Click"/>
+                                            Click="BtnManageScanSources_Click">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="&#xF419;"
+                                                       FontFamily="{StaticResource FontIcons}"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="Manage"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
                             </Border>
 
@@ -1649,6 +1670,47 @@
                                                 Padding="12,6"
                                                 Click="BtnSteamGridApiGuide_Click"/>
                                     </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Network / Proxy -->
+                            <Border Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="20,16"
+                                    Margin="0,0,16,16"
+                                    HorizontalAlignment="Left">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <TextBlock Text="{DynamicResource TxtNetworkTitle}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                        <TextBlock Text="{DynamicResource TxtNetworkDesc}"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0,4,16,0"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                    <Button Name="BtnManageProxy"
+                                            Grid.Column="1"
+                                            Classes="BtnBase"
+                                            Padding="16,8"
+                                            VerticalAlignment="Center"
+                                            Click="BtnManageProxy_Click">
+                                        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                            <TextBlock Text="&#xF419;"
+                                                       FontFamily="{StaticResource FontIcons}"
+                                                       FontSize="14"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Text="Manage"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
                             </Border>
                         </WrapPanel>
@@ -1828,5 +1890,11 @@
             </Border>
         </Grid>
 
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                Grid.ColumnSpan="2"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Grid>
 </Window>

@@ -1,8 +1,8 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.CacheManagementWindow"
         Title="Cache Management"
-        Width="500"
+        Width="800"
         Height="640"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="None"
@@ -11,26 +11,53 @@
         CanResize="False"
         ShowInTaskbar="False">
 
+    <Window.Styles>
+        <Style Selector="Ellipse#ImportDot1">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Ellipse#ImportDot2">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" Delay="0:0:0.2" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Ellipse#ImportDot3">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6" Delay="0:0:0.4" IterationCount="INFINITE" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Margin" Value="4,2,4,10"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Margin" Value="4,12,4,0"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </Window.Styles>
+
     <Panel Margin="16" Name="RootPanel" Opacity="0">
         <Border CornerRadius="12"
                 Background="{StaticResource BrBgBase}"
                 BoxShadow="0 10 30 0 #A0000000">
-            
             <Grid>
-                <!-- Separate layer for the subtle border -->
                 <Border CornerRadius="12"
                         BorderBrush="{StaticResource BrBorderSubtle}"
                         BorderThickness="1"
                         ZIndex="10"
                         IsHitTestVisible="False"/>
 
-                <!-- Main Content Layout -->
                 <Border CornerRadius="12"
                         Background="Transparent"
                         ClipToBounds="True">
-                    
                     <Grid RowDefinitions="Auto, *, Auto">
-                        <!-- Custom Title Bar (Draggable) -->
+
+                        <!-- Title Bar -->
                         <Border Grid.Row="0"
                                 Name="TitleBar"
                                 Background="{StaticResource BrBgDeep}"
@@ -39,18 +66,24 @@
                                 BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="*, Auto">
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="{DynamicResource TxtManageCacheTitle}"
-                                               FontSize="18"
-                                               FontWeight="Bold"
-                                               Foreground="{StaticResource BrTextPrimary}"/>
+                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
+                                        <TextBlock Text="&#xF63D;"
+                                                   FontFamily="{StaticResource FontIcons}"
+                                                   FontSize="16"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Text="{DynamicResource TxtManageCacheTitle}"
+                                                   FontSize="18"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource BrTextPrimary}"/>
+                                    </StackPanel>
                                     <TextBlock Text="{DynamicResource TxtManageCacheDesc}"
                                                FontSize="11"
                                                Foreground="{StaticResource BrTextSecondary}"
                                                Margin="0,2,0,0"/>
                                 </StackPanel>
-                                
                                 <Button Grid.Column="1"
-                                        Content="✕"
+                                        Content="&#10005;"
                                         Classes="BtnSecondary"
                                         Padding="8,4"
                                         MinWidth="32"
@@ -62,30 +95,27 @@
                             </Grid>
                         </Border>
 
-                        <!-- List of downloaded versions -->
-                        <ScrollViewer Grid.Row="1" Padding="0">
-                            <StackPanel Spacing="0" Margin="24,20">
-                                <!-- Group 1: OptiScaler -->
-                                <TextBlock Text="OptiScaler Versions" 
-                                           FontWeight="SemiBold" 
-                                           FontSize="13" 
-                                           Foreground="{StaticResource BrTextSecondary}"
-                                           Margin="0,0,0,12"/>
-                                <StackPanel Name="PnlVersions" Spacing="8" Margin="0,0,0,24">
-                                    <!-- OptiScaler versions go here -->
-                                </StackPanel>
+                        <!-- Sidebar + Content -->
+                        <Grid Grid.Row="1" ColumnDefinitions="190,*">
 
-                                <!-- Group 2: FSR 4 INT8 Extras -->
-                                <TextBlock Text="FSR4 INT8 (Injection DLLs)" 
-                                           FontWeight="SemiBold" 
-                                           FontSize="13" 
-                                           Foreground="{StaticResource BrTextSecondary}"
-                                           Margin="0,0,0,12"/>
-                                <StackPanel Name="PnlExtrasVersions" Spacing="8">
-                                    <!-- Extras versions go here -->
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
+                            <!-- SIDEBAR -->
+                            <Border Grid.Column="0"
+                                    Background="{StaticResource BrBgDeep}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="0,0,1,0">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Name="CacheSidebar" Margin="8,12,8,12" Spacing="2"/>
+                                </ScrollViewer>
+                            </Border>
+
+                            <!-- CONTENT AREA -->
+                            <ScrollViewer Grid.Column="1"
+                                          Name="CacheContentScrollViewer"
+                                          VerticalScrollBarVisibility="Auto">
+                                <StackPanel Name="CacheContentArea" Margin="24,20,24,24" Spacing="8"/>
+                            </ScrollViewer>
+
+                        </Grid>
 
                         <!-- Footer -->
                         <Border Grid.Row="2"
@@ -94,7 +124,7 @@
                                 BorderBrush="{StaticResource BrBorderSubtle}"
                                 BorderThickness="0,1,0,0">
                             <Grid ColumnDefinitions="*, Auto">
-                                <TextBlock Grid.Column="0" 
+                                <TextBlock Grid.Column="0"
                                            Name="TxtCacheInfo"
                                            VerticalAlignment="Center"
                                            FontSize="11"
@@ -106,9 +136,45 @@
                                         Click="BtnClose_Click"/>
                             </Grid>
                         </Border>
+
+                        <!-- Importing overlay -->
+                        <Grid Name="OverlayImporting"
+                              Grid.RowSpan="3"
+                              Background="#CC000000"
+                              IsVisible="False"
+                              ZIndex="100">
+                            <Border Background="{StaticResource BrBgElevated}"
+                                    BorderBrush="{StaticResource BrAccent}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Padding="60,44">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+                                        <Ellipse Name="ImportDot1" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                        <Ellipse Name="ImportDot2" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                        <Ellipse Name="ImportDot3" Width="12" Height="12" Fill="{StaticResource BrAccent}" Margin="4,12,4,0"/>
+                                    </StackPanel>
+                                    <TextBlock Text="{DynamicResource TxtImporting}"
+                                               FontSize="{StaticResource FontSizeSubtitle}"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource BrTextPrimary}"
+                                               HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
                     </Grid>
                 </Border>
             </Grid>
         </Border>
+
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                CornerRadius="12"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Panel>
 </Window>

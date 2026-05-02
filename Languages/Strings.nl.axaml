@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">Instellingen</x:String>
     <x:String x:Key="TxtSettingsDesc">Beheer applicatievoorkeuren</x:String>
     <x:String x:Key="TxtAppPrefs">Applicatievoorkeuren</x:String>
-    <x:String x:Key="TxtCacheMgmt">Lokale cachebeheer</x:String>
-    <x:String x:Key="TxtCacheDesc">Bekijk en verwijder gedownloade OptiScaler versies van uw lokale opslag om ruimte vrij te maken.</x:String>
+    <x:String x:Key="TxtCacheMgmt">Lokale cache &amp; Standaard versiebeheer</x:String>
+    <x:String x:Key="TxtCacheDesc">Bekijk en beheer gedownloade componentversies, stel standaardversies in voor Snelle installatie en gamebeheer, en maak lokale opslagruimte vrij.</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  Beheer</x:String>
     <x:String x:Key="TxtLanguage">Applicatietaal</x:String>
     <x:String x:Key="TxtLanguageDesc">Wijzig de gebruikersinterfacetaal.</x:String>
@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Momenteel geen versies gedownload.</x:String>
     <x:String x:Key="TxtToastSuccess">Succes</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Bevestig Verwijdering</x:String>
+    <x:String x:Key="TxtCustomVersions">Aangepaste OptiScaler-versies</x:String>
+    <x:String x:Key="TxtImportArchive">Archief importeren</x:String>
+    <x:String x:Key="TxtNoCustomVersions">Geen aangepaste versies geïmporteerd.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Importeer aangepaste OptiScaler-builds als 7z-, zip- of rar-archieven. Installatie/deïnstallatie kan mislukken als het archief bestanden bevat die niet door de app gevolgd kunnen worden. Voeg alleen de OptiScaler-releasebestanden toe.</x:String>
+    <x:String x:Key="TxtImporting">Importeren...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Weet u zeker dat u deze versie wilt verwijderen?</x:String>
     <x:String x:Key="TxtCancel">Annuleren</x:String>
     <x:String x:Key="TxtDeletePlain">Verwijder</x:String>
@@ -91,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Bevestig Deïnstallatie</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Weet u zeker dat u OptiScaler wilt deïnstalleren?&#x0a;Alleen geback-upde originele bestanden worden hersteld.</x:String>
     <x:String x:Key="TxtUninstall">✕ Deïnstalleer</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Map opschonen</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Map geforceerd opschonen</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Alle bekende OptiScaler-bestanden worden geforceerd verwijderd uit de installatiemap van het spel.&#x0a;&#x0a;Gebruik dit wanneer een vorige OptiScaler-installatie in een beschadigde of onvolledige staat is achtergelaten, of wanneer u wilt terugkeren naar een schone basis vóór het opnieuw installeren.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Gevoelige bestanden — kunnen ook bij het spel horen</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">De onderstaande bestanden kunnen native spelbestanden zijn. Ze verwijderen kan het spel beschadigen. Het wordt sterk aanbevolen om de bestandsverificatie van uw launcher (bijv. Steam → Integriteit van spelbestanden verifiëren) daarna uit te voeren. Selecteer alleen de bestanden die u wilt verwijderen:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Map opschonen voltooid.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Map opschonen mislukt: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Beschadigde installatie gedetecteerd</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">OptiScaler-bestanden zijn gevonden in de map van dit spel, maar het spel is niet gemarkeerd als geïnstalleerd. Dit betekent meestal dat een eerdere installatie niet correct is verwijderd.&#x0a;&#x0a;Het wordt sterk aanbevolen de map op te schonen vóór het installeren om conflicten te vermijden. U kunt nu opschonen, doorgaan zonder opschonen, of de installatie annuleren.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Opschonen en installeren</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Toch doorgaan</x:String>
     <x:String x:Key="TxtVersionLbl">Versie:</x:String>
     <x:String x:Key="TxtInjectionLbl">Injectie:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Automatische installatie</x:String>
@@ -170,7 +186,7 @@
     <x:String x:Key="TxtAnimationsDesc">Activeer soepele overgangen en animaties in de hele interface</x:String>
     <x:String x:Key="TxtBetaVersions">Voorkeur voor laatste beta als standaard</x:String>
     <x:String x:Key="TxtBetaVersionsDesc">Wanneer ingeschakeld, selecteert automatisch de laatste beta versie in plaats van de stabiele release.</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta versies bevatten al Fakenvapi en NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Deze versie bevat al Fakenvapi en NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">Standaard FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Standaard FSR4 INT8-modversie die vooraf wordt geselecteerd bij het openen van een spel. RDNA 4-GPU's (RX 9000-serie) gebruiken automatisch Geen.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Standaard GPU</x:String>
@@ -196,6 +212,15 @@
     <x:String x:Key="TxtCustomFolders">Aangepaste mappen</x:String>
     <x:String x:Key="TxtAddFolder">+ Map toevoegen</x:String>
     <x:String x:Key="TxtNoCustomFolders">Nog geen aangepaste mappen toegevoegd.</x:String>
+    <x:String x:Key="TxtFilterOptions">Filteropties</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Alle games scannen</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Alle geïnstalleerde games van alle ingeschakelde bronnen detecteren en weergeven.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Alles scannen, games zonder upscalers verbergen</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Alles scannen, maar games zonder detecteerbare DLSS, FSR of XeSS automatisch verbergen. Verborgen games blijven in de lijst en kunnen worden weergegeven vanuit de Organiseer-modus.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Games zonder upscalers overslaan</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Alleen games opnemen waarbij DLSS-, FSR- of XeSS-DLL's zijn gedetecteerd.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Sommige games ondersteunen upscalers maar tonen hun DLL's niet op een detecteerbaar pad. Die games verschijnen niet in de lijst.</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Spellen zonder upscalers weergeven (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Verwijderen</x:String>
     <x:String x:Key="TxtSave">Opslaan</x:String>
     <x:String x:Key="TxtScanSources">Scanbronnen</x:String>
@@ -225,6 +250,8 @@
     <x:String x:Key="TxtInstallSelected">Geselecteerde installeren</x:String>
     <x:String x:Key="TxtNoGames">Geen games</x:String>
     <x:String x:Key="TxtNoGamesFound">Geen games gevonden. Scan eerst op games.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Geen games gevonden</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Zorg ervoor dat er games geïnstalleerd zijn en klik op Scannen om opnieuw te zoeken. Je kunt ook aangepaste mappen toevoegen in Scanbronnen.</x:String>
 
 
     <!-- SteamGridDB -->
@@ -287,7 +314,7 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; Probleemoplossing</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Disclaimer ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">Dit is geen officieel OptiScaler-project. Ik heb geen enkele band met het OptiScaler-team. Dit is een persoonlijk project dat zonder commercieel doel is ontwikkeld. Iedereen is vrij om deze software op eigen risico te proberen en te gebruiken.&#x0a;&#x0a;Credits: Een speciale dank aan het OptiScaler-team; dit hulpmiddel is alleen mogelijk dankzij hun ongelooflijke werk aan de originele mod.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;Gelicentieerd onder GPL-3.0-or-later. Dit is vrije software: u kunt het wijzigen en verspreiden onder bepaalde voorwaarden. Zie het LICENSE-bestand voor details.&#x0a;&#x0a;Componenten van derden (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) vallen onder hun respectieve licenties.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;Gelicentieerd onder GPL-3.0-or-later. Dit is vrije software: u kunt het wijzigen en verspreiden onder bepaalde voorwaarden. Zie het LICENSE-bestand voor details.&#x0a;&#x0a;Componenten van derden (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) vallen onder hun respectieve licenties.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">Systeem</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Licentie &amp; Auteursrecht</x:String>
 
@@ -424,6 +451,16 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtHelpFaqUpscText">Controleer of de game DLSS/FSR/XeSS standaard ondersteunt. OptiScaler vervangt bestaande upscaling-implementaties.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll of nvngx.dll niet gevonden en andere fouten.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Gebruik de knop om de cache te wissen via de instellingen; dat zou de meeste problemen moeten oplossen.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Spelmap bevat na verwijdering nog steeds OptiScaler-bestanden</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Dit gebeurt wanneer een eerdere installatie niet correct is bijgehouden (bijv. een crash liet bestanden achter). Aanbevolen stappen:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Probeer eerst de per-spel Map Opschonen in de app (Spel → Forceren Map Opschonen).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Als dat het probleem niet oplost, klik in de app op Verwijderen en verwijder vervolgens handmatig de resterende OptiScaler-bestanden uit de spelmap (OptiScaler.dll, OptiScaler.ini, dxgi.dll als dat het injectiedoel was, nvapi64.dll, enz.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">De app detecteert standaard corrupte installaties en zal vragen om de map te reinigen voordat u installeert indien nodig.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 niet zichtbaar op Linux</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Als u op Linux bent en FSR 4 niet als optie verschijnt, houd dan rekening met het volgende:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">U hebt de nieuwste AMD MESA-stuurprogramma's nodig (versie 25.2.0 of nieuwer).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Installeer de nieuwste beschikbare versie van OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Het wordt aanbevolen om GE-Proton te gebruiken, dat beheerd kan worden via Proton Plus of ProtonUp-Qt.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Standaardprofiel</x:String>
@@ -453,7 +490,6 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtProfSearchResultFormat">{0} resultaat/-aten van {1}.</x:String>
     <x:String x:Key="TxtProfNotFound">Geen profielen gevonden.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">Geen overeenkomende profielen gevonden.</x:String>
-    <x:String x:Key="TxtDefaultBadge">Standaard</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← Profielen</x:String>
@@ -475,6 +511,8 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtEditorSave">Profiel opslaan</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Games zonder upscaling-DLL's overslaan</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Negeer games zonder detecteerbare DLSS-, FSR- of XeSS-bibliotheken. Alleen games die compatibel zijn met OptiScaler worden toegevoegd.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Alleen ontbrekende omslagen vernieuwen</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Sla de volledige scan over en probeer alleen omslagen op te halen voor games die eerder niet konden worden gedownload. Handig na het instellen van een SteamGridDB API-sleutel.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Games organiseren</x:String>
@@ -496,7 +534,44 @@ Deze versie is niet beschikbaar om te downloaden. Controleer uw internetverbindi
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">Een ASI-plugin voor OptiScaler die DLSS/DLSS-FG-invoer blootlegt zonder spoofing in ondersteunde spellen. Helpt Intel Arc-gebruikers D3D12-fouten te vermijden en voorkomt prestatieproblemen of crashes door Dxgi-spoofing.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher downloaden...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher installeren...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher installeren...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">Versiebeheer</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi en NukemFG versies kunnen worden beheerd vanuit het gedeelte Lokale cache &amp; Standaard versiebeheer in Instellingen.</x:String>
+    <x:String x:Key="TxtSetDefault">Als standaard instellen</x:String>
+    <x:String x:Key="TxtClearDefault">Wissen</x:String>
+    <x:String x:Key="TxtDefaultBadge">STANDAARD</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">Huidige standaard: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">Geen standaard ingesteld</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Netwerk &amp; Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Configureer een HTTP(S)-proxy voor de GitHub API en downloadverbindingen.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Configureer een HTTP(S)- of SOCKS5-proxy voor de GitHub API en downloadverbindingen. Laat leeg om het systeemplug-in te gebruiken.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Systeemproxy gebruiken</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Wanneer ingeschakeld, worden de OS-proxyinstellingen en de omgevingsvariabelen HTTP_PROXY / HTTPS_PROXY gebruikt. Schakel uit om een aangepaste proxy in te stellen.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy-configuratie</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Type</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.voorbeeld.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Poort</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy vereist authenticatie</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Inloggegevens</x:String>
+    <x:String x:Key="TxtNetworkUsername">Gebruikersnaam</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Optioneel</x:String>
+    <x:String x:Key="TxtNetworkPassword">Wachtwoord</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Optioneel</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Verbinding testen</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Verbonden</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Mislukt</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Bezig met testen…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Wijzigingslogboek</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">De volledige lijst van wijzigingen en nieuwe functies van deze versie is beschikbaar op GitHub.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Bekijk wijzigingslogboek op GitHub</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Aan de slag</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Ik raad sterk aan om de ingebouwde handleiding in het tabblad Help te raadplegen om vertrouwd te raken met de app of specifieke vragen te beantwoorden.</x:String>
+</ResourceDictionary>
 
 
 

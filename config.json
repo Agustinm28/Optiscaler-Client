@@ -39,7 +39,24 @@
         {
             "Name": "GameSave",
             "PathSegment": "GameSave"
-        }
+        },
+        {
+            "Name": "SteamVR",
+            "PathSegment": "SteamVR"
+        },
+        {
+            "Name": "Steam Linux Runtime",
+            "PathSegment": "SteamLinuxRuntime"
+        },
+        {
+            "Name": "Proton",
+            "PathSegment": "Proton "
+        },
+        { "PathSegment": "SteamLinuxRuntime" },
+        { "PathSegment": "common/Proton " },
+        { "PathSegment": "Proton Hotfix" },
+        { "PathSegment": "Proton EasyAntiCheat Runtime" },
+        { "PathSegment": "Proton BattlEye Runtime" }
     ],
     "SteamGridDBApiKey": "",
     "Debug": false

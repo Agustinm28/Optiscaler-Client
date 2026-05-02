@@ -7,6 +7,7 @@ using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using OptiscalerClient.Helpers;
+using OptiscalerClient.Models;
 using System.Diagnostics;
 using OptiscalerClient.Services;
 
@@ -15,18 +16,24 @@ namespace OptiscalerClient.Views
     public partial class ManageDefaultVersionsWindow : Window
     {
         private readonly ComponentManagementService _componentService;
+        private readonly IGpuDetectionService? _gpuService;
         private bool _optiDefaultShowingBeta;
+        private bool _optiDefaultShowingCustom;
 
         public ManageDefaultVersionsWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public ManageDefaultVersionsWindow(Window owner, ComponentManagementService componentService)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
+
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
             this.Opacity = 0;
 
@@ -57,21 +64,36 @@ namespace OptiscalerClient.Views
 
         private void LoadCurrentSettings()
         {
-            // Determine if saved OptiScaler default is beta
+            // Determine if saved OptiScaler default is beta or custom
             var savedOptiDefault = _componentService.Config.DefaultOptiScalerVersion;
+            var customVersions = _componentService.CustomVersions;
             bool savedIsBeta = !string.IsNullOrEmpty(savedOptiDefault) &&
                                _componentService.BetaVersions.Contains(savedOptiDefault);
+            bool savedIsCustom = !string.IsNullOrEmpty(savedOptiDefault) &&
+                                 customVersions.Contains(savedOptiDefault);
+            if (savedIsCustom) savedIsBeta = false;
             _optiDefaultShowingBeta = savedIsBeta;
+            _optiDefaultShowingCustom = savedIsCustom;
+
+            // Show/hide Custom tab
+            var btnCustom = this.FindControl<Button>("BtnOptiDefaultCustom");
+            var gridTabs = this.FindControl<Grid>("GridOptiDefaultTabs");
+            bool hasCustom = customVersions.Count > 0;
+            if (btnCustom != null) btnCustom.IsVisible = hasCustom;
+            if (gridTabs != null)
+                gridTabs.ColumnDefinitions = hasCustom
+                    ? new ColumnDefinitions("*,*,*")
+                    : new ColumnDefinitions("*,*");
 
             UpdateOptiDefaultChannelButtons();
-            PopulateDefaultOptiScalerVersionCombo(showBeta: savedIsBeta, restoreSaved: true);
+            PopulateDefaultOptiScalerVersionCombo(showBeta: savedIsBeta, showCustom: savedIsCustom, restoreSaved: true);
             PopulateDefaultExtrasCombo();
             PopulateDefaultOptiPatcherCombo();
         }
 
         // ── OptiScaler Version ──────────────────────────────────────────────
 
-        private void PopulateDefaultOptiScalerVersionCombo(bool showBeta, bool restoreSaved)
+        private void PopulateDefaultOptiScalerVersionCombo(bool showBeta, bool restoreSaved, bool showCustom = false)
         {
             var cmb = this.FindControl<ComboBox>("CmbDefaultOptiScalerVersion");
             if (cmb == null) return;
@@ -80,17 +102,28 @@ namespace OptiscalerClient.Views
 
             var allVersions = _componentService.OptiScalerAvailableVersions;
             var betaSet = _componentService.BetaVersions;
+            var customSet = _componentService.CustomVersions;
             var latestStable = _componentService.LatestStableVersion;
             var latestBeta = _componentService.LatestBetaVersion;
 
             foreach (var ver in allVersions)
             {
                 bool isBeta = betaSet.Contains(ver);
-                if (isBeta != showBeta) continue;
+                bool isCustom = customSet.Contains(ver);
 
-                bool isLatestInChannel = showBeta
+                if (showCustom)
+                {
+                    if (!isCustom) continue;
+                }
+                else
+                {
+                    if (isCustom) continue;
+                    if (isBeta != showBeta) continue;
+                }
+
+                bool isLatestInChannel = !showCustom && (showBeta
                     ? ver == latestBeta
-                    : ver == latestStable;
+                    : ver == latestStable);
 
                 ComboBoxItem cbi;
                 if (isLatestInChannel)
@@ -105,7 +138,7 @@ namespace OptiscalerClient.Views
                     stack.Children.Add(new Border
                     {
                         CornerRadius = new CornerRadius(4),
-                        Background = new SolidColorBrush(Color.Parse("#7C3AED")),
+                        Background = new SolidColorBrush(Color.Parse(showBeta ? "#D4A017" : "#7C3AED")),
                         Padding = new Thickness(5, 1),
                         Child = new TextBlock
                         {
@@ -155,8 +188,9 @@ namespace OptiscalerClient.Views
 
         private void BtnOptiDefaultStable_Click(object? sender, RoutedEventArgs e)
         {
-            if (!_optiDefaultShowingBeta) return;
+            if (!_optiDefaultShowingBeta && !_optiDefaultShowingCustom) return;
             _optiDefaultShowingBeta = false;
+            _optiDefaultShowingCustom = false;
             UpdateOptiDefaultChannelButtons();
             PopulateDefaultOptiScalerVersionCombo(showBeta: false, restoreSaved: false);
         }
@@ -165,25 +199,47 @@ namespace OptiscalerClient.Views
         {
             if (_optiDefaultShowingBeta) return;
             _optiDefaultShowingBeta = true;
+            _optiDefaultShowingCustom = false;
             UpdateOptiDefaultChannelButtons();
             PopulateDefaultOptiScalerVersionCombo(showBeta: true, restoreSaved: false);
+        }
+
+        private void BtnOptiDefaultCustom_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_optiDefaultShowingCustom) return;
+            _optiDefaultShowingCustom = true;
+            _optiDefaultShowingBeta = false;
+            UpdateOptiDefaultChannelButtons();
+            PopulateDefaultOptiScalerVersionCombo(showBeta: false, showCustom: true, restoreSaved: false);
         }
 
         private void UpdateOptiDefaultChannelButtons()
         {
             var btnStable = this.FindControl<Button>("BtnOptiDefaultStable");
             var btnBeta = this.FindControl<Button>("BtnOptiDefaultBeta");
+            var btnCustom = this.FindControl<Button>("BtnOptiDefaultCustom");
             if (btnStable == null || btnBeta == null) return;
 
-            if (_optiDefaultShowingBeta)
+            void SetActive(Button b) { b.Classes.Remove("BtnSecondary"); b.Classes.Add("BtnPrimary"); }
+            void SetInactive(Button b) { b.Classes.Remove("BtnPrimary"); b.Classes.Add("BtnSecondary"); }
+
+            if (_optiDefaultShowingCustom)
             {
-                btnStable.Classes.Remove("BtnPrimary"); btnStable.Classes.Add("BtnSecondary");
-                btnBeta.Classes.Remove("BtnSecondary"); btnBeta.Classes.Add("BtnPrimary");
+                SetInactive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetActive(btnCustom);
+            }
+            else if (_optiDefaultShowingBeta)
+            {
+                SetInactive(btnStable);
+                SetActive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
             }
             else
             {
-                btnStable.Classes.Remove("BtnSecondary"); btnStable.Classes.Add("BtnPrimary");
-                btnBeta.Classes.Remove("BtnPrimary"); btnBeta.Classes.Add("BtnSecondary");
+                SetActive(btnStable);
+                SetInactive(btnBeta);
+                if (btnCustom != null) SetInactive(btnCustom);
             }
         }
 
@@ -243,19 +299,50 @@ namespace OptiscalerClient.Views
                 cmb.Items.Add(cbi);
             }
 
-            // Restore saved
+            // Determine selection: saved preference wins; if none, use GPU-based intelligent default
             var saved = _componentService.Config.DefaultExtrasVersion;
-            cmb.SelectedIndex = 0; // None
-            if (!string.IsNullOrEmpty(saved) && !saved.Equals("none", StringComparison.OrdinalIgnoreCase))
+
+            if (!string.IsNullOrEmpty(saved))
             {
-                for (int i = 1; i < cmb.Items.Count; i++)
+                // Saved preference exists — restore it exactly
+                if (saved.Equals("none", StringComparison.OrdinalIgnoreCase))
                 {
-                    if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == saved)
+                    cmb.SelectedIndex = 0;
+                }
+                else
+                {
+                    cmb.SelectedIndex = 0; // fallback to None if not found
+                    for (int i = 1; i < cmb.Items.Count; i++)
                     {
-                        cmb.SelectedIndex = i;
-                        break;
+                        if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == saved)
+                        {
+                            cmb.SelectedIndex = i;
+                            break;
+                        }
                     }
                 }
+            }
+            else
+            {
+                // No saved preference — pick intelligently based on GPU
+                bool isRdna4 = false;
+                if (OperatingSystem.IsWindows() && _gpuService != null)
+                {
+                    try
+                    {
+                        var gpu = GpuSelectionHelper.GetPreferredGpu(_gpuService, _componentService.Config.DefaultGpuId);
+                        isRdna4 = gpu != null && gpu.Vendor == GpuVendor.AMD &&
+                                  (gpu.Name.Contains(" 9", StringComparison.OrdinalIgnoreCase) ||
+                                   gpu.Name.Contains("RX 9", StringComparison.OrdinalIgnoreCase));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"[ManageDefaultVersions] GPU detection failed: {ex.Message}");
+                    }
+                }
+
+                // RDNA 4 → None (INT8 shader not needed); all others → latest version
+                cmb.SelectedIndex = isRdna4 ? 0 : (cmb.Items.Count > 1 ? 1 : 0);
             }
         }
 

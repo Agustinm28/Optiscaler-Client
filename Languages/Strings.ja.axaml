@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">設定</x:String>
     <x:String x:Key="TxtSettingsDesc">アプリケーションの設定を管理</x:String>
     <x:String x:Key="TxtAppPrefs">アプリ設定</x:String>
-    <x:String x:Key="TxtCacheMgmt">ローカルキャッシュ管理</x:String>
-    <x:String x:Key="TxtCacheDesc">ダウンロードしたOptiScalerバージョンをローカルストレージから表示・削除してスペースを解放します。</x:String>
+    <x:String x:Key="TxtCacheMgmt">ローカルキャッシュ &amp; デフォルトバージョン管理</x:String>
+    <x:String x:Key="TxtCacheDesc">ダウンロード済みのコンポーネントバージョンの表示・管理、クイックインストールやゲーム管理のデフォルトバージョンの設定、ローカルストレージの空き容量の確保。</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  管理</x:String>
     <x:String x:Key="TxtLanguage">アプリケーション言語</x:String>
     <x:String x:Key="TxtLanguageDesc">ユーザーインターフェースの言語を変更します。</x:String>
@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">現在ダウンロードされているバージョンはありません。</x:String>
     <x:String x:Key="TxtToastSuccess">成功</x:String>
     <x:String x:Key="TxtConfirmDelTitle">削除を確認</x:String>
+    <x:String x:Key="TxtCustomVersions">カスタム OptiScaler バージョン</x:String>
+    <x:String x:Key="TxtImportArchive">アーカイブをインポート</x:String>
+    <x:String x:Key="TxtNoCustomVersions">カスタムバージョンはインポートされていません。</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ カスタム OptiScaler ビルドを 7z、zip、または rar アーカイブとしてインポートしてください。アプリが追跡できないファイルが含まれている場合、インストール/アンインストールが失敗する可能性があります。OptiScaler のリリースファイルのみを含めてください。</x:String>
+    <x:String x:Key="TxtImporting">インポート中...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">このバージョンを削除してもよろしいですか？</x:String>
     <x:String x:Key="TxtCancel">キャンセル</x:String>
     <x:String x:Key="TxtDeletePlain">削除</x:String>
@@ -91,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">アンインストールを確認</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">OptiScalerをアンインストールしてもよろしいですか？&#x0a;バックアップされた元のファイルのみが復元されます。</x:String>
     <x:String x:Key="TxtUninstall">✕ アンインストール</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 フォルダをクリーンアップ</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">フォルダを強制クリーンアップ</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">ゲームのインストールフォルダから既知のすべてのOptiScalerファイルを削除します。&#x0a;&#x0a;以前のOptiScalerインストールが壊れた状態や不完全な状態で残っている場合、または再インストール前にクリーンな状態にリセットしたい場合に使用してください。</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; 注意が必要なファイル — ゲーム固有のファイルである可能性があります</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">以下のファイルはゲームのネイティブファイルである可能性があります。削除するとゲームが破損する可能性があります。その後、ランチャーのファイル検証（例：Steam → ゲームファイルの整合性を確認）を実行することを強くお勧めします。削除したいものだけを選択してください：</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">フォルダのクリーンアップが完了しました。</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">フォルダのクリーンアップに失敗しました: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">壊れたインストールが検出されました</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">このゲームのフォルダにOptiScalerのファイルが見つかりましたが、ゲームはインストール済みとしてマークされていません。これは通常、以前のインストールが正しくアンインストールされなかったことを意味します。&#x0a;&#x0a;競合を避けるため、インストール前にフォルダをクリーンアップすることを強くお勧めします。今すぐクリーンアップ、クリーンアップなしで続行、またはインストールをキャンセルできます。</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 クリーンアップしてインストール</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">そのまま続行</x:String>
     <x:String x:Key="TxtVersionLbl">バージョン：</x:String>
     <x:String x:Key="TxtInjectionLbl">インジェクション：</x:String>
     <x:String x:Key="TxtInstallOpti">✦ 自動インストール</x:String>
@@ -178,6 +194,15 @@
     <x:String x:Key="TxtCustomFolders">カスタムフォルダー</x:String>
     <x:String x:Key="TxtAddFolder">+ フォルダーを追加</x:String>
     <x:String x:Key="TxtNoCustomFolders">カスタムフォルダーはまだ追加されていません。</x:String>
+    <x:String x:Key="TxtFilterOptions">フィルターオプション</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">すべてのゲームをスキャン</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">有効なすべてのソースからインストール済みゲームをすべて検出して表示します。</x:String>
+    <x:String x:Key="TxtFilterHideTitle">すべてスキャン、アップスケーラーなしを非表示</x:String>
+    <x:String x:Key="TxtFilterHideDesc">すべてをスキャンしますが、検出可能な DLSS、FSR、XeSS のないゲームを自動的に非表示にします。非表示のゲームはリストに残り、整理モードから表示できます。</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">アップスケーラーのないゲームをスキップ</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">DLSS、FSR、または XeSS の DLL が検出されたゲームのみを含めます。</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">一部のゲームはアップスケーラーをサポートしていますが、DLL が検出可能なパスに公開されていません。そのようなゲームはリストに表示されません。</x:String>
+    <x:String x:Key="TxtShowNonGameApps">アップスケーラーのないゲームを表示（DLSS/FSR/XeSS）</x:String>
     <x:String x:Key="TxtRemove">削除</x:String>
     <x:String x:Key="TxtSave">保存</x:String>
     <x:String x:Key="TxtScanSources">スキャンソース</x:String>
@@ -207,6 +232,8 @@
     <x:String x:Key="TxtInstallSelected">選択したものをインストール</x:String>
     <x:String x:Key="TxtNoGames">ゲームなし</x:String>
     <x:String x:Key="TxtNoGamesFound">ゲームが見つかりませんでした。まずゲームをスキャンしてください。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">ゲームが見つかりませんでした</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">ゲームがインストールされていることを確認し、スキャンを押して再検索してください。スキャンソースにカスタムフォルダーを追加することもできます。</x:String>
 
 
     <!-- SteamGridDB -->
@@ -253,7 +280,7 @@
     <x:String x:Key="TxtFeedbackFeatures">✨ 機能要望: 新機能を提案するには "Feature request" テンプレートを使用してください</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 改善: 既存の機能改善には "Improvement request" テンプレートを使用してください</x:String>
     <x:String x:Key="TxtFeedbackSystem">より早い対応のためにOS、GPU、アプリのバージョンを含めてください</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">ベータ版には既に Fakenvapi と NukemFG が含まれています</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">このバージョンには既に Fakenvapi と NukemFG が含まれています</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">デフォルト FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">ゲームを開く際に事前選択されるデフォルトの FSR4 INT8 モッドバージョン。RDNA 4 GPU（RX 9000シリーズ）は自動的に「なし」になります。</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">デフォルト GPU</x:String>
@@ -287,7 +314,7 @@
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; トラブルシューティング</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">免責事項 ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">これはOptiScalerの公式プロジェクトではありません。OptiScalerチームとは一切関係ありません。これは商業目的なく開発された個人プロジェクトです。誰でも自己責任でこのソフトウェアを試用・利用できます。&#x0a;&#x0a;クレジット: OptiScalerチームへの特別な感謝を捧げます。このツールは彼らの素晴らしいオリジナルModの仕事があって初めて成り立っています。</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later ライセンスの下で提供されています。これはフリーソフトウェアです: 一定の条件のもとで変更・再配布が可能です。詳細はLICENSEファイルをご覧ください。&#x0a;&#x0a;サードパーティコンポーネント (OptiScaler、Fakenvapi、NukemFG、FSR4 INT8) はそれぞれのライセンスに従います。</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;GPL-3.0-or-later ライセンスの下で提供されています。これはフリーソフトウェアです: 一定の条件のもとで変更・再配布が可能です。詳細はLICENSEファイルをご覧ください。&#x0a;&#x0a;サードパーティコンポーネント (OptiScaler、Fakenvapi、NukemFG、FSR4 INT8) はそれぞれのライセンスに従います。</x:String>
     <x:String x:Key="TxtHelpSystemTitle">システム</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">ライセンス &amp; 著作権</x:String>
 
@@ -424,6 +451,16 @@
     <x:String x:Key="TxtHelpFaqUpscText">ゲームがDLSS/FSR/XeSSをネイティブでサポートしているか確認してください。OptiScalerは既存のアップスケーリング実装を置き換えます。</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dllまたはnvngx.dllが見つからないおよびその他のエラー。</x:String>
     <x:String x:Key="TxtHelpFaqDllText">設定からキャッシュをクリアするボタンを使用してください。ほとんどの問題が解決するはずです。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">アンインストール後もゲームフォルダーにOptiScalerのファイルが残っている</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">これは以前のインストールが正しく追跡されなかった場合（例：クラッシュで孤立ファイルが残った）に発生します。推奨手順:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">まず、アプリ内のゲームごとの「フォルダのクリーンアップ」機能を試してください（ゲーム → フォルダの強制クリーンアップ）。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">フォルダのクリーンアップで解決しない場合は、アプリのアンインストールを実行し、その後ゲームフォルダに残っているOptiScalerファイル（OptiScaler.dll、OptiScaler.ini、インジェクション対象であればdxgi.dll、nvapi64.dllなど）を手動で削除してください。</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">また、アプリはデフォルトで破損したインストールを検知し、必要に応じてインストール前にフォルダのクリーンアップを促します。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">LinuxでFSR 4が表示されない</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">LinuxでFSR 4がオプションに表示されない場合は、以下を確認してください：</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">最新のAMD MESAドライバー（バージョン25.2.0以降）が必要です。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">利用可能な最新バージョンのOptiScalerをインストールしてください。</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">GE-Protonの使用を推奨します。Proton PlusまたはProtonUp-Qtで管理できます。</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">デフォルトプロフィール</x:String>
@@ -453,7 +490,6 @@
     <x:String x:Key="TxtProfSearchResultFormat">{1}件中 {0}件の結果.</x:String>
     <x:String x:Key="TxtProfNotFound">プロフィールが見つかりません.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">一致するプロフィールが見つかりません.</x:String>
-    <x:String x:Key="TxtDefaultBadge">デフォルト</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← プロフィール</x:String>
@@ -475,6 +511,8 @@
     <x:String x:Key="TxtEditorSave">プロフィールを保存</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">アップスケーリングDLLのないゲームをスキップ</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">DLSS、FSR、またはXeSSライブラリが検出されないゲームを無視します。OptiScalerと互換性のあるゲームのみが追加されます。</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">不足しているカバーのみ更新</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">フルスキャンをスキップし、以前に取得できなかったゲームのカバー画像の再取得のみを試みます。SteamGridDB APIキーを設定した後に役立ちます。</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">ゲームを整理</x:String>
@@ -496,7 +534,44 @@
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">サポートするゲームでスプーフィングなしにDLSS/DLSS-FG入力を公開するOptiScaler用ASIプラグインです。Intel ArcユーザーのD3D12エラーやDxgiスプーフィングによるパフォーマンス低下・クラッシュを防ぎます。</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcherをダウンロード中...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcherをインストール中...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcherをインストール中...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">バージョン管理</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler、OptiPatcher、FSR4 INT8、Fakenvapi、NukemFGのバージョンは、設定のローカルキャッシュ &amp; デフォルトバージョン管理セクションから管理できます。</x:String>
+    <x:String x:Key="TxtSetDefault">デフォルトに設定</x:String>
+    <x:String x:Key="TxtClearDefault">クリア</x:String>
+    <x:String x:Key="TxtDefaultBadge">デフォルト</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">現在のデフォルト: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">デフォルト未設定</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">ネットワークとプロキシ</x:String>
+    <x:String x:Key="TxtNetworkDesc">GitHub API とダウンロード接続のための HTTP(S) プロキシを設定します。</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">GitHub API とダウンロード接続のための HTTP(S) または SOCKS5 プロキシを設定します。システムプロキシを使用するには空のままにしてください。</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">システムプロキシを使用</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">有効にすると、OS のプロキシ設定と HTTP_PROXY / HTTPS_PROXY 環境変数が使用されます。カスタムプロキシを設定するには無効にしてください。</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">プロキシ設定</x:String>
+    <x:String x:Key="TxtNetworkProxyType">タイプ</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">ホスト</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.example.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">ポート</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">プロキシに認証が必要</x:String>
+    <x:String x:Key="TxtNetworkCredentials">資格情報</x:String>
+    <x:String x:Key="TxtNetworkUsername">ユーザー名</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">任意</x:String>
+    <x:String x:Key="TxtNetworkPassword">パスワード</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">任意</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">接続をテスト</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ 接続成功</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ 失敗</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">テスト中…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">変更履歴</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">このバージョンの変更点と新機能の完全なリストはGitHubで確認できます。</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; GitHubで変更履歴を見る</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">はじめに</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">アプリに慣れるため、または特定の質問を解決するために、ヘルプタブの組み込みガイドを確認することを強くお勧めします。</x:String>
+</ResourceDictionary>
 
 
 

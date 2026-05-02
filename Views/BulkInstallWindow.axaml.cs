@@ -21,7 +21,7 @@ public partial class BulkInstallWindow : Window
 {
     private readonly ComponentManagementService _componentService;
     private readonly GameInstallationService _installService;
-    private readonly IGpuDetectionService _gpuService;
+    private readonly IGpuDetectionService? _gpuService;
     private readonly ObservableCollection<BulkGameItem> _gameItems;
     private readonly ObservableCollection<BulkGameItem> _filteredGameItems;
     private List<BulkGameItem> _allGames = new List<BulkGameItem>();
@@ -31,10 +31,14 @@ public partial class BulkInstallWindow : Window
     private string? _lastSelectedProfileName;
     private bool _isUpdatingProfiles = false;
     private const string NewProfileTag = "__new_profile__";
+    private bool _optiShowingBeta;
+    private bool _optiShowingCustom;
+    private bool _optiTabInitialized;
 
     public BulkInstallWindow()
     {
         InitializeComponent();
+        DialogDimHelper.Register(this);
 
         // Initialize fields to avoid nullable warnings
         _componentService = null!;
@@ -52,6 +56,7 @@ public partial class BulkInstallWindow : Window
         Window? owner = null)
     {
         InitializeComponent();
+        DialogDimHelper.Register(this);
 
         _componentService = componentService;
         _installService = installService;
@@ -61,14 +66,7 @@ public partial class BulkInstallWindow : Window
         _filteredGameItems = new ObservableCollection<BulkGameItem>();
 
         // Initialize GPU service
-        if (OperatingSystem.IsWindows())
-        {
-            _gpuService = new WindowsGpuDetectionService();
-        }
-        else
-        {
-            _gpuService = null!;
-        }
+        _gpuService = PlatformServiceFactory.CreateGpuDetectionService();
 
         // Populate games list
         foreach (var game in games.OrderBy(g => g.Name))
@@ -116,6 +114,8 @@ public partial class BulkInstallWindow : Window
             cmbOptiVersion.SelectionChanged += CmbOptiVersion_SelectionChanged;
         }
 
+
+
         // Initialize injection method selector
         var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
         if (cmbInjectionMethod != null)
@@ -128,6 +128,12 @@ public partial class BulkInstallWindow : Window
 
         // Populate OptiPatcher versions
         PopulateOptiPatcherComboBox();
+
+        // Populate Fakenvapi versions
+        PopulateFakenvapiComboBox();
+
+        // Populate NukemFG versions
+        PopulateNukemFGComboBox();
 
         // Populate profile selector
         PopulateProfileSelector();
@@ -158,104 +164,191 @@ public partial class BulkInstallWindow : Window
 
     private async Task LoadVersionsAsync()
     {
-        // Check if we need to fetch versions
         if (_componentService.OptiScalerAvailableVersions.Count == 0)
         {
-            await _componentService.CheckForUpdatesAsync();
+            try { await _componentService.CheckForUpdatesAsync(); }
+            catch (GitHubRateLimitException) { /* rate limited — populate from cache */ }
+            catch (Exception) { /* network error — populate from cache */ }
         }
 
         Dispatcher.UIThread.Post(() =>
         {
-            var allVersions = _componentService.OptiScalerAvailableVersions;
-            var betaVersions = _componentService.BetaVersions;
-            var latestBeta = _componentService.LatestBetaVersion;
+            var customVersions = _componentService.CustomVersions;
 
-            var cmbOptiVersion = this.FindControl<ComboBox>("CmbOptiVersion");
-            if (cmbOptiVersion == null) return;
+            // Show/hide Custom tab
+            var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+            var gridTabs = this.FindControl<Grid>("GridOptiTabs");
+            bool hasCustom = customVersions.Count > 0;
+            if (btnCustom != null) btnCustom.IsVisible = hasCustom;
+            if (gridTabs != null)
+                gridTabs.ColumnDefinitions = hasCustom
+                    ? new ColumnDefinitions("*,*,*")
+                    : new ColumnDefinitions("*,*");
 
-            cmbOptiVersion.Items.Clear();
-
-            if (allVersions.Count == 0)
+            // Determine initial tab on first load
+            if (!_optiTabInitialized)
             {
-                cmbOptiVersion.Items.Add("No versions available");
-                cmbOptiVersion.SelectedIndex = 0;
-                cmbOptiVersion.IsEnabled = false;
-                return;
+                var configDefault = _componentService.Config.DefaultOptiScalerVersion;
+                _optiShowingBeta = !string.IsNullOrEmpty(configDefault) &&
+                                   _componentService.BetaVersions.Contains(configDefault);
+                _optiShowingCustom = !string.IsNullOrEmpty(configDefault) &&
+                                     customVersions.Contains(configDefault);
+                if (_optiShowingCustom) _optiShowingBeta = false;
+                _optiTabInitialized = true;
             }
 
-            var stableVersions = allVersions.Where(v => !betaVersions.Contains(v)).ToList();
-            var otherBetas = allVersions.Where(v => betaVersions.Contains(v) && v != latestBeta).ToList();
-
-            int selectedIndex = 0;
-            int currentIndex = 0;
-
-            bool hasBeta = !string.IsNullOrEmpty(latestBeta);
-
-            // Add latest beta first - NO LATEST badge for beta
-            if (hasBeta && latestBeta != null)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(latestBeta, isBeta: true, isLatest: false));
-                selectedIndex = 0; // Select beta by default
-                currentIndex++;
-            }
-
-            var latestStable = _componentService.LatestStableVersion;
-
-            // Add stable versions
-            bool isLatestStableMarked = false;
-            foreach (var ver in stableVersions)
-            {
-                bool shouldMarkAsLatest = false;
-
-                if (!string.IsNullOrEmpty(latestStable))
-                {
-                    shouldMarkAsLatest = ver.Equals(latestStable, StringComparison.OrdinalIgnoreCase);
-                }
-                else
-                {
-                    shouldMarkAsLatest = !isLatestStableMarked && !ver.Contains("nightly", StringComparison.OrdinalIgnoreCase);
-                }
-
-                if (shouldMarkAsLatest)
-                {
-                    isLatestStableMarked = true;
-                    // If we didn't default to beta, default to this latest stable
-                    if (!hasBeta)
-                    {
-                        selectedIndex = currentIndex;
-                    }
-                }
-
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: shouldMarkAsLatest));
-                currentIndex++;
-            }
-
-            // Add other betas
-            foreach (var ver in otherBetas)
-            {
-                cmbOptiVersion.Items.Add(BuildVersionItem(ver, isBeta: true, isLatest: false));
-                currentIndex++;
-            }
-
-            // Override with user-configured default version if set
-            var configDefault = _componentService.Config.DefaultOptiScalerVersion;
-            if (!string.IsNullOrEmpty(configDefault))
-            {
-                for (int i = 0; i < cmbOptiVersion.Items.Count; i++)
-                {
-                    if (cmbOptiVersion.Items[i] is ComboBoxItem ci && string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
-                    {
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            cmbOptiVersion.SelectedIndex = selectedIndex;
-
-            // Refresh OptiPatcher list after versions are loaded
+            UpdateOptiChannelButtons();
+            PopulateOptiVersionCombo();
             PopulateOptiPatcherComboBox();
+            PopulateFakenvapiComboBox();
+            PopulateNukemFGComboBox();
         });
+    }
+
+    private void PopulateOptiVersionCombo()
+    {
+        var allVersions = _componentService.OptiScalerAvailableVersions;
+        var betaVersions = _componentService.BetaVersions;
+        var customVersions = _componentService.CustomVersions;
+        var latestStable = _componentService.LatestStableVersion;
+        var latestBeta = _componentService.LatestBetaVersion;
+        string? latestInChannel = _optiShowingCustom ? null : (_optiShowingBeta ? latestBeta : latestStable);
+        string latestBadgeColor = _optiShowingBeta ? "#D4A017" : "#7C3AED";
+
+        var cmb = this.FindControl<ComboBox>("CmbOptiVersion");
+        if (cmb == null) return;
+
+        cmb.SelectionChanged -= CmbOptiVersion_SelectionChanged;
+        cmb.Items.Clear();
+
+        if (allVersions.Count == 0 && !_optiShowingCustom)
+        {
+            cmb.Items.Add("No versions available");
+            cmb.SelectedIndex = 0;
+            cmb.IsEnabled = false;
+            cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+            return;
+        }
+
+        System.Collections.Generic.List<string> versionsToShow;
+        if (_optiShowingCustom)
+            versionsToShow = allVersions.Where(v => customVersions.Contains(v)).ToList();
+        else
+            versionsToShow = allVersions.Where(v => !customVersions.Contains(v) && betaVersions.Contains(v) == _optiShowingBeta).ToList();
+
+        if (versionsToShow.Count == 0)
+        {
+            cmb.Items.Add(new ComboBoxItem { Content = "No versions available", Tag = "none" });
+            cmb.SelectedIndex = 0;
+            cmb.IsEnabled = false;
+            cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+            return;
+        }
+
+        cmb.IsEnabled = true;
+
+        foreach (var ver in versionsToShow)
+        {
+            bool isLatest = string.Equals(ver, latestInChannel, StringComparison.OrdinalIgnoreCase);
+            ComboBoxItem cbi;
+            if (isLatest)
+            {
+                var stack = new StackPanel { Orientation = Avalonia.Layout.Orientation.Horizontal, Spacing = 6 };
+                stack.Children.Add(new TextBlock { Text = ver, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center });
+                stack.Children.Add(new Border
+                {
+                    CornerRadius = new CornerRadius(4),
+                    Background = new SolidColorBrush(Color.Parse(latestBadgeColor)),
+                    Padding = new Thickness(5, 1),
+                    Child = new TextBlock { Text = "LATEST", FontSize = 10, Foreground = Brushes.White, FontWeight = FontWeight.Bold }
+                });
+                cbi = new ComboBoxItem { Content = stack, Tag = ver };
+            }
+            else
+            {
+                cbi = new ComboBoxItem { Content = ver, Tag = ver };
+            }
+            cmb.Items.Add(cbi);
+        }
+
+        int selectedIndex = 0;
+        var configDefault = _componentService.Config.DefaultOptiScalerVersion;
+        bool defaultInChannel = !string.IsNullOrEmpty(configDefault) &&
+            (_optiShowingCustom
+                ? customVersions.Contains(configDefault)
+                : !customVersions.Contains(configDefault) && betaVersions.Contains(configDefault) == _optiShowingBeta);
+        if (defaultInChannel)
+        {
+            for (int i = 0; i < cmb.Items.Count; i++)
+            {
+                if (cmb.Items[i] is ComboBoxItem ci &&
+                    string.Equals(ci.Tag?.ToString(), configDefault, StringComparison.OrdinalIgnoreCase))
+                {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectedIndex = selectedIndex;
+        cmb.SelectionChanged += CmbOptiVersion_SelectionChanged;
+    }
+
+    private void UpdateOptiChannelButtons()
+    {
+        var btnStable = this.FindControl<Button>("BtnOptiStable");
+        var btnBeta = this.FindControl<Button>("BtnOptiBeta");
+        var btnCustom = this.FindControl<Button>("BtnOptiCustom");
+        if (btnStable == null || btnBeta == null) return;
+
+        void SetActive(Button b) { b.Classes.Remove("BtnSecondary"); b.Classes.Add("BtnPrimary"); }
+        void SetInactive(Button b) { b.Classes.Remove("BtnPrimary"); b.Classes.Add("BtnSecondary"); }
+
+        if (_optiShowingCustom)
+        {
+            SetInactive(btnStable);
+            SetInactive(btnBeta);
+            if (btnCustom != null) SetActive(btnCustom);
+        }
+        else if (_optiShowingBeta)
+        {
+            SetInactive(btnStable);
+            SetActive(btnBeta);
+            if (btnCustom != null) SetInactive(btnCustom);
+        }
+        else
+        {
+            SetActive(btnStable);
+            SetInactive(btnBeta);
+            if (btnCustom != null) SetInactive(btnCustom);
+        }
+    }
+
+    private void BtnOptiStable_Click(object? sender, RoutedEventArgs e)
+    {
+        if (!_optiShowingBeta && !_optiShowingCustom) return;
+        _optiShowingBeta = false;
+        _optiShowingCustom = false;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
+    }
+
+    private void BtnOptiBeta_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_optiShowingBeta) return;
+        _optiShowingBeta = true;
+        _optiShowingCustom = false;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
+    }
+
+    private void BtnOptiCustom_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_optiShowingCustom) return;
+        _optiShowingCustom = true;
+        _optiShowingBeta = false;
+        UpdateOptiChannelButtons();
+        PopulateOptiVersionCombo();
     }
 
     private static ComboBoxItem BuildVersionItem(string ver, bool isBeta, bool isLatest)
@@ -367,15 +460,27 @@ public partial class BulkInstallWindow : Window
         var cmbInjectionMethod = this.FindControl<ComboBox>("CmbInjectionMethod");
         var cmbExtrasVersion = this.FindControl<ComboBox>("CmbExtrasVersion");
         var cmbOptiPatcher = this.FindControl<ComboBox>("CmbOptiPatcherVersion");
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
+        var cmbFakenvapiVersion = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        var cmbNukemFGVersion = this.FindControl<ComboBox>("CmbNukemFGVersion");
         var cmbProfile = this.FindControl<ComboBox>("CmbProfile");
 
         if (cmbOptiVersion?.SelectedItem is not ComboBoxItem selectedItem) return;
 
         string version = selectedItem.Tag?.ToString() ?? "";
-        bool installFakenvapi = chkFakenvapi?.IsChecked == true;
-        bool installNukemFG = chkNukemFG?.IsChecked == true;
+
+        // Fakenvapi: read version from combobox
+        var selectedFakenvapiItem = cmbFakenvapiVersion?.SelectedItem as ComboBoxItem;
+        var selectedFakenvapiVersion = selectedFakenvapiItem?.Tag?.ToString();
+        bool installFakenvapi = !string.IsNullOrEmpty(selectedFakenvapiVersion) &&
+                                !selectedFakenvapiVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                                selectedFakenvapiVersion != "__manage__";
+
+        // NukemFG: read version from combobox
+        var selectedNukemFGItem = cmbNukemFGVersion?.SelectedItem as ComboBoxItem;
+        var selectedNukemFGVersion = selectedNukemFGItem?.Tag?.ToString();
+        bool installNukemFG = !string.IsNullOrEmpty(selectedNukemFGVersion) &&
+                              !selectedNukemFGVersion.Equals("none", StringComparison.OrdinalIgnoreCase) &&
+                              selectedNukemFGVersion != "__manage__";
 
         // Get injection method
         var injectionItem = cmbInjectionMethod?.SelectedItem as ComboBoxItem;
@@ -431,8 +536,12 @@ public partial class BulkInstallWindow : Window
             {
                 // Get cache paths
                 var optiCacheDir = _componentService.GetOptiScalerCachePath(version);
-                var fakeCacheDir = installFakenvapi ? _componentService.GetFakenvapiCachePath() : "";
-                var nukemCacheDir = installNukemFG ? _componentService.GetNukemFGCachePath() : "";
+                var fakeCacheDir = installFakenvapi
+                    ? _componentService.GetFakenvapiCachePath(selectedFakenvapiVersion!)
+                    : "";
+                var nukemCacheDir = installNukemFG
+                    ? _componentService.GetNukemFGCachePath(selectedNukemFGVersion!)
+                    : "";
 
                 await Task.Run(() =>
                 {
@@ -606,38 +715,38 @@ public partial class BulkInstallWindow : Window
         var selectedTag = (cmb?.SelectedItem as ComboBoxItem)?.Tag?.ToString();
         bool isBeta = !string.IsNullOrEmpty(selectedTag) && _componentService.BetaVersions.Contains(selectedTag);
 
-        var chkFakenvapi = this.FindControl<CheckBox>("ChkFakenvapi");
-        var chkNukemFG = this.FindControl<CheckBox>("ChkNukemFG");
-
         // Disable Fakenvapi/NukemFG for any OptiScaler version >= 0.9 regardless of beta
         bool includedInPackage = IsVersionGreaterOrEqual(selectedTag, 0, 9);
 
+        var cmbFakenvapi = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        var cmbNukemFG = this.FindControl<ComboBox>("CmbNukemFGVersion");
+
         if (includedInPackage)
         {
-            if (chkFakenvapi != null)
+            if (cmbFakenvapi != null)
             {
-                chkFakenvapi.IsEnabled = false;
-                chkFakenvapi.IsChecked = false;
-                ToolTip.SetTip(chkFakenvapi, "Included in OptiScaler 0.9+");
+                cmbFakenvapi.IsEnabled = false;
+                cmbFakenvapi.SelectedIndex = 0; // Reset to "None"
+                ToolTip.SetTip(cmbFakenvapi, "Included in OptiScaler 0.9+");
             }
-            if (chkNukemFG != null)
+            if (cmbNukemFG != null)
             {
-                chkNukemFG.IsEnabled = false;
-                chkNukemFG.IsChecked = false;
-                ToolTip.SetTip(chkNukemFG, "Included in OptiScaler 0.9+");
+                cmbNukemFG.IsEnabled = false;
+                cmbNukemFG.SelectedIndex = 0; // Reset to "None"
+                ToolTip.SetTip(cmbNukemFG, "Included in OptiScaler 0.9+");
             }
         }
         else
         {
-            if (chkFakenvapi != null)
+            if (cmbFakenvapi != null)
             {
-                chkFakenvapi.IsEnabled = true;
-                ToolTip.SetTip(chkFakenvapi, null);
+                cmbFakenvapi.IsEnabled = true;
+                ToolTip.SetTip(cmbFakenvapi, null);
             }
-            if (chkNukemFG != null)
+            if (cmbNukemFG != null)
             {
-                chkNukemFG.IsEnabled = true;
-                ToolTip.SetTip(chkNukemFG, null);
+                cmbNukemFG.IsEnabled = true;
+                ToolTip.SetTip(cmbNukemFG, null);
             }
         }
     }
@@ -758,7 +867,7 @@ public partial class BulkInstallWindow : Window
 
         // Determine default selection
         bool isRdna4 = false;
-        if (OperatingSystem.IsWindows() && _gpuService != null)
+        if (_gpuService != null)
         {
             try
             {
@@ -854,6 +963,91 @@ public partial class BulkInstallWindow : Window
         }
 
         cmb.SelectedIndex = targetIndex;
+    }
+
+    private void PopulateFakenvapiComboBox()
+    {
+        var cmb = this.FindControl<ComboBox>("CmbFakenvapiVersion");
+        if (cmb == null) return;
+
+        cmb.Items.Clear();
+        cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+        var versions = _componentService.FakenvapiAvailableVersions;
+        foreach (var ver in versions)
+        {
+            var isLatest = ver == _componentService.LatestFakenvapiVersion;
+            cmb.Items.Add(BuildVersionItem(ver, isBeta: false, isLatest: isLatest));
+        }
+
+        cmb.Items.Add(new ComboBoxItem { Content = "Manage versions\u2026", Tag = "__manage__" });
+
+        // Pre-select configured default
+        var savedFakenvapi = _componentService.Config.DefaultFakenvapiVersion;
+        cmb.SelectedIndex = 0;
+        if (!string.IsNullOrEmpty(savedFakenvapi) && !savedFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int i = 1; i < cmb.Items.Count; i++)
+            {
+                if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedFakenvapi)
+                {
+                    cmb.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectionChanged += (s, e) =>
+        {
+            if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+            {
+                cmb.SelectedIndex = 0;
+                var cacheWindow = new CacheManagementWindow("fakenvapi");
+                cacheWindow.ShowDialog(this);
+            }
+        };
+    }
+
+    private void PopulateNukemFGComboBox()
+    {
+        var cmb = this.FindControl<ComboBox>("CmbNukemFGVersion");
+        if (cmb == null) return;
+
+        cmb.Items.Clear();
+        cmb.Items.Add(new ComboBoxItem { Content = "None", Tag = "none" });
+
+        var versions = _componentService.GetDownloadedNukemFGVersions();
+        foreach (var ver in versions)
+        {
+            cmb.Items.Add(new ComboBoxItem { Content = ver, Tag = ver });
+        }
+
+        cmb.Items.Add(new ComboBoxItem { Content = "Manage versions\u2026", Tag = "__manage__" });
+
+        // Pre-select configured default
+        var savedNukemFG = _componentService.Config.DefaultNukemFGVersion;
+        cmb.SelectedIndex = 0;
+        if (!string.IsNullOrEmpty(savedNukemFG) && !savedNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            for (int i = 1; i < cmb.Items.Count; i++)
+            {
+                if ((cmb.Items[i] as ComboBoxItem)?.Tag?.ToString() == savedNukemFG)
+                {
+                    cmb.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        cmb.SelectionChanged += (s, e) =>
+        {
+            if (cmb.SelectedItem is ComboBoxItem item && item.Tag?.ToString() == "__manage__")
+            {
+                cmb.SelectedIndex = 0;
+                var cacheWindow = new CacheManagementWindow("nukemfg");
+                cacheWindow.ShowDialog(this);
+            }
+        };
     }
 
     // (Replaced by unified version earlier)

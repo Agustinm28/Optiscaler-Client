@@ -86,9 +86,9 @@
                                 <Image Name="ImgGameCover" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <Border Classes="ImageOverlay">
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
-                                        <TextBlock Text="&#xE70F;"
-                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                                   FontSize="16"
+                                        <TextBlock Text="&#xF493;"
+                                                   FontFamily="{StaticResource FontIcons}"
+                                                   FontSize="22"
                                                    Foreground="{StaticResource BrTextPrimary}"
                                                    HorizontalAlignment="Center"/>
                                         <TextBlock Text="{DynamicResource TxtEditImage}"
@@ -120,8 +120,8 @@
                                         Padding="10,6"
                                         Click="BtnEditTitle_Click">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="&#xE70F;"
-                                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        <TextBlock Text="&#xF3DD;"
+                                                   FontFamily="{StaticResource FontIcons}"
                                                    FontSize="12"/>
                                     </StackPanel>
                                 </Button>
@@ -147,9 +147,9 @@
                                 ToolTip.Tip="{DynamicResource TxtOpenFolder}"
                                 VerticalAlignment="Center"
                                 Click="BtnOpenFolder_Click">
-                            <TextBlock Text="&#xE8B7;"
-                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
-                                       FontSize="12"/>
+                            <TextBlock Text="&#xF419;"
+                                       FontFamily="{StaticResource FontIcons}"
+                                       FontSize="14"/>
                         </Button>
                     </Grid>
                 </Grid>
@@ -196,8 +196,8 @@
                                         Classes="IconBtn"
                                         VerticalAlignment="Top"
                                         Click="BtnClose_Click">
-                                    <TextBlock Text="&#xE711;"
-                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                    <TextBlock Text="{OnPlatform '&#xE711;', Linux='✕'}"
+                                               FontFamily="{OnPlatform 'Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI', Linux='sans-serif'}"
                                                FontSize="12"/>
                                 </Button>
                             </Grid>
@@ -248,6 +248,27 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
+                            <!-- EasyAntiCheat Detection -->
+                            <Border Name="EasyAntiCheat"
+                                    Background="{StaticResource BrBgCard}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusLarge}"
+                                    Padding="16,12"
+                                    Margin="0,8,0,0"
+                                    IsVisible="False">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="⚠ Anti Cheat Detected"
+                                                   Foreground="{StaticResource BrTextPrimary}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="{StaticResource FontSizeBody}"/>
+                                        <TextBlock Text="This game uses anti-cheat protection, use OptiScaler at your own risk"
+                                                   Foreground="{StaticResource BrTextSecondary}"
+                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Border>
 
@@ -272,9 +293,10 @@
                                     Margin="0,0,0,10"
                                     IsVisible="False">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <TextBlock Text="&#xE946;"
+                                    <TextBlock Text="&#xF4A4;"
+                                               FontFamily="{StaticResource FontIcons}"
                                                Foreground="#4A90E2"
-                                               FontSize="14"
+                                               FontSize="16"
                                                FontWeight="Bold"
                                                VerticalAlignment="Center"/>
                                     <TextBlock Text="{DynamicResource TxtBetaIncludesComponents}"
@@ -292,12 +314,44 @@
                                   ColumnSpacing="12">
 
                                 <!-- Row 0, Col 0 : OptiScaler version -->
-                                <StackPanel Grid.Row="0" Grid.Column="0">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4">
                                     <TextBlock Text="{DynamicResource TxtVersionLbl}"
                                                Foreground="{StaticResource BrTextSecondary}"
                                                FontSize="{StaticResource FontSizeCaption}"/>
+                                    <Grid Name="GridOptiTabs" ColumnDefinitions="*,*">
+                                        <Button Name="BtnOptiStable"
+                                                Grid.Column="0"
+                                                Content="Stable"
+                                                Classes="BtnPrimary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="0,0,2,0"
+                                                Click="BtnOptiStable_Click"/>
+                                        <Button Name="BtnOptiBeta"
+                                                Grid.Column="1"
+                                                Content="Beta"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                Click="BtnOptiBeta_Click"/>
+                                        <Button Name="BtnOptiCustom"
+                                                Grid.Column="2"
+                                                Content="Custom"
+                                                Classes="BtnSecondary"
+                                                HorizontalAlignment="Stretch"
+                                                HorizontalContentAlignment="Center"
+                                                FontSize="11"
+                                                Padding="8,5"
+                                                Margin="2,0,0,0"
+                                                IsVisible="False"
+                                                Click="BtnOptiCustom_Click"/>
+                                    </Grid>
                                     <ComboBox Name="CmbOptiVersion"
-                                              Margin="0,4,0,0"
                                               HorizontalAlignment="Stretch"
                                               Classes="BtnSelector"
                                               SelectedIndex="0"
@@ -343,7 +397,8 @@
                                 <StackPanel Grid.Row="0" Grid.Column="1">
                                     <TextBlock Text="FSR4 INT8"
                                                Foreground="{StaticResource BrTextSecondary}"
-                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                               FontSize="{StaticResource FontSizeCaption}"
+                                               Margin="0,32,0,0"/>
                                     <ComboBox Name="CmbExtrasVersion"
                                               Margin="0,4,0,0"
                                               HorizontalAlignment="Stretch"
@@ -381,22 +436,33 @@
                                               VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
-                                <!-- Row 0, Col 2 : Fakenvapi toggle -->
-                                <StackPanel Grid.Row="0" Grid.Column="2"
-                                            Orientation="Horizontal" Spacing="8"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center">
-                                    <ToggleSwitch Name="ChkInstallFakenvapi" VerticalAlignment="Center" OnContent="" OffContent=""/>
-                                    <TextBlock Text="Fakenvapi" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                                <!-- Row 0, Col 2 : Fakenvapi version selector -->
+                                <StackPanel Grid.Row="0" Grid.Column="2">
+                                    <TextBlock Text="Fakenvapi"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"
+                                               Margin="0,32,0,0"/>
+                                    <ComboBox Name="CmbFakenvapiVersion"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
-                                <!-- Row 1, Col 2 : NukemFG toggle -->
-                                <StackPanel Grid.Row="1" Grid.Column="2"
-                                            Orientation="Horizontal" Spacing="8"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center">
-                                    <ToggleSwitch Name="ChkInstallNukemFG" VerticalAlignment="Center" OnContent="" OffContent=""/>
-                                    <TextBlock Text="NukemFG" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                                <!-- Row 1, Col 2 : NukemFG version selector -->
+                                <StackPanel Grid.Row="1" Grid.Column="2">
+                                    <TextBlock Text="NukemFG"
+                                               Foreground="{StaticResource BrTextSecondary}"
+                                               FontSize="{StaticResource FontSizeCaption}"/>
+                                    <ComboBox Name="CmbNukemFGVersion"
+                                              Margin="0,4,0,0"
+                                              HorizontalAlignment="Stretch"
+                                              Classes="BtnSelector"
+                                              Padding="8,0,24,0"
+                                              HorizontalContentAlignment="Left"
+                                              VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
                                 <!-- Row 3, Col 2 : Uninstall button -->
@@ -409,22 +475,32 @@
                                         IsVisible="False"
                                         Click="BtnUninstall_Click"/>
 
-                                <!-- Row 4, all columns : Install buttons right-aligned -->
-                                <StackPanel Name="InstallBtnGroup"
-                                            Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3"
-                                            Orientation="Horizontal" Spacing="10"
-                                            HorizontalAlignment="Right">
-                                    <Button Name="BtnInstallManual"
-                                            Content="{DynamicResource TxtBtnManualInstall}"
-                                            Classes="BtnSuccess"
-                                            Padding="16,8"
-                                            Click="BtnInstallManual_Click"/>
-                                    <Button Name="BtnInstall"
-                                            Content="{DynamicResource TxtInstallOpti}"
-                                            Classes="BtnSuccess"
-                                            Padding="16,8"
-                                            Click="BtnInstall_Click"/>
-                                </StackPanel>
+                                <!-- Row 4, all columns : Install buttons right-aligned, Cleanup left-aligned -->
+                                <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+                                    <!-- Cleanup button — left side -->
+                                    <Button Name="BtnFolderCleanup"
+                                            Content="{DynamicResource TxtFolderCleanup}"
+                                            Classes="BtnBase"
+                                            Padding="14,7"
+                                            HorizontalAlignment="Left"
+                                            Click="BtnFolderCleanup_Click"/>
+
+                                    <!-- Install buttons — right side -->
+                                    <StackPanel Name="InstallBtnGroup"
+                                                Orientation="Horizontal" Spacing="10"
+                                                HorizontalAlignment="Right">
+                                        <Button Name="BtnInstallManual"
+                                                Content="{DynamicResource TxtBtnManualInstall}"
+                                                Classes="BtnSuccess"
+                                                Padding="16,8"
+                                                Click="BtnInstallManual_Click"/>
+                                        <Button Name="BtnInstall"
+                                                Content="{DynamicResource TxtInstallOpti}"
+                                                Classes="BtnSuccess"
+                                                Padding="16,8"
+                                                Click="BtnInstall_Click"/>
+                                    </StackPanel>
+                                </Grid>
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -449,6 +525,107 @@
                     </StackPanel>
                 </Border>
 
+                <!-- FOLDER CLEANUP CONFIRMATION MODAL -->
+                <!-- CORRUPT INSTALL DETECTED MODAL -->
+                <Grid Name="BdConfirmCorruptInstall" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="22">
+                    <Border Background="{StaticResource BrBgElevated}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24,24,24,20"
+                            MaxWidth="600">
+                        <StackPanel Spacing="0">
+                            <!-- Title -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="&#x26A0;" Foreground="{StaticResource BrAccentWarm}" FontSize="22" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource TxtCorruptInstallTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Description -->
+                            <TextBlock Text="{DynamicResource TxtCorruptInstallMsg}"
+                                       Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
+                                       TextWrapping="Wrap" Margin="0,0,0,20"/>
+
+                            <!-- Action buttons: Cancel | Clean then Install | Continue anyway -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                                <Button Name="BtnCorruptCancel"   Content="{DynamicResource TxtCancel}"               Classes="BtnBase"   Padding="16,8" Click="BtnCorruptCancel_Click"/>
+                                <Button Name="BtnCorruptClean"    Content="{DynamicResource TxtCorruptInstallClean}"   Classes="BtnDanger" Padding="16,8" Click="BtnCorruptClean_Click"/>
+                                <Button Name="BtnCorruptContinue" Content="{DynamicResource TxtCorruptInstallContinue}" Classes="BtnBase"  Padding="16,8" Click="BtnCorruptContinue_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Grid Name="BdConfirmFolderCleanup" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="21">
+                    <Border Background="{StaticResource BrBgElevated}"
+                            BorderBrush="{StaticResource BrBorderSubtle}"
+                            BorderThickness="1"
+                            CornerRadius="{StaticResource RadiusLarge}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Padding="24,24,24,20"
+                            MaxWidth="600">
+                        <StackPanel Spacing="0">
+                            <!-- Title -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="&#x26A0;" Foreground="{StaticResource BrAccentWarm}" FontSize="22" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{DynamicResource TxtFolderCleanupTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Main description -->
+                            <TextBlock Text="{DynamicResource TxtFolderCleanupMsg}"
+                                       Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
+                                       TextWrapping="Wrap" Margin="0,0,0,16"/>
+
+                            <!-- Sensitive files section -->
+                            <Border Background="{StaticResource BrBgSurface}"
+                                    BorderBrush="{StaticResource BrBorderSubtle}"
+                                    BorderThickness="1"
+                                    CornerRadius="{StaticResource RadiusMedium}"
+                                    Padding="12,10"
+                                    Margin="0,0,0,8">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{DynamicResource TxtFolderCleanupSensitiveHeader}"
+                                               FontWeight="SemiBold" FontSize="{StaticResource FontSizeBody}"
+                                               Foreground="{StaticResource BrAccentWarm}" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{DynamicResource TxtFolderCleanupSensitiveNote}"
+                                               Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeCaption}"
+                                               TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                                    <!-- Select All toggle -->
+                                    <CheckBox Name="ChkSensitiveSelectAll"
+                                              Content="Select / Deselect all"
+                                              FontSize="{StaticResource FontSizeCaption}"
+                                              Foreground="{StaticResource BrTextSecondary}"
+                                              IsChecked="False"
+                                              Margin="0,0,0,4"
+                                              Click="ChkSensitiveSelectAll_Click"/>
+
+                                    <!-- Per-file checkboxes — two-column grid (unchecked by default) -->
+                                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                                        <CheckBox Grid.Column="0" Grid.Row="0" Name="ChkSensitive_amd_fidelityfx_dx12"    Content="amd_fidelityfx_dx12.dll"             IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="0" Name="ChkSensitive_amd_fidelityfx_fg_dx12" Content="amd_fidelityfx_framegeneration_dx12.dll" IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="1" Name="ChkSensitive_amd_fidelityfx_vk"      Content="amd_fidelityfx_vk.dll"               IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="1" Name="ChkSensitive_dxgi"                   Content="dxgi.dll"                            IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="2" Name="ChkSensitive_libxell"                Content="libxell.dll"                         IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="2" Name="ChkSensitive_libxess"                Content="libxess.dll"                         IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="0" Grid.Row="3" Name="ChkSensitive_libxess_dx11"           Content="libxess_dx11.dll"                    IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                        <CheckBox Grid.Column="1" Grid.Row="3" Name="ChkSensitive_libxess_fg"             Content="libxess_fg.dll"                      IsChecked="False" FontSize="{StaticResource FontSizeCaption}" Foreground="{StaticResource BrTextPrimary}"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Action buttons -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                                <Button Name="BtnConfirmFolderCleanupNo" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="16,8" Margin="0,0,10,0" Click="BtnConfirmFolderCleanupNo_Click"/>
+                                <Button Name="BtnConfirmFolderCleanupYes" Content="{DynamicResource TxtFolderCleanup}" Classes="BtnDanger" Padding="16,8" Click="BtnConfirmFolderCleanupYes_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
                 <!-- UNINSTALL CONFIRMATION MODAL -->
                 <Grid Name="BdConfirmUninstall" Grid.ColumnSpan="2" Background="#80000000" IsVisible="False" ZIndex="20">
                     <Border Background="{StaticResource BrBgElevated}"
@@ -465,10 +642,12 @@
                                 <TextBlock Text="{DynamicResource TxtConfirmUninstallTitle}" FontSize="{StaticResource FontSizeSubtitle}" FontWeight="Bold" Foreground="{StaticResource BrTextPrimary}" VerticalAlignment="Center"/>
                             </StackPanel>
 
+                            <!-- Message -->
                             <TextBlock Text="{DynamicResource TxtConfirmUninstallMsg}"
                                        Foreground="{StaticResource BrTextSecondary}" FontSize="{StaticResource FontSizeBody}"
                                        TextWrapping="Wrap" Margin="0,0,0,24"/>
 
+                            <!-- Buttons -->
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Name="BtnConfirmUninstallNo" Content="{DynamicResource TxtCancel}" Classes="BtnBase" Padding="16,8" Margin="0,0,10,0" Click="BtnConfirmUninstallNo_Click"/>
                                 <Button Name="BtnConfirmUninstallYes" Content="{DynamicResource TxtUninstall}" Classes="BtnDanger" Padding="16,8" Click="BtnConfirmUninstallYes_Click"/>
@@ -492,8 +671,8 @@
                             <!-- Encabezado -->
                             <StackPanel Orientation="Horizontal" Spacing="10">
                                 <Border Background="{StaticResource BrBgSurface}" Width="36" Height="36" CornerRadius="{StaticResource RadiusMedium}">
-                                    <TextBlock Text="&#xE8B9;"
-                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"
+                                        <TextBlock Text="&#xE726;"
+                                               FontFamily="{StaticResource FontIcons}"
                                                FontSize="18"
                                                Foreground="{StaticResource BrAccent}"
                                                HorizontalAlignment="Center"
@@ -519,7 +698,7 @@
                                     ClipToBounds="True">
                                 <Grid>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
-                                        <TextBlock Text="&#xE8B9;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" FontSize="32" Foreground="{StaticResource BrTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="&#xE726;" FontFamily="{StaticResource FontIcons}" FontSize="32" Foreground="{StaticResource BrTextSecondary}" HorizontalAlignment="Center"/>
                                         <TextBlock Text="{DynamicResource TxtPreviewUnavailable}" Foreground="{StaticResource BrTextSecondary}" FontWeight="Medium"/>
                                     </StackPanel>
                                     <Image Name="ImgCoverPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -565,7 +744,10 @@
                             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
                             <Button Name="BtnCoverReset" Grid.Column="0" Classes="BtnBase" Padding="14,8" Click="BtnCoverReset_Click" ToolTip.Tip="{DynamicResource TxtCoverRestoreTooltip}">
                                 <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                                    <TextBlock Text="&#xE777;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI" VerticalAlignment="Center" FontSize="12"/>
+                                    <TextBlock Text="&#xF1A0;"
+                                               FontFamily="{StaticResource FontIcons}"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"/>
                                     <TextBlock Text="{DynamicResource TxtRestore}" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </Button>
@@ -579,5 +761,12 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <!-- Dim backdrop shown behind child dialogs -->
+        <Border Name="DimOverlay"
+                CornerRadius="12"
+                Background="#A0000000"
+                IsVisible="False"
+                ZIndex="9999"/>
     </Panel>
 </Window>

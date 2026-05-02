@@ -1,6 +1,7 @@
 ﻿using OptiscalerClient.Models;
 using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace OptiscalerClient.Services;
 
@@ -33,9 +34,14 @@ public class ExclusionService
                 game.Name.Equals(rule.Name, StringComparison.OrdinalIgnoreCase))
                 return true;
 
-            // Match by path segment (works regardless of library location)
+            // Match by path segment (contains, case-insensitive)
             if (!string.IsNullOrWhiteSpace(rule.PathSegment) &&
                 game.InstallPath.Contains(rule.PathSegment, StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            // Match by regex pattern (case-insensitive, optional)
+            if (!string.IsNullOrWhiteSpace(rule.PathRegex) &&
+                Regex.IsMatch(game.InstallPath, rule.PathRegex, RegexOptions.IgnoreCase))
                 return true;
         }
         return false;
@@ -83,7 +89,13 @@ public class ExclusionService
     /// </summary>
     private static List<ScanExclusion> DefaultExclusions() =>
     [
-        new() { Name = "Wallpaper Engine",                    PathSegment = "wallpaper_engine"   },
-        new() { Name = "Steamworks Common Redistributables",  PathSegment = "Steamworks Shared"  }
+        new() { Name = "Wallpaper Engine",                   PathSegment = "wallpaper_engine"      },
+        new() { Name = "Steamworks Common Redistributables", PathSegment = "Steamworks Shared"     },
+        new() { Name = "Steam Linux Runtime",                PathSegment = "SteamLinuxRuntime"      },
+        // All Proton variants: covers "Proton 8.0-5", "Proton Experimental", "Proton Hotfix",
+        // "Proton EasyAntiCheat Runtime", "Proton BattlEye Runtime", and future names like
+        // "Proton-9.0" that use a dash instead of a space.
+        new() { Name = "Proton",                             PathRegex = @"[/\\]Proton[ \-]"      },
+        new() { Name = "SteamVR",                            PathSegment = "SteamVR"               }
     ];
 }

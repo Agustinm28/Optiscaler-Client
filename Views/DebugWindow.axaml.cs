@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using OptiscalerClient.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -111,12 +112,7 @@ namespace OptiscalerClient.Views
 
                 Directory.CreateDirectory(cachePath);
 
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "explorer.exe",
-                    Arguments = cachePath,
-                    UseShellExecute = true
-                });
+                PlatformServiceFactory.CreateShellService().OpenFolder(cachePath);
             }
             catch (Exception ex)
             {
