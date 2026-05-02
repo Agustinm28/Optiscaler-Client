@@ -3,7 +3,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/Agustinm28/Optiscaler-Client?style=flat-square&color=8A2BE2)](https://github.com/Agustinm28/Optiscaler-Client/releases/tag/OptiscalerClient-1.0.5)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-yellow.svg?style=flat-square)](LICENSE)
 [![Platform: Windows](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows)](https://www.microsoft.com/windows)
-[![Platform: Linux](https://img.shields.io/badge/Platform-Linux%20(Steam)-E95420?style=flat-square&logo=linux)](https://www.linux.org)
+[![Platform: Linux](https://img.shields.io/badge/Platform-Linux-E95420?style=flat-square&logo=linux)](https://www.linux.org)
 
 > **⚠️ Disclaimer:** This is **not** an official OptiScaler project. I am not affiliated with the OptiScaler team. This is a personal project developed without any commercial purpose. Anyone is free to try and use this software at their own risk.
 
@@ -63,11 +63,17 @@
 - **Default Profile** — Set a default profile that is applied automatically during Quick Install and Bulk Install.
 - **Built-in Default** — "OptiScaler Standard" profile ships out-of-the-box with sensible defaults.
 
+## Network & Proxy
+
+- Supports system proxy settings and `HTTP_PROXY` / `HTTPS_PROXY` environment variables.
+- Also supports explicit proxy configuration from app settings (including auth when required).
+- Network settings are persisted in app configuration.
+
 ### Settings & Customization
 
 - **Default Versions** — Configure default OptiScaler, Extras, and OptiPatcher versions for Quick Install.
 - **Beta Channel Toggle** — Show or hide beta versions in all version selectors.
-- **GPU Detection** — Automatically detects installed GPUs via WMI, with discrete GPU preference logic.
+- **GPU Detection** — Automatically detects installed GPUs with platform-specific providers and discrete GPU preference logic.
 - **Preferred GPU Selection** — Choose which GPU is used for installation decisions.
 - **Scan Source Management** — Enable/disable per-platform scanners and configure custom folders.
 - **Cache Management** — View and delete cached OptiScaler and Extras versions to free storage.
@@ -130,9 +136,22 @@ Full interface translation in **14 languages**:
 
 ## 🛠️ Installation & Requirements
 
-1. Download the latest version from the [Releases](https://github.com/Agustinm28/Optiscaler-Client/releases) page.
-2. Run `OptiscalerClient.exe`.
-3. **Requirements**: Windows 10/11 is required. Linux is supported with Steam-only game scanning. The app is self-contained, so no external .NET runtime installation is needed.
+### Platform Support
+
+- Windows
+- Linux
+
+### Instructions
+
+1. Download the latest release asset from [Releases](https://github.com/Agustinm28/Optiscaler-Client/releases).
+2. Extract the package.
+3. Run `OptiscalerClient.exe`.
+
+### Notes
+
+- The app is self-contained, so no external .NET runtime installation is required.
+- On Linux, automatic scanner sources are focused on Steam libraries.
+- Manual add/install flows currently target executable files (`.exe`) for game selection.
 
 ---
 
