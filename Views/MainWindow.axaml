@@ -1010,10 +1010,12 @@
                          HorizontalAlignment="Center"
                          Margin="24">
                      <StackPanel Spacing="16" HorizontalAlignment="Center">
-                         <TextBlock Text="🎮"
-                                    FontSize="52"
+                         <TextBlock Text="&#xEEB9;"
+                                    FontFamily="{StaticResource FontIcons}"
+                                    FontSize="44"
                                     HorizontalAlignment="Center"
-                                    Opacity="0.35"/>
+                                    Foreground="{StaticResource BrTextSecondary}"
+                                    Opacity="0.4"/>
                          <TextBlock Text="{DynamicResource TxtNoUpscalersFoundTitle}"
                                     FontSize="16"
                                     FontWeight="SemiBold"

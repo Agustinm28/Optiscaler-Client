@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">Seçilenleri Yükle</x:String>
     <x:String x:Key="TxtNoGames">Oyun Yok</x:String>
     <x:String x:Key="TxtNoGamesFound">Oyun bulunamadı. Lütfen önce oyunları tarayın.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">Uyumlu oyun bulunamadı</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">Upscaler içeren oyun (DLSS, FSR veya XeSS) bulunamadı. Tarama Kaynaklarında 'Upscaler olmayan oyunları göster' seçeneğini etkinleştirin veya tarama sırasında 'DLL olmayan oyunları atla' seçeneğini devre dışı bırakın.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Oyun bulunamadı</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Oyunların yüklü olduğundan emin olun ve yeniden aramak için Tara'ya tıklayın. Tara Kaynaklarında özel klasörler de ekleyebilirsiniz.</x:String>
 
 
     <!-- SteamGridDB -->

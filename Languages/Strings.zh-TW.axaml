@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">安裝所選項目</x:String>
     <x:String x:Key="TxtNoGames">無遊戲</x:String>
     <x:String x:Key="TxtNoGamesFound">未找到遊戲。請先掃描遊戲。</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">未偵測到相容遊戲</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">未找到含有升頻器（DLSS、FSR 或 XeSS）的遊戲。在掃描來源中啟用「顯示沒有升頻器的遊戲」，或在掃描時停用「跳過沒有 DLL 的遊戲」以查看所有已安裝遊戲。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">未偵測到遊戲</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">請確認已安裝遊戲，然後按掃描重新搜尋。您也可以在掃描來源中新增自訂資料夾。</x:String>
 
 
     <!-- SteamGridDB -->

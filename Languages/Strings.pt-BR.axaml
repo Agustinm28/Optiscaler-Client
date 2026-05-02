@@ -248,8 +248,8 @@
     <x:String x:Key="TxtInstallSelected">Instalar selecionados</x:String>
     <x:String x:Key="TxtNoGames">Sem jogos</x:String>
     <x:String x:Key="TxtNoGamesFound">Nenhum jogo encontrado. Por favor, escaneie os jogos primeiro.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">Nenhum jogo compatível detectado</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">Nenhum jogo com upscalers (DLSS, FSR ou XeSS) foi encontrado. Ative 'Mostrar jogos sem upscalers' em Fontes de Varredura, ou desative 'Ignorar jogos sem DLLs' ao escanear.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Nenhum jogo detectado</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Certifique-se de ter jogos instalados e clique em Escanear para buscar novamente. Você também pode adicionar pastas personalizadas em Fontes de Varredura.</x:String>
 
 
     <!-- SteamGridDB -->

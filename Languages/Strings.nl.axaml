@@ -250,8 +250,8 @@
     <x:String x:Key="TxtInstallSelected">Geselecteerde installeren</x:String>
     <x:String x:Key="TxtNoGames">Geen games</x:String>
     <x:String x:Key="TxtNoGamesFound">Geen games gevonden. Scan eerst op games.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">Geen compatibele games gevonden</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">Er zijn geen games met upscalers (DLSS, FSR of XeSS) gevonden. Schakel 'Games zonder upscalers tonen' in bij Scanbronnen, of schakel 'Games zonder DLLs overslaan' uit tijdens het scannen.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Geen games gevonden</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Zorg ervoor dat er games geïnstalleerd zijn en klik op Scannen om opnieuw te zoeken. Je kunt ook aangepaste mappen toevoegen in Scanbronnen.</x:String>
 
 
     <!-- SteamGridDB -->

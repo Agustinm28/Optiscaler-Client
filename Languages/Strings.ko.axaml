@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">선택 항목 설치</x:String>
     <x:String x:Key="TxtNoGames">게임 없음</x:String>
     <x:String x:Key="TxtNoGamesFound">게임을 찾을 수 없습니다. 먼저 게임을 스캔해 주세요.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">호환 게임이 감지되지 않음</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">업스케일러(DLSS, FSR 또는 XeSS)가 있는 게임을 찾지 못했습니다. 스캔 소스에서 '업스케일러 없는 게임 표시'를 활성화하거나 스캔 시 'DLL 없는 게임 건너뛰기'를 비활성화하세요.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">게임이 감지되지 않음</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">게임이 설치되어 있는지 확인한 후 스캔을 눌러 다시 검색하세요. 스캔 소스에서 사용자 지정 폴더를 추가할 수도 있습니다.</x:String>
 
 
     <!-- SteamGridDB -->

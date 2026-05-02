@@ -269,8 +269,8 @@ Esta versión no está disponible para descarga. Verificá tu conexión a intern
     <x:String x:Key="TxtInstallSelected">Instalar Seleccionados</x:String>
     <x:String x:Key="TxtNoGames">Sin Juegos</x:String>
     <x:String x:Key="TxtNoGamesFound">No se encontraron juegos. Por favor, escanea primero.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">No se detectaron juegos compatibles</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">No se encontraron juegos con upscalers (DLSS, FSR o XeSS). Activa 'Mostrar juegos sin upscalers' en Fuentes de escaneo, o desactiva 'Omitir juegos sin DLLs' al escanear para ver todos los juegos instalados.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">No se detectaron juegos</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Asegúrate de tener juegos instalados y pulsa Escanear para volver a buscar. También puedes agregar carpetas personalizadas en Fuentes de escaneo para incluir juegos de cualquier directorio.</x:String>
 
 
     <!-- SteamGridDB -->

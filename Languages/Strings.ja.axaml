@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">選択したものをインストール</x:String>
     <x:String x:Key="TxtNoGames">ゲームなし</x:String>
     <x:String x:Key="TxtNoGamesFound">ゲームが見つかりませんでした。まずゲームをスキャンしてください。</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">対応ゲームが見つかりませんでした</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">アップスケーラー（DLSS、FSR、XeSS）を持つゲームが見つかりませんでした。スキャンソースで「アップスケーラーのないゲームを表示」を有効にするか、スキャン時に「DLLのないゲームをスキップ」を無効にしてください。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">ゲームが見つかりませんでした</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">ゲームがインストールされていることを確認し、スキャンを押して再検索してください。スキャンソースにカスタムフォルダーを追加することもできます。</x:String>
 
 
     <!-- SteamGridDB -->

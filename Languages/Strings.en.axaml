@@ -271,8 +271,8 @@ This version is unavailable for download. Check your internet connection and try
     <x:String x:Key="TxtInstallSelected">Install Selected</x:String>
     <x:String x:Key="TxtNoGames">No Games</x:String>
     <x:String x:Key="TxtNoGamesFound">No games found. Please scan for games first.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">No compatible games detected</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">No games with upscalers (DLSS, FSR, or XeSS) were found. Enable 'Show games without upscalers' in Scan Sources, or disable 'Skip games without DLLs' when scanning to see all installed games.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">No games detected</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Make sure your games are installed, then press Scan to search again. You can also add custom folders in Scan Sources to include games from any directory.</x:String>
 
 
     <!-- SteamGridDB -->

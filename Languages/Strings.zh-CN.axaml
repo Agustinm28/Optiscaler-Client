@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">安装所选项目</x:String>
     <x:String x:Key="TxtNoGames">无游戏</x:String>
     <x:String x:Key="TxtNoGamesFound">未找到游戏。请先扫描游戏。</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">未检测到兼容游戏</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">未找到含有升频器（DLSS、FSR 或 XeSS）的游戏。在扫描源中启用"显示没有升频器的游戏"，或在扫描时禁用"跳过没有 DLL 的游戏"以查看所有已安装游戏。</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">未检测到游戏</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">请确保已安装游戏，然后点击扫描重新搜索。您也可以在扫描来源中添加自定义文件夹。</x:String>
 
 
     <!-- SteamGridDB -->

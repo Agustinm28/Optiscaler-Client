@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">Installer la sélection</x:String>
     <x:String x:Key="TxtNoGames">Aucun jeu</x:String>
     <x:String x:Key="TxtNoGamesFound">Aucun jeu trouvé. Veuillez d'abord scanner vos jeux.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">Aucun jeu compatible détecté</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">Aucun jeu avec des upscalers (DLSS, FSR ou XeSS) n'a été trouvé. Activez 'Afficher les jeux sans upscalers' dans les Sources de scan, ou désactivez 'Ignorer les jeux sans DLLs' lors du scan.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Aucun jeu détecté</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Assurez-vous que des jeux sont installés et cliquez sur Scanner pour relancer la recherche. Vous pouvez aussi ajouter des dossiers personnalisés dans les Sources de scan.</x:String>
 
 
     <!-- SteamGridDB -->

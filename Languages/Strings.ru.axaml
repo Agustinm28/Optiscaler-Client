@@ -232,8 +232,8 @@
     <x:String x:Key="TxtInstallSelected">Установить выбранные</x:String>
     <x:String x:Key="TxtNoGames">Нет игр</x:String>
     <x:String x:Key="TxtNoGamesFound">Игры не найдены. Сначала выполните сканирование.</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundTitle">Совместимые игры не обнаружены</x:String>
-    <x:String x:Key="TxtNoUpscalersFoundHint">Игры с апскейлерами (DLSS, FSR или XeSS) не найдены. Включите 'Показывать игры без апскейлеров' в настройках источников сканирования или отключите 'Пропускать игры без DLL' при сканировании.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Игры не обнаружены</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Убедитесь, что игры установлены, и нажмите Сканировать для повторного поиска. Вы также можете добавить пользовательские папки в источниках сканирования.</x:String>
 
 
     <!-- SteamGridDB -->
