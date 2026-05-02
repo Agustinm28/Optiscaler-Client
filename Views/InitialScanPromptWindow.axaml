@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.InitialScanPromptWindow"
         Title="Initial Scan"
-        Width="560"
+        Width="640"
         Height="720"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="None"
@@ -55,7 +55,7 @@
 
                                 <!-- Refresh missing covers only -->
                                 <Border Background="{StaticResource BrBgCard}"
-                                        BorderBrush="{StaticResource BrAccent}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
                                         BorderThickness="1"
                                         CornerRadius="{StaticResource RadiusMedium}"
                                         Padding="16,12"
@@ -78,6 +78,116 @@
                                                       IsCheckedChanged="TglRefreshCoversOnly_IsCheckedChanged"/>
                                     </Grid>
                                 </Border>
+
+                                <!-- Upscaler filter mode -->
+                                <StackPanel Name="PnlUpscalerFilter" Spacing="8" Margin="0,0,0,20">
+
+                                    <TextBlock Text="{DynamicResource TxtFilterOptions}"
+                                               FontWeight="SemiBold"
+                                               FontSize="13"
+                                               Foreground="{StaticResource BrTextPrimary}"
+                                               Margin="0,0,0,4"/>
+
+                                    <!-- Option 1: Show All -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,10">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterShowAll"
+                                                         GroupName="UpscalerFilterScan"
+                                                         IsChecked="True"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{DynamicResource TxtFilterShowAllTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterShowAllDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Option 2: Hide without upscaler -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,10">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterHideWithoutUpscaler"
+                                                         GroupName="UpscalerFilterScan"
+                                                         IsChecked="False"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{DynamicResource TxtFilterHideTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterHideDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Option 3: Skip without upscaler -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,10">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterSkipWithoutUpscaler"
+                                                         GroupName="UpscalerFilterScan"
+                                                         IsChecked="False"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1" Spacing="5">
+                                                <TextBlock Text="{DynamicResource TxtFilterSkipTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterSkipDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,2,0,0"/>
+                                                <Border Background="#1AF59E0B"
+                                                        BorderBrush="#40F59E0B"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="10,7">
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <TextBlock Grid.Column="0" Text="&#xE7BA;"
+                                                                   FontFamily="{StaticResource FontIcons}"
+                                                                   FontSize="13"
+                                                                   Foreground="#F59E0B"
+                                                                   VerticalAlignment="Top"
+                                                                   Margin="0,1,8,0"/>
+                                                        <TextBlock Grid.Column="1" Text="{DynamicResource TxtFilterSkipWarning}"
+                                                                   Foreground="#F59E0B"
+                                                                   TextWrapping="Wrap"
+                                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                </StackPanel>
 
                                 <!-- Scan options panel (disabled when covers-only is active) -->
                                 <StackPanel Name="PnlScanOptions">
@@ -118,27 +228,63 @@
                                             <TextBlock Grid.Column="0" Text="Steam" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglSteam" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <!-- Windows-only sources; visibility set from code-behind -->
+                                        <Grid Name="GridEpic" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Epic Games" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEpic" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridGOG" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="GOG Galaxy" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglGOG" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridXbox" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Xbox (Microsoft Store)" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglXbox" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridEA" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="EA App" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEA" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridUbisoft" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Ubisoft Connect" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglUbisoft" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
                                     </StackPanel>
+                                </Border>
+
+                                <!-- Custom Folders -->
+                                <Grid ColumnDefinitions="*,Auto" Margin="0,24,0,12">
+                                    <TextBlock Grid.Column="0"
+                                               Text="{DynamicResource TxtCustomFolders}"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               Foreground="{StaticResource BrTextPrimary}"
+                                               VerticalAlignment="Center"/>
+                                    <Button Grid.Column="1"
+                                            Name="BtnAddFolder"
+                                            Content="{DynamicResource TxtAddFolder}"
+                                            Classes="BtnBase"
+                                            Padding="12,6"
+                                            FontSize="12"
+                                            Click="BtnAddFolder_Click"/>
+                                </Grid>
+
+                                <Border Background="{StaticResource BrBgCard}"
+                                        BorderBrush="{StaticResource BrBorderSubtle}"
+                                        BorderThickness="1"
+                                        CornerRadius="{StaticResource RadiusMedium}"
+                                        Padding="16,12"
+                                        MinHeight="80">
+                                    <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Name="PnlCustomFolders" Spacing="8">
+                                            <TextBlock Name="TxtNoCustomFolders"
+                                                       Text="{DynamicResource TxtNoCustomFolders}"
+                                                       Foreground="{StaticResource BrTextSecondary}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       Margin="0,12"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
                                 </Border>
 
                                 </StackPanel> <!-- /PnlScanOptions -->
@@ -157,7 +303,8 @@
                                         Classes="BtnSecondary"
                                         Padding="20,10"
                                         Click="BtnClose_Click"/>
-                                <Button Content="{DynamicResource TxtInitialScanStart}"
+                                <Button Name="BtnStartScan"
+                                        Content="{DynamicResource TxtInitialScanStart}"
                                         Classes="BtnPrimary"
                                         Padding="20,10"
                                         Click="BtnStartScan_Click"/>

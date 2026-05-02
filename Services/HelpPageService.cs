@@ -49,11 +49,11 @@ namespace OptiscalerClient.Services
                 {
                     Id = "about",
                     Title = "About & Feedback",
-                    Icon = "&#xE946;",
+                    Icon = "&#xF4A4;",
                     Sections = new List<HelpSection>
                     {
                         new HelpSection { Type = "app-info" },
-                        new HelpSection { Type = "external-resources" },
+                        new HelpSection { Type = "version-management-info" },
                         new HelpSection { Type = "feedback" }
                     }
                 }

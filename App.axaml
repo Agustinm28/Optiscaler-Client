@@ -49,6 +49,8 @@
             <SolidColorBrush x:Key="BrWarning" Color="{StaticResource StatusWarningColor}"/>
 
             <FontFamily x:Key="FontPrimary">Segoe UI Variable, Segoe UI, sans-serif</FontFamily>
+            <FontFamily x:Key="FontIcons">avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular, Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+            <FontFamily x:Key="FontIconsFilled">avares://OptiscalerClient/assets/FluentSystemIcons-Filled.ttf#FluentSystemIcons-Filled</FontFamily>
             <x:Double x:Key="FontSizeCaption">11</x:Double>
             <x:Double x:Key="FontSizeBody">13</x:Double>
             <x:Double x:Key="FontSizeBodyLarge">15</x:Double>

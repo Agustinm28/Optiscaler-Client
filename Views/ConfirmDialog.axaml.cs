@@ -17,11 +17,13 @@ namespace OptiscalerClient.Views
         public ConfirmDialog()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
         }
 
-        public ConfirmDialog(Window? owner, string title, string message, bool isAlert = false)
+        public ConfirmDialog(Window? owner, string title, string message, bool isAlert = false, string? iconOverride = null)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             
             // 100% Flicker-free startup strategy:
             // 1. Invisible and at targeted position before becoming visible.
@@ -60,27 +62,27 @@ namespace OptiscalerClient.Views
                 };
             }
 
+            var defaultIcon = isAlert ? "\uE783" : "\uF63E";
+            var defaultBrush = isAlert
+                ? (Application.Current?.FindResource("BrAccentWarm") as IBrush ?? Brushes.Orange)
+                : (Application.Current?.FindResource("BrAccentPrimary") as IBrush ?? Brushes.DeepSkyBlue);
+
             if (isAlert)
             {
                 if (btnCancel != null) btnCancel.IsVisible = false;
-                if (txtIcon != null)
-                {
-                    txtIcon.Text = "\uE783"; // Warning icon
-                    txtIcon.Foreground = Application.Current?.FindResource("BrAccentWarm") as IBrush ?? Brushes.Orange;
-                }
 
                 if (btnConfirm != null) 
                 {
                     btnConfirm.Content = Application.Current?.TryFindResource("TxtGotIt", out var res) == true ? res?.ToString() ?? "Got it" : "Got it";
                 }
             }
-            else
+
+            if (txtIcon != null)
             {
-                if (txtIcon != null)
-                {
-                    txtIcon.Text = "\uE9CE"; // Question icon
-                    txtIcon.Foreground = Application.Current?.FindResource("BrAccentPrimary") as IBrush ?? Brushes.DeepSkyBlue;
-                }
+                txtIcon.Text = iconOverride ?? defaultIcon;
+                txtIcon.Foreground = iconOverride != null
+                    ? (Application.Current?.FindResource("BrAccentPrimary") as IBrush ?? Brushes.DeepSkyBlue)
+                    : defaultBrush;
             }
 
             this.Opened += (s, e) =>
@@ -109,6 +111,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);

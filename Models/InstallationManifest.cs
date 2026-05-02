@@ -88,5 +88,11 @@ namespace OptiscalerClient.Models
         public List<ManifestFileRecord> FilesCreated { get; set; } = new();
         public List<ManifestFileRecord> FilesOverwritten { get; set; } = new();
         public List<KeyFileSnapshot> PreInstallKeyFiles { get; set; } = new();
+
+        /// <summary>
+        /// Populated when this manifest was created by migrating a legacy in-folder backup.
+        /// Null for fresh installations with v1.0.5+.
+        /// </summary>
+        public string? MigrationSource { get; set; }
     }
 }

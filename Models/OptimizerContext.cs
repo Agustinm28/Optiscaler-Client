@@ -9,6 +9,7 @@ namespace OptiscalerClient.Models
     /// </summary>
     [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonSerializable(typeof(AppConfiguration))]
+    [JsonSerializable(typeof(NetworkConfig))]
     [JsonSerializable(typeof(ScanSourcesConfig))]
     [JsonSerializable(typeof(ComponentVersions))]
     [JsonSerializable(typeof(InstallationManifest))]
@@ -28,6 +29,9 @@ namespace OptiscalerClient.Models
     [JsonSerializable(typeof(OptiPatcherReleaseEntry))]
     [JsonSerializable(typeof(OptiPatcherReleasesCache))]
     [JsonSerializable(typeof(List<OptiPatcherReleaseEntry>))]
+    [JsonSerializable(typeof(FakenvapiReleaseEntry))]
+    [JsonSerializable(typeof(FakenvapiReleasesCache))]
+    [JsonSerializable(typeof(List<FakenvapiReleaseEntry>))]
     [JsonSerializable(typeof(OptiScalerProfile))]
     [JsonSerializable(typeof(List<OptiScalerProfile>))]
     [JsonSerializable(typeof(Dictionary<string, Dictionary<string, string>>))]

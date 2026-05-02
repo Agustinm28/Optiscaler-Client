@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.ManageScanSourcesWindow"
         Title="Manage Scan Sources"
-        Width="520"
-        Height="680"
+        Width="640"
+        Height="820"
         WindowStartupLocation="CenterOwner"
         SystemDecorations="None"
         TransparencyLevelHint="Transparent"
@@ -74,37 +74,148 @@
                                         </Grid>
                                         
                                         <!-- Epic Games -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridEpic" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Epic Games" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEpic" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- GOG Galaxy -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridGOG" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="GOG Galaxy" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglGOG" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- Xbox (Microsoft Store) -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridXbox" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Xbox (Microsoft Store)" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglXbox" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
-                                        
+
                                         <!-- EA App -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridEA" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="EA App" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglEA" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
 
                                         <!-- Ubisoft Connect -->
-                                        <Grid ColumnDefinitions="*,Auto">
+                                        <Grid Name="GridUbisoft" ColumnDefinitions="*,Auto">
                                             <TextBlock Grid.Column="0" Text="Ubisoft Connect" VerticalAlignment="Center" Foreground="{StaticResource BrTextPrimary}"/>
                                             <ToggleSwitch Grid.Column="1" Name="TglUbisoft" OnContent="" OffContent="" IsChecked="True"/>
                                         </Grid>
                                         
                                     </StackPanel>
                                 </Border>
+
+                                <!-- Filter Options -->
+                                <TextBlock Text="{DynamicResource TxtFilterOptions}"
+                                           FontWeight="SemiBold"
+                                           FontSize="14"
+                                           Foreground="{StaticResource BrTextPrimary}"
+                                           Margin="0,0,0,12"/>
+
+                                <StackPanel Spacing="8" Margin="0,0,0,24">
+
+                                    <!-- Option 1: Show All -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,12">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterShowAll"
+                                                         GroupName="UpscalerFilter"
+                                                         IsChecked="True"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{DynamicResource TxtFilterShowAllTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterShowAllDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Option 2: Hide without upscaler -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,12">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterHideWithoutUpscaler"
+                                                         GroupName="UpscalerFilter"
+                                                         IsChecked="False"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{DynamicResource TxtFilterHideTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterHideDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Option 3: Skip without upscaler -->
+                                    <Border Background="{StaticResource BrBgCard}"
+                                            BorderBrush="{StaticResource BrBorderSubtle}"
+                                            BorderThickness="1"
+                                            CornerRadius="{StaticResource RadiusMedium}"
+                                            Padding="14,12">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <RadioButton Grid.Column="0"
+                                                         Name="RbFilterSkipWithoutUpscaler"
+                                                         GroupName="UpscalerFilter"
+                                                         IsChecked="False"
+                                                         VerticalAlignment="Top"
+                                                         Margin="0,2,12,0"/>
+                                            <StackPanel Grid.Column="1" Spacing="6">
+                                                <TextBlock Text="{DynamicResource TxtFilterSkipTitle}"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="{StaticResource BrTextPrimary}"/>
+                                                <TextBlock Text="{DynamicResource TxtFilterSkipDesc}"
+                                                           Foreground="{StaticResource BrTextSecondary}"
+                                                           TextWrapping="Wrap"
+                                                           FontSize="{StaticResource FontSizeCaption}"
+                                                           Margin="0,3,0,0"/>
+                                                <!-- Warning -->
+                                                <Border Background="#1AF59E0B"
+                                                        BorderBrush="#40F59E0B"
+                                                        BorderThickness="1"
+                                                        CornerRadius="6"
+                                                        Padding="10,7">
+                                                    <Grid ColumnDefinitions="Auto,*">
+                                                        <TextBlock Grid.Column="0" Text="&#xE7BA;"
+                                                                   FontFamily="{StaticResource FontIcons}"
+                                                                   FontSize="13"
+                                                                   Foreground="#F59E0B"
+                                                                   VerticalAlignment="Top"
+                                                                   Margin="0,1,8,0"/>
+                                                        <TextBlock Grid.Column="1" Text="{DynamicResource TxtFilterSkipWarning}"
+                                                                   Foreground="#F59E0B"
+                                                                   TextWrapping="Wrap"
+                                                                   FontSize="{StaticResource FontSizeCaption}"/>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                </StackPanel>
 
                                 <!-- Custom Folders -->
                                 <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,12">

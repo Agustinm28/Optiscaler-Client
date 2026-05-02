@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="OptiscalerClient.Views.ManageDefaultVersionsWindow"
         Title="Manage Default Versions"
@@ -63,8 +63,8 @@
                                                Foreground="{StaticResource BrTextSecondary}"
                                                TextWrapping="Wrap"
                                                FontSize="{StaticResource FontSizeCaption}"/>
-                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,4,0,0">
-                                        <Grid ColumnDefinitions="*,*" Width="150">
+                                    <StackPanel Spacing="4" Margin="0,4,0,0">
+                                        <Grid Name="GridOptiDefaultTabs" ColumnDefinitions="*,*">
                                             <Button Name="BtnOptiDefaultStable"
                                                     Grid.Column="0"
                                                     Content="Stable"
@@ -85,10 +85,20 @@
                                                     Padding="8,5"
                                                     Margin="2,0,0,0"
                                                     Click="BtnOptiDefaultBeta_Click"/>
+                                            <Button Name="BtnOptiDefaultCustom"
+                                                    Grid.Column="2"
+                                                    Content="Custom"
+                                                    Classes="BtnSecondary"
+                                                    HorizontalAlignment="Stretch"
+                                                    HorizontalContentAlignment="Center"
+                                                    FontSize="11"
+                                                    Padding="8,5"
+                                                    Margin="2,0,0,0"
+                                                    IsVisible="False"
+                                                    Click="BtnOptiDefaultCustom_Click"/>
                                         </Grid>
                                         <ComboBox Name="CmbDefaultOptiScalerVersion"
-                                                  Width="260"
-                                                  VerticalAlignment="Center"/>
+                                                  HorizontalAlignment="Stretch"/>
                                     </StackPanel>
                                 </StackPanel>
 
@@ -103,9 +113,8 @@
                                                TextWrapping="Wrap"
                                                FontSize="{StaticResource FontSizeCaption}"/>
                                     <ComboBox Name="CmbDefaultExtrasVersion"
-                                              Width="260"
-                                              Margin="0,4,0,0"
-                                              VerticalAlignment="Center"/>
+                                              HorizontalAlignment="Stretch"
+                                              Margin="0,4,0,0"/>
                                 </StackPanel>
 
                                 <!-- Default OptiPatcher Version -->
@@ -139,9 +148,8 @@
                                             HorizontalAlignment="Left"
                                             Click="BtnOptiPatcherSupportLink_Click"/>
                                         <ComboBox Name="CmbDefaultOptiPatcherVersion"
-                                              Width="260"
-                                              Margin="0,6,0,0"
-                                              VerticalAlignment="Center"/>
+                                              HorizontalAlignment="Stretch"
+                                              Margin="0,6,0,0"/>
                                 </StackPanel>
 
                             </StackPanel>

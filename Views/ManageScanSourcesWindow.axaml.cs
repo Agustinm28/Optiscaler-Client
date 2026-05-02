@@ -10,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using OptiscalerClient.Helpers;
+using OptiscalerClient.Models;
 using OptiscalerClient.Services;
 
 namespace OptiscalerClient.Views
@@ -22,12 +23,14 @@ namespace OptiscalerClient.Views
         public ManageScanSourcesWindow()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = new ComponentManagementService();
         }
 
         public ManageScanSourcesWindow(Window owner, ComponentManagementService componentService)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentService = componentService;
 
             this.Opacity = 0;
@@ -75,9 +78,43 @@ namespace OptiscalerClient.Views
             if (tglEA != null) tglEA.IsChecked = config.ScanEA;
             if (tglUbisoft != null) tglUbisoft.IsChecked = config.ScanUbisoft;
 
+            SetFilterMode(config.UpscalerFilter);
+
+            var isWindows = OperatingSystem.IsWindows();
+            var gridEpic = this.FindControl<Grid>("GridEpic");
+            var gridGOG = this.FindControl<Grid>("GridGOG");
+            var gridXbox = this.FindControl<Grid>("GridXbox");
+            var gridEA = this.FindControl<Grid>("GridEA");
+            var gridUbisoft = this.FindControl<Grid>("GridUbisoft");
+            if (gridEpic != null) gridEpic.IsVisible = isWindows;
+            if (gridGOG != null) gridGOG.IsVisible = isWindows;
+            if (gridXbox != null) gridXbox.IsVisible = isWindows;
+            if (gridEA != null) gridEA.IsVisible = isWindows;
+            if (gridUbisoft != null) gridUbisoft.IsVisible = isWindows;
+
             _customFolders.Clear();
             _customFolders.AddRange(config.CustomFolders);
             RefreshCustomFoldersList();
+        }
+
+        private void SetFilterMode(UpscalerFilterMode mode)
+        {
+            var rb1 = this.FindControl<RadioButton>("RbFilterShowAll");
+            var rb2 = this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler");
+            var rb3 = this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler");
+            if (rb1 == null || rb2 == null || rb3 == null) return;
+            rb1.IsChecked = mode == UpscalerFilterMode.ShowAll;
+            rb2.IsChecked = mode == UpscalerFilterMode.HideWithoutUpscaler;
+            rb3.IsChecked = mode == UpscalerFilterMode.SkipWithoutUpscaler;
+        }
+
+        private UpscalerFilterMode GetSelectedFilterMode()
+        {
+            if (this.FindControl<RadioButton>("RbFilterHideWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.HideWithoutUpscaler;
+            if (this.FindControl<RadioButton>("RbFilterSkipWithoutUpscaler")?.IsChecked == true)
+                return UpscalerFilterMode.SkipWithoutUpscaler;
+            return UpscalerFilterMode.ShowAll;
         }
 
         private void RefreshCustomFoldersList()
@@ -203,6 +240,7 @@ namespace OptiscalerClient.Views
             _componentService.Config.ScanSources.ScanEA = tglEA?.IsChecked ?? true;
             _componentService.Config.ScanSources.ScanUbisoft = tglUbisoft?.IsChecked ?? true;
             _componentService.Config.ScanSources.CustomFolders = _customFolders.ToList();
+            _componentService.Config.ScanSources.UpscalerFilter = GetSelectedFilterMode();
 
             _componentService.SaveConfiguration();
             Close(true);

@@ -4,7 +4,7 @@
       "id": "about",
       "title": "About & Feedback",
       "titleKey": "TxtHelpPageAbout",
-      "icon": "\uE946",
+      "icon": "\uF4A4",
       "sections": [
         {
           "type": "disclaimer",
@@ -20,8 +20,8 @@
           "title": "Application Info"
         },
         {
-          "type": "external-resources",
-          "title": "External Resources"
+          "type": "version-management-info",
+          "title": "Version Management"
         },
         {
           "type": "system-info",
@@ -32,7 +32,7 @@
           "type": "disclaimer",
           "title": "License & Copyright",
           "titleKey": "TxtHelpLicenseTitle",
-          "content": "Copyright 2026 Agustín Montaña (Agustinm28)\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses.",
+          "content": "Copyright 2026 Agustinm28\n\nLicensed under GPL-3.0-or-later. This is free software: you are free to change and redistribute it under certain conditions. See the LICENSE file for details.\n\nThird-party components (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) are subject to their respective licenses.",
           "contentKey": "TxtHelpLicenseContent"
         },
         {
@@ -45,7 +45,7 @@
       "id": "getting-started",
       "title": "Getting Started",
       "titleKey": "TxtHelpPageGettingStarted",
-      "icon": "\uE8F4",
+      "icon": "\uF41D",
       "fontSize": 14,
       "sections": [
         {
@@ -97,7 +97,7 @@
       "id": "features",
       "title": "Features",
       "titleKey": "TxtHelpPageFeatures",
-      "icon": "\uE734",
+      "icon": "\uF710",
       "fontSize": 14,
       "sections": [
         {
@@ -155,7 +155,7 @@
       "id": "main-window",
       "title": "Main Window",
       "titleKey": "TxtHelpPageMainWindow",
-      "icon": "\uE80F",
+      "icon": "\uF481",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -233,7 +233,7 @@
       "id": "game-management",
       "title": "Game Management",
       "titleKey": "TxtHelpPageGameManagement",
-      "icon": "\uE7FC",
+      "icon": "\uEEB9",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -323,7 +323,7 @@
       "id": "profiles",
       "title": "Profile System",
       "titleKey": "TxtHelpPageProfiles",
-      "icon": "\uE8B7",
+      "icon": "\uF419",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -405,7 +405,7 @@
       "id": "settings",
       "title": "Settings & Configuration",
       "titleKey": "TxtHelpPageSettings",
-      "icon": "\uE713",
+      "icon": "\uF6AA",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -483,7 +483,7 @@
       "id": "bulk-operations",
       "title": "Bulk Operations",
       "titleKey": "TxtHelpPageBulkOperations",
-      "icon": "\uE8F1",
+      "icon": "\uE619",
       "category": "Guides",
       "categoryKey": "TxtHelpCategoryGuides",
       "fontSize": 14,
@@ -531,7 +531,7 @@
       "id": "troubleshooting",
       "title": "FAQ & Troubleshooting",
       "titleKey": "TxtHelpPageTroubleshooting",
-      "icon": "\uE9D9",
+      "icon": "\uE9E1",
       "fontSize": 14,
       "sections": [
         {
@@ -586,6 +586,64 @@
               "labelKey": "TxtHelpFaqDllLabel",
               "text": "Use the button to clear the cache from the settings; that should solve most problems.",
               "textKey": "TxtHelpFaqDllText"
+            },
+            {
+              "label": "Game folder is still dirty with OptiScaler files after uninstall",
+              "labelKey": "TxtHelpFaqDirtyFolderLabel",
+              "text": "This happens when a previous installation was not properly tracked (e.g. a crash left orphan files).",
+              "textKey": "TxtHelpFaqDirtyFolderText",
+              "items": [
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "First, try the per-game Folder Cleanup utility in the app (Game → Force Folder Cleanup).",
+                  "textKey": "TxtHelpFaqDirtyFolderStep1",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "If Folder Cleanup doesn't resolve the issue, click Uninstall in the app, then manually delete any remaining OptiScaler files from the game folder (OptiScaler.dll, OptiScaler.ini, dxgi.dll if it was the injection target, nvapi64.dll, etc.).",
+                  "textKey": "TxtHelpFaqDirtyFolderStep2",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "The app will also detect corrupt installations by default and will prompt to clean the folder before installing when needed.",
+                  "textKey": "TxtHelpFaqDirtyFolderStep3",
+                  "type": "bullet-point"
+                }
+              ]
+            },
+            {
+              "label": "FSR 4 not visible on Linux",
+              "labelKey": "TxtHelpFaqFsr4LinuxLabel",
+              "text": "If you are on Linux and FSR 4 does not appear as an option, consider the following:",
+              "textKey": "TxtHelpFaqFsr4LinuxText",
+              "items": [
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "You need the latest AMD MESA drivers (version 25.2.0 or newer).",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep1",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "Install the latest version of OptiScaler available.",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep2",
+                  "type": "bullet-point"
+                },
+                {
+                  "title": "",
+                  "titleKey": "",
+                  "text": "It is recommended to use GE-Proton, which can be managed via Proton Plus or ProtonUp-Qt.",
+                  "textKey": "TxtHelpFaqFsr4LinuxStep3",
+                  "type": "bullet-point"
+                }
+              ]
             }
           ]
         }

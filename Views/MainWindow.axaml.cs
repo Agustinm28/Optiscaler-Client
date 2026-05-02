@@ -52,7 +52,7 @@ namespace OptiscalerClient.Views
         private ObservableCollection<Game> _games;
         private List<Game> _allGames = new List<Game>();
         private readonly ComponentManagementService _componentService;
-        private readonly IGpuDetectionService _gpuService;
+        private IGpuDetectionService _gpuService;
 
         private GpuInfo? _lastDetectedGpu;
         private ScrollViewer? _gameListScrollViewer;
@@ -83,6 +83,8 @@ namespace OptiscalerClient.Views
         private TextBox? _txtSearch;
         private TextBlock? _txtSearchPlaceholder;
         private TextBlock? _txtGpuInfo;
+        private Border? _pnlNoUpscalersFound;
+        private bool _hasScanned = false;
         private bool _isEditMode = false;
         private Game? _draggedGame;
 
@@ -114,29 +116,27 @@ namespace OptiscalerClient.Views
             AvaloniaXamlLoader.Load(this);
         }
 
+        /// <summary>
+        /// Test-only constructor. Injects a custom <see cref="IGpuDetectionService"/> instead
+        /// of the platform-default one so unit/headless tests can run without real hardware.
+        /// </summary>
+        internal MainWindow(IGpuDetectionService? gpuService) : this()
+        {
+            // Override the service assigned by the public constructor.
+            _gpuService = gpuService!;
+            // Reset cached GPU so the injected service is actually called.
+            _lastDetectedGpu = null;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
-            if (OperatingSystem.IsWindows())
-            {
-                _scannerService = new GameScannerService();
-            }
-            else
-            {
-                _scannerService = null!; // TODO: Implement Linux game scanner
-            }
+            _scannerService = new GameScannerService();
             _persistenceService = new GamePersistenceService();
             _componentService = new ComponentManagementService();
             _metadataService = new GameMetadataService(_componentService);
             App.ChangeLanguage(_componentService.Config.Language);
-            if (OperatingSystem.IsWindows())
-            {
-                _gpuService = new WindowsGpuDetectionService();
-            }
-            else
-            {
-                _gpuService = null!; // TODO: Implement Linux GPU detection
-            }
+            _gpuService = PlatformServiceFactory.CreateGpuDetectionService()!;
             _games = new ObservableCollection<Game>();
 
             // Debug Window check
@@ -200,6 +200,7 @@ namespace OptiscalerClient.Views
                 _txtSearch = this.FindControl<TextBox>("TxtSearch");
                 _txtSearchPlaceholder = this.FindControl<TextBlock>("TxtSearchPlaceholder");
                 _txtGpuInfo = this.FindControl<TextBlock>("TxtGpuInfo");
+                _pnlNoUpscalersFound = this.FindControl<Border>("PnlNoUpscalersFound");
 
                 if (_lstGames != null) _lstGames.ItemsSource = _games;
                 if (_lstGamesGrid != null) _lstGamesGrid.ItemsSource = _games;
@@ -211,7 +212,20 @@ namespace OptiscalerClient.Views
                 _ = LoadGpuInfoAsync();
                 _ = ScheduleStartupUpdatesAsync(_windowLifetimeCts.Token);
 
+                var linuxNotice = this.FindControl<Border>("LinuxNotice");
+                if (linuxNotice != null)
+                    linuxNotice.IsVisible = OperatingSystem.IsLinux();
+
                 UpdateAnimationsState(_componentService.Config.AnimationsEnabled);
+
+                // Show welcome/changelog popup when the app version changes (or on first run)
+                if (_componentService.Config.LastSeenAppVersion != App.AppVersion)
+                {
+                    var welcome = new WelcomeWindow(this);
+                    await welcome.ShowDialog(this);
+                    _componentService.Config.LastSeenAppVersion = App.AppVersion;
+                    _componentService.SaveConfiguration();
+                }
 
                 if (!hadSavedGames)
                 {
@@ -229,7 +243,7 @@ namespace OptiscalerClient.Views
                         _componentService.Config.ScanDriveRoots = options.DriveRoots;
                         _componentService.Config.HasCompletedInitialScan = true;
                         _componentService.SaveConfiguration();
-                        await RunScanAsync();
+                        await RunScanAsync(options.UpscalerFilter);
                     }
 
                     // Never auto-scan on startup when there are no cached games.
@@ -375,6 +389,9 @@ namespace OptiscalerClient.Views
             {
                 _games.Add(game);
             }
+
+            if (_pnlNoUpscalersFound != null)
+                _pnlNoUpscalersFound.IsVisible = _hasScanned && _games.Count == 0;
         }
 
         private void RefreshGameLists()
@@ -606,7 +623,10 @@ namespace OptiscalerClient.Views
                     var hideIcon = container.GetVisualDescendants()
                         .OfType<TextBlock>().FirstOrDefault(x => x.Name == "TxtHideIcon");
                     if (hideIcon != null)
-                        hideIcon.Foreground = game.IsHidden ? warmBrush : secondaryBrush;
+                    {
+                        hideIcon.Text = game.IsHidden ? "\uE5F5" : "\uE5F2";
+                        hideIcon.Foreground = game.IsHidden ? new SolidColorBrush(Color.Parse("#E05252")) : secondaryBrush;
+                    }
 
                     container.Opacity = editMode && game.IsHidden ? 0.4 : 1.0;
                 }
@@ -625,8 +645,8 @@ namespace OptiscalerClient.Views
                         .OfType<TextBlock>().FirstOrDefault(x => x.Name == "TxtHideIconGrid");
                     if (hideIcon != null)
                     {
-                        hideIcon.Text = game.IsHidden ? "\uED1A" : "\uE7B3";
-                        hideIcon.Foreground = game.IsHidden ? warmBrush : secondaryBrush;
+                        hideIcon.Text = game.IsHidden ? "\uE5F5" : "\uE5F2";
+                        hideIcon.Foreground = game.IsHidden ? new SolidColorBrush(Color.Parse("#E05252")) : secondaryBrush;
                     }
 
                     var hideLabel = container.GetVisualDescendants()
@@ -872,9 +892,9 @@ namespace OptiscalerClient.Views
                     {
                         new TextBlock
                         {
-                            Text                = "\uE7FC",  // game controller icon
-                            FontFamily          = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
-                            FontSize            = 22,
+                            Text                = "\uEEB9",  // game controller icon (FluentSystemIcons-Regular)
+                            FontFamily          = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
+                            FontSize            = 28,
                             Foreground          = accentBrush,
                             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center
                         },
@@ -1266,11 +1286,6 @@ namespace OptiscalerClient.Views
             if (tglAnimations != null)
             {
                 tglAnimations.IsChecked = _componentService.Config.AnimationsEnabled;
-            }
-            var tglBetaVersions = this.FindControl<ToggleSwitch>("TglBetaVersions");
-            if (tglBetaVersions != null)
-            {
-                tglBetaVersions.IsChecked = _componentService.Config.ShowBetaVersions;
             }
             var txtSteamGridApiKey = this.FindControl<TextBox>("TxtSteamGridApiKey");
             if (txtSteamGridApiKey != null)
@@ -2363,16 +2378,6 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private void TglBetaVersions_IsCheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (_isInitializingLanguage) return;
-            if (sender is ToggleSwitch tgl)
-            {
-                _componentService.Config.ShowBetaVersions = tgl.IsChecked ?? true;
-                _componentService.SaveConfiguration();
-            }
-        }
-
         private async void BtnManageDefaultVersions_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -2394,7 +2399,7 @@ namespace OptiscalerClient.Views
             var autoItem = new ComboBoxItem { Content = "Auto (Recommended)", Tag = "auto" };
             cmb.Items.Add(autoItem);
 
-            if (OperatingSystem.IsWindows() && _gpuService != null)
+            if (_gpuService != null)
             {
                 var gpus = _gpuService.DetectGPUs();
                 foreach (var gpu in gpus)
@@ -2441,6 +2446,16 @@ namespace OptiscalerClient.Views
 
             _componentService.Config.SteamGridDBApiKey = (textBox.Text ?? string.Empty).Trim();
             _componentService.SaveConfiguration();
+        }
+
+        private async void BtnManageProxy_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var proxyWindow = new ProxySettingsWindow(this, _componentService);
+                await proxyWindow.ShowDialog<object>(this);
+            }
+            catch (Exception ex) { DebugWindow.Log($"[MainWindow] Proxy settings dialog failed: {ex.Message}"); }
         }
 
         private async void BtnSteamGridApiGuide_Click(object sender, RoutedEventArgs e)
@@ -2584,7 +2599,8 @@ namespace OptiscalerClient.Views
                 this,
                 "GitHub Rate Limit Reached",
                 "Could not fetch version data from GitHub (HTTP 403 — too many requests).\n\nPlease wait a few minutes and restart the application.\n\nIn the meantime, you can still install any OptiScaler versions already cached locally.",
-                isAlert: true
+                isAlert: true,
+                iconOverride: "\uF4A4"
             ).ShowDialog<object>(this);
         }
 
@@ -2628,7 +2644,7 @@ namespace OptiscalerClient.Views
                     var icon = new TextBlock
                     {
                         Text = currentPage.Icon,
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 16,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
                     };
@@ -2693,8 +2709,8 @@ namespace OptiscalerClient.Views
 
                     var expandIcon = new TextBlock
                     {
-                        Text = "\uE70D", // ChevronUp
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        Text = "\uF2A3", // ChevronDown
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 12,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                         Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2702,8 +2718,8 @@ namespace OptiscalerClient.Views
 
                     var categoryIcon = new TextBlock
                     {
-                        Text = "\uE8F1", // BookOpen icon for Guides
-                        FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                        Text = "\uF4D3", // Library icon for Guides
+                        FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                         FontSize = 16,
                         VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                         Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2755,7 +2771,7 @@ namespace OptiscalerClient.Views
                         var pageIcon = new TextBlock
                         {
                             Text = page.Icon,
-                            FontFamily = new FontFamily("Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI"),
+                            FontFamily = new FontFamily("avares://OptiscalerClient/assets/FluentSystemIcons-Regular.ttf#FluentSystemIcons-Regular"),
                             FontSize = 16,
                             VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
                             Foreground = this.FindResource("BrTextSecondary") as IBrush
@@ -2781,7 +2797,7 @@ namespace OptiscalerClient.Views
                     categoryButton.Click += (s, e) =>
                     {
                         childrenContainer.IsVisible = !childrenContainer.IsVisible;
-                        expandIcon.Text = childrenContainer.IsVisible ? "\uE70D" : "\uE70E"; // ChevronUp : ChevronDown
+                        expandIcon.Text = childrenContainer.IsVisible ? "\uF2A3" : "\uF2B6"; // ChevronDown : ChevronUp
                     };
 
                     categoryContainer.Children.Add(categoryButton);
@@ -2897,8 +2913,8 @@ namespace OptiscalerClient.Views
                 case "app-info":
                     RenderAppInfo(container);
                     break;
-                case "external-resources":
-                    RenderExternalResources(container);
+                case "version-management-info":
+                    RenderVersionManagementInfo(container);
                     break;
                 case "system-info":
                     RenderSystemInfo(container, section);
@@ -3083,11 +3099,11 @@ namespace OptiscalerClient.Views
             container.Children.Add(border);
         }
 
-        private void RenderExternalResources(StackPanel container)
+        private void RenderVersionManagementInfo(StackPanel container)
         {
             var title = new TextBlock
             {
-                Text = GetResourceString("TxtExternalResourcesTitle", "External Resources"),
+                Text = GetResourceString("TxtVersionMgmtInfoTitle", "Version Management"),
                 FontSize = 18,
                 FontWeight = FontWeight.SemiBold,
                 Margin = new Thickness(0, 0, 0, 12),
@@ -3104,56 +3120,31 @@ namespace OptiscalerClient.Views
                 CornerRadius = (CornerRadius)(this.FindResource("RadiusMedium") ?? new CornerRadius(8))
             };
 
-            var stack = new StackPanel();
+            var infoStack = new StackPanel { Spacing = 8 };
 
-            var optiScalerRow = CreateResourceRow("Latest OptiScaler",
-                string.IsNullOrWhiteSpace(_componentService.OptiScalerVersion) ? "Not installed" : _componentService.OptiScalerVersion,
-                _componentService.IsOptiScalerUpdateAvailable, false);
-            optiScalerRow.Margin = new Thickness(0, 0, 0, 16);
-            stack.Children.Add(optiScalerRow);
-
-            stack.Children.Add(CreateResourceRow("Latest Fakenvapi",
-                string.IsNullOrWhiteSpace(_componentService.FakenvapiVersion) ? "Not installed" : _componentService.FakenvapiVersion,
-                false, false, "BtnUpdateFakenvapi", BtnUpdateFakenvapi_Click));
-
-            stack.Children.Add(CreateResourceRow("Latest NukemFG",
-                _componentService.IsNukemFGInstalled
-                    ? (string.IsNullOrWhiteSpace(_componentService.NukemFGVersion) || _componentService.NukemFGVersion == "manual" ? "Available" : _componentService.NukemFGVersion)
-                    : "Not installed",
-                false, false, "BtnUpdateNukemFG", BtnUpdateNukemFG_Click,
-                _componentService.IsNukemFGInstalled ? GetResourceString("TxtBtnUpdate", "Update") : "Install"));
-
-            border.Child = stack;
-
-            var buttonStack = new StackPanel
+            infoStack.Children.Add(new TextBlock
             {
-                Orientation = Avalonia.Layout.Orientation.Horizontal,
-                Margin = new Thickness(0, 0, 0, 16)
-            };
-
-            var checkUpdatesBtn = new Button
-            {
-                Content = GetResourceString("TxtCheckUpdatesBtn", "Check for Updates"),
-                Padding = new Thickness(16, 8),
-                Margin = new Thickness(0, 0, 12, 0)
-            };
-            checkUpdatesBtn.Classes.Add("BtnPrimary");
-            checkUpdatesBtn.Click += BtnCheckUpdates_Click;
+                Text = GetResourceString("TxtVersionMgmtInfoDesc", "OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi and NukemFG versions can be managed from the Local cache & Default version management section in Settings."),
+                Foreground = this.FindResource("BrTextSecondary") as IBrush,
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 13
+            });
 
             var githubBtn = new Button
             {
-                Content = GetResourceString("TxtGithubBtn", "GitHub"),
-                Padding = new Thickness(16, 8)
+                Content = GetResourceString("TxtGithubBtn", "GitHub Repository"),
+                Padding = new Thickness(16, 8),
+                Margin = new Thickness(0, 8, 0, 0)
             };
             githubBtn.Classes.Add("BtnBase");
             githubBtn.Click += BtnGithub_Click;
 
-            buttonStack.Children.Add(checkUpdatesBtn);
-            buttonStack.Children.Add(githubBtn);
+            infoStack.Children.Add(githubBtn);
+
+            border.Child = infoStack;
 
             container.Children.Add(title);
             container.Children.Add(border);
-            container.Children.Add(buttonStack);
         }
 
         private void RenderSystemInfo(StackPanel container, HelpSection section)
@@ -3222,12 +3213,6 @@ namespace OptiscalerClient.Views
             try
             {
                 LogToFile("[GetHelpGpuInfo] Starting...");
-
-                if (!OperatingSystem.IsWindows())
-                {
-                    LogToFile("[GetHelpGpuInfo] Not Windows");
-                    return ("Not available", true);
-                }
 
                 if (_gpuService == null)
                 {
@@ -3872,6 +3857,17 @@ namespace OptiscalerClient.Views
             // Normalise DisplayOrder so it's 0-based and gapless
             for (int i = 0; i < _allGames.Count; i++) _allGames[i].DisplayOrder = i;
 
+            // Migrate legacy in-folder backups to external store (idempotent, guarded by version check)
+            try
+            {
+                var migrationService = new StartupMigrationService(new BackupStoreService(), _componentService);
+                migrationService.RunIfNeeded(_allGames);
+            }
+            catch (Exception ex)
+            {
+                DebugWindow.Log($"[MainWindow] Startup migration error (non-fatal): {ex.Message}");
+            }
+
             ApplyFilter(_txtSearch?.Text);
 
             var loadedFormat = GetResourceString("TxtLoadedGamesFormat", "Loaded {0} games.");
@@ -3966,7 +3962,7 @@ namespace OptiscalerClient.Views
                 _componentService.Config.HasCompletedInitialScan = true;
                 _componentService.SaveConfiguration();
 
-                await RunScanAsync();
+                await RunScanAsync(options.UpscalerFilter);
             }
             catch (Exception ex) { DebugWindow.Log($"[MainWindow] Scan failed: {ex.Message}"); }
         }
@@ -4013,12 +4009,14 @@ namespace OptiscalerClient.Views
                 ApplyFilter(_txtSearch?.Text);
 
                 var found = missing.Count(g => !string.IsNullOrEmpty(g.CoverImageUrl));
-                if (_txtStatus != null)
-                    _txtStatus.Text = string.Format(GetResourceString("TxtCoverRefreshDoneFmt", "Cover refresh complete. Found {0}/{1} missing covers."), found, missing.Count);
                 ShowToast(string.Format(GetResourceString("TxtCoverRefreshToastFmt", "Cover refresh complete — {0}/{1} covers found."), found, missing.Count));
+                _ = HideToastAfterAsync(3500);
+                if (_txtStatus != null)
+                    _txtStatus.Text = GetResourceString("TxtReady", "Ready");
             }
             catch (Exception ex)
             {
+                HideToast();
                 await new ConfirmDialog(this, "Error", ex.Message).ShowDialog<object>(this);
                 if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtReady", "Ready");
             }
@@ -4028,7 +4026,7 @@ namespace OptiscalerClient.Views
             }
         }
 
-        private async Task RunScanAsync()
+        private async Task RunScanAsync(UpscalerFilterMode upscalerFilter = UpscalerFilterMode.ShowAll)
         {
             if (_btnScan != null) _btnScan.IsEnabled = false;
             if (_txtStatus != null) _txtStatus.Text = GetResourceString("TxtScanningShort", "Scanning for games...");
@@ -4037,7 +4035,7 @@ namespace OptiscalerClient.Views
             try
             {
                 List<Game> scanResults;
-                if (OperatingSystem.IsWindows() && _scannerService != null)
+                if (_scannerService != null)
                 {
                     var allowedDrives = _componentService.Config.ScanDriveRoots;
                     scanResults = await _scannerService.ScanAllGamesAsync(
@@ -4068,6 +4066,16 @@ namespace OptiscalerClient.Views
                 {
                     if (!_games.Any(g => g.InstallPath.Equals(scannedGame.InstallPath, StringComparison.OrdinalIgnoreCase)))
                     {
+                        bool lacksUpscaler = string.IsNullOrEmpty(scannedGame.DlssVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.FsrVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.XessVersion) &&
+                                             string.IsNullOrEmpty(scannedGame.DlssFrameGenVersion) &&
+                                             !scannedGame.IsOptiscalerInstalled;
+
+                        // SkipWithoutUpscaler: do not add the game at all
+                        if (upscalerFilter == UpscalerFilterMode.SkipWithoutUpscaler && lacksUpscaler)
+                            continue;
+
                         if (existingGames.TryGetValue(scannedGame.InstallPath, out var existing) &&
                             !string.IsNullOrEmpty(existing.CoverImageUrl) &&
                             !existing.CoverImageUrl.StartsWith("http"))
@@ -4075,11 +4083,16 @@ namespace OptiscalerClient.Views
                             scannedGame.CoverImageUrl = existing.CoverImageUrl;
                         }
 
+                        // HideWithoutUpscaler: add the game but mark it hidden
+                        if (upscalerFilter == UpscalerFilterMode.HideWithoutUpscaler && lacksUpscaler)
+                            scannedGame.IsHidden = true;
+
                         _games.Add(scannedGame);
                     }
                 }
 
                 _allGames = _games.ToList();
+                _hasScanned = true;
                 ApplyFilter(_txtSearch?.Text);
 
                 var scanCompleteFormat = GetResourceString("TxtScanCompleteFormat", "Scan complete. Total games: {0}");
@@ -4439,10 +4452,6 @@ namespace OptiscalerClient.Views
                         {
                             versionToInstall = configuredDefault;
                         }
-                        else if (_componentService.Config.ShowBetaVersions)
-                        {
-                            versionToInstall = _componentService.LatestBetaVersion ?? "";
-                        }
                         else
                         {
                             versionToInstall = _componentService.LatestStableVersion ?? "";
@@ -4508,8 +4517,49 @@ namespace OptiscalerClient.Views
                             }
                         }
 
-                        var fakeCacheDir = _componentService.GetFakenvapiCachePath();
-                        var nukemCacheDir = _componentService.GetNukemFGCachePath();
+                        // ── Determine Fakenvapi / NukemFG install based on configured defaults
+                        // For OptiScaler >= 0.9, these components are bundled; skip them
+                        bool versionIncludesBundled = false;
+                        {
+                            var vMatch = System.Text.RegularExpressions.Regex.Match(versionToInstall, @"^v?(\d+(?:\.\d+)*)");
+                            if (vMatch.Success && Version.TryParse(vMatch.Groups[1].Value, out var parsedVer))
+                                versionIncludesBundled = parsedVer.Major > 0 || parsedVer.Minor >= 9;
+                        }
+
+                        var configuredFakenvapi = versionIncludesBundled ? null : _componentService.Config.DefaultFakenvapiVersion;
+                        bool installFakenvapi = !string.IsNullOrEmpty(configuredFakenvapi) &&
+                                                !configuredFakenvapi.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+                        var configuredNukemFG = versionIncludesBundled ? null : _componentService.Config.DefaultNukemFGVersion;
+                        bool installNukemFG = !string.IsNullOrEmpty(configuredNukemFG) &&
+                                              !configuredNukemFG.Equals("none", StringComparison.OrdinalIgnoreCase);
+
+                        var fakeCacheDir = installFakenvapi
+                            ? _componentService.GetFakenvapiCachePath(configuredFakenvapi!)
+                            : _componentService.GetFakenvapiCachePath();
+                        var nukemCacheDir = installNukemFG
+                            ? _componentService.GetNukemFGCachePath(configuredNukemFG!)
+                            : _componentService.GetNukemFGCachePath();
+
+                        // Download Fakenvapi on-demand if not cached
+                        if (installFakenvapi && !_componentService.IsFakenvapiCached(configuredFakenvapi!))
+                        {
+                            try
+                            {
+                                ShowToast($"Downloading Fakenvapi v{configuredFakenvapi}...", showProgress: true, progressPercent: 0);
+                                var fakeProgress = new Progress<double>(p =>
+                                    UpdateToastProgress($"Downloading Fakenvapi v{configuredFakenvapi}... {(int)p}%", p));
+                                fakeCacheDir = await _componentService.DownloadFakenvapiAsync(configuredFakenvapi!, fakeProgress);
+                            }
+                            catch (Exception ex)
+                            {
+                                HideToast();
+                                await new ConfirmDialog(this, GetResourceString("TxtWarning", "Warning"),
+                                    $"Failed to download Fakenvapi v{configuredFakenvapi}: {ex.Message}", isAlert: true)
+                                    .ShowDialog<bool>(this);
+                                installFakenvapi = false;
+                            }
+                        }
 
                         // Resolve the configured default profile (null = built-in default → no .ini written)
                         var profileService = new ProfileManagementService();
@@ -4519,7 +4569,6 @@ namespace OptiscalerClient.Views
                             defaultProfile = profileService.GetProfileByName(defaultProfileName);
 
                         // Install with default settings (backup always enabled)
-                        // Always install Fakenvapi and NukemFG by default
                         SetQuickInstallLoading(button);
                         await Task.Run(() =>
                         {
@@ -4527,9 +4576,9 @@ namespace OptiscalerClient.Views
                                 selectedGame,
                                 optiCacheDir,
                                 "dxgi.dll",
-                                installFakenvapi: true, // Always install Fakenvapi
+                                installFakenvapi: installFakenvapi,
                                 fakenvapiCachePath: fakeCacheDir,
-                                installNukemFG: true,  // Always install NukemFG
+                                installNukemFG: installNukemFG,
                                 nukemFGCachePath: nukemCacheDir,
                                 optiscalerVersion: versionToInstall,
                                 profile: defaultProfile
@@ -4645,6 +4694,10 @@ namespace OptiscalerClient.Views
 
                         // Final toast: report what was installed
                         var parts = new System.Collections.Generic.List<string> { $"OptiScaler {versionToInstall}" };
+                        if (installFakenvapi)
+                            parts.Add($"Fakenvapi {configuredFakenvapi}");
+                        if (installNukemFG)
+                            parts.Add($"NukemFG {configuredNukemFG}");
                         var configuredExtrasFinal = _componentService.Config.DefaultExtrasVersion;
                         if (!string.IsNullOrEmpty(configuredExtrasFinal) && !configuredExtrasFinal.Equals("none", StringComparison.OrdinalIgnoreCase))
                             parts.Add($"FSR4 INT8 {configuredExtrasFinal}");
@@ -4717,7 +4770,7 @@ namespace OptiscalerClient.Views
                     _txtGpuInfo!.Text = GetResourceString("TxtDefaultGpu", "Detecting GPU...");
                     gpu = await Task.Run(() =>
                     {
-                        if (OperatingSystem.IsWindows() && _gpuService != null)
+                        if (_gpuService != null)
                         {
                             try
                             {

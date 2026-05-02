@@ -35,6 +35,7 @@ namespace OptiscalerClient.Views
         public ManualDownloadDialog()
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
             _componentName = "";
             _requiredFileName = "";
             _targetCachePath = "";
@@ -43,6 +44,7 @@ namespace OptiscalerClient.Views
         public ManualDownloadDialog(string componentName, string requiredFileName, string targetCachePath, bool isUpdate = false)
         {
             InitializeComponent();
+            DialogDimHelper.Register(this);
 
             _componentName = componentName;
             _requiredFileName = requiredFileName;
@@ -243,6 +245,7 @@ namespace OptiscalerClient.Views
         {
             if (_isAnimatingClose) return;
             _isAnimatingClose = true;
+            DialogDimHelper.HideDimNow(this);
             var rootPanel = this.FindControl<Panel>("RootPanel");
             if (rootPanel != null) rootPanel.Opacity = 0;
             await Task.Delay(220);

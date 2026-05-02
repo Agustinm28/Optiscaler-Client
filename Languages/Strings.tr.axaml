@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">Ayarlar</x:String>
     <x:String x:Key="TxtSettingsDesc">Uygulama tercihlerini yönet</x:String>
     <x:String x:Key="TxtAppPrefs">Uygulama Tercihleri</x:String>
-    <x:String x:Key="TxtCacheMgmt">Yerel Önbellek Yönetimi</x:String>
-    <x:String x:Key="TxtCacheDesc">Yerel depolamadan indirilen OptiScaler sürümlerini görüntüle ve silerek alan boşalt.</x:String>
+    <x:String x:Key="TxtCacheMgmt">Yerel önbellek &amp; Varsayılan sürüm yönetimi</x:String>
+    <x:String x:Key="TxtCacheDesc">Yüklenen bileşen sürümlerini görüntüleyin ve yönetin, Hızlı Kurulum ve oyun yönetimi için varsayılan sürümleri ayarlayın ve yerel depolama alanı açın.</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  Yönet</x:String>
     <x:String x:Key="TxtLanguage">Uygulama Dili</x:String>
     <x:String x:Key="TxtLanguageDesc">Kullanıcı arayüzü dilini değiştir.</x:String>
@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Şu anda indirilen sürüm yok.</x:String>
     <x:String x:Key="TxtToastSuccess">Başarılı</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Silme İşlemini Onayla</x:String>
+    <x:String x:Key="TxtCustomVersions">Özel OptiScaler Sürümleri</x:String>
+    <x:String x:Key="TxtImportArchive">Arşiv İçe Aktar</x:String>
+    <x:String x:Key="TxtNoCustomVersions">İçe aktarılmış özel sürüm yok.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Özel OptiScaler yapılarını 7z, zip veya rar arşivi olarak içe aktarın. Arşiv uygulama tarafından izlenemeyen dosyalar içeriyorsa kurulum/kaldırma başarısız olabilir. Yalnızca OptiScaler sürüm dosyalarını ekleyin.</x:String>
+    <x:String x:Key="TxtImporting">İçe aktarılıyor...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Bu sürümü silmek istediğinizden emin misiniz?</x:String>
     <x:String x:Key="TxtCancel">İptal</x:String>
     <x:String x:Key="TxtDeletePlain">Sil</x:String>
@@ -91,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Kaldırma İşlemini Onayla</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">OptiScaler'ı kaldırmak istediğinizden emin misiniz?&#x0a;Yalnızca yedeklenen orijinal dosyalar geri yüklenecektir.</x:String>
     <x:String x:Key="TxtUninstall">✕ Kaldır</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Klasörü Temizle</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Klasörü Zorla Temizle</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Tüm bilinen OptiScaler dosyaları oyunun kurulum klasöründen zorla kaldırılacak.&#x0a;&#x0a;Önceki bir OptiScaler kurulumu bozuk veya eksik bir durumda kalmışsa ya da yeniden kurmadan önce temiz bir başlangıç yapmak istediğinizde bunu kullanın.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Hassas dosyalar — oyuna ait olabilir</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Aşağıdaki dosyalar oyunun yerel dosyaları olabilir. Bunları silmek oyunu bozabilir. Daha sonra başlatıcınızın dosya doğrulamasını (ör. Steam → Oyun dosyalarının bütünlüğünü doğrula) çalıştırmanız şiddetle tavsiye edilir. Yalnızca kaldırmak istediklerinizi seçin:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Klasör temizleme tamamlandı.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Klasör temizleme başarısız: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Bozuk Kurulum Tespit Edildi</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Bu oyunun klasöründe OptiScaler dosyaları bulundu, ancak oyun kurulu olarak işaretlenmemiş. Bu genellikle önceki bir kurulumun düzgün kaldırılmadığı anlamına gelir.&#x0a;&#x0a;Çakışmaları önlemek için kurulumdan önce klasörü temizlemeniz şiddetle tavsiye edilir. Şimdi temizleyebilir, temizlemeden devam edebilir veya kurulumu iptal edebilirsiniz.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Temizle ve Yükle</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Yine de Devam Et</x:String>
     <x:String x:Key="TxtVersionLbl">Sürüm:</x:String>
     <x:String x:Key="TxtInjectionLbl">Enjeksiyon:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Otomatik Yükle</x:String>
@@ -178,6 +194,15 @@
     <x:String x:Key="TxtCustomFolders">Özel klasörler</x:String>
     <x:String x:Key="TxtAddFolder">+ Klasör ekle</x:String>
     <x:String x:Key="TxtNoCustomFolders">Henüz özel klasör eklenmedi.</x:String>
+    <x:String x:Key="TxtFilterOptions">Filtre Seçenekleri</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Tüm oyunları tara</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Tüm etkin kaynaklardan tüm yüklü oyunları algıla ve göster.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Tümünü tara, upscaler olmadanları gizle</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Her şeyi tara, ancak algılanabilir DLSS, FSR veya XeSS içermeyen oyunları otomatik olarak gizle. Gizli oyunlar listede kalır ve Düzenle modundan gösterilebilir.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Upscaler olmayan oyunları atla</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Yalnızca DLSS, FSR veya XeSS DLL'lerinin algılandığı oyunları dahil et.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Bazı oyunlar upscaler destekler ancak DLL'lerini algılanabilir bir yolda göstermez. Bu oyunlar listede görünmez.</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Upscaler'sız oyunları göster (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Kaldır</x:String>
     <x:String x:Key="TxtSave">Kaydet</x:String>
     <x:String x:Key="TxtScanSources">Tarama kaynakları</x:String>
@@ -207,6 +232,8 @@
     <x:String x:Key="TxtInstallSelected">Seçilenleri Yükle</x:String>
     <x:String x:Key="TxtNoGames">Oyun Yok</x:String>
     <x:String x:Key="TxtNoGamesFound">Oyun bulunamadı. Lütfen önce oyunları tarayın.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Oyun bulunamadı</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Oyunların yüklü olduğundan emin olun ve yeniden aramak için Tara'ya tıklayın. Tara Kaynaklarında özel klasörler de ekleyebilirsiniz.</x:String>
 
 
     <!-- SteamGridDB -->
@@ -253,7 +280,7 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtFeedbackFeatures">✨ Özellik istekleri: yeni özellik önermek için "Feature request" şablonunu kullanın</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 İyileştirmeler: mevcut özellikler için "Improvement request" şablonunu kullanın</x:String>
     <x:String x:Key="TxtFeedbackSystem">Daha hızlı çözüm için OS, GPU ve uygulama sürümünüzü ekleyin</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta sürümleri zaten Fakenvapi ve NukemFG içerir</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Bu sürüm zaten Fakenvapi ve NukemFG içerir</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">Varsayılan FSR4 INT8</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Oyun açılırken önceden seçilen varsayılan FSR4 INT8 mod sürümü. RDNA 4 GPU'lar (RX 9000 serisi) otomatik olarak Hiçbirini kullanır.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Varsayılan GPU</x:String>
@@ -287,7 +314,7 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtHelpPageTroubleshooting">SSS &amp; Sorun Giderme</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Yasal Uyarı ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">Bu resmi bir OptiScaler projesi değildir. OptiScaler ekibiyle hiçbir bağlantım yoktur. Bu, herhangi bir ticari amaç güdülmeden geliştirilen kişisel bir projedir. Herkes bu yazılımı kendi sorumluluğunda kullanmakta özgürdür.&#x0a;&#x0a;Katkılar: OptiScaler ekibine özel teşekkürler; bu araç yalnızca orijinal mod üzerindeki inanılmaz çalışmaları sayesinde mümkündür.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;GPL-3.0-or-later lisansı altında lisanslanmıştır. Bu özgür yazılımdır: belirli koşullar altında değiştirip yeniden dağıtabilirsiniz. Ayrıntılar için LICENSE dosyasına bakın.&#x0a;&#x0a;Üçüncü taraf bileşenler (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) kendi lisanslarına tabidir.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;GPL-3.0-or-later lisansı altında lisanslanmıştır. Bu özgür yazılımdır: belirli koşullar altında değiştirip yeniden dağıtabilirsiniz. Ayrıntılar için LICENSE dosyasına bakın.&#x0a;&#x0a;Üçüncü taraf bileşenler (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) kendi lisanslarına tabidir.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">Sistem</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Lisans &amp; Telif Hakkı</x:String>
 
@@ -424,7 +451,15 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtHelpFaqUpscText">Oyunun DLSS/FSR/XeSS'yi native olarak destekleyip desteklemediğini kontrol edin. OptiScaler mevcut yükseltme uygulamalarını değiştirir.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll veya nvngx.dll bulunamadı ve diğer hatalar.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Ayarlardan önbelleği temizleme düğmesini kullanın; bu çoğu sorunu çözecektir.</x:String>
-
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Kaldırma işleminden sonra oyun klasöründe hâlâ OptiScaler dosyaları var</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Bu, önceki bir kurulum düzgün şekilde izlenmediğinde oluşur (ör. bir çökme geride yetim dosyalar bıraktı). Önerilen adımlar:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Önce uygulamadaki oyun bazlı Klasörü Temizleme aracını deneyin (Oyun → Klasörü Zorla Temizle).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Klasörü temizleme sorunu çözmezse uygulamada Kaldır'a tıklayın ve ardından oyun klasöründe kalan OptiScaler dosyalarını (OptiScaler.dll, OptiScaler.ini, enjeksiyon hedefiyse dxgi.dll, nvapi64.dll vb.) manuel olarak silin.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">Uygulama ayrıca varsayılan olarak bozuk kurulumları algılar ve gerekirse yüklemeden önce klasörü temizlemenizi önerir.</x:String>    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">Linux'ta FSR 4 görünmüyor</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Linux'tayken FSR 4 bir seçenek olarak görünmüyorsa şunları göz önünde bulundurun:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">En son AMD MESA sürücülerine (sürüm 25.2.0 veya daha yeni) ihtiyacınız var.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Mevcut en son OptiScaler sürümünü yükleyin.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Proton Plus veya ProtonUp-Qt aracılığıyla yönetilebilen GE-Proton kullanılması önerilir.</x:String>
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Varsayılan profil</x:String>
     <x:String x:Key="TxtHelpProfDefaultText">Bir oyunu yönetirken veya Hızlı Yükleme kullanırken varsayılan olarak seçilecek profili ayarlar.</x:String>
@@ -453,7 +488,6 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtProfSearchResultFormat">{1} icinde {0} sonuc.</x:String>
     <x:String x:Key="TxtProfNotFound">Profil bulunamadi.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">Eslesen profil bulunamadi.</x:String>
-    <x:String x:Key="TxtDefaultBadge">Varsayilan</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← Profiller</x:String>
@@ -475,6 +509,8 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtEditorSave">Profili kaydet</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Ölçekleme DLL'leri olmayan oyunları atla</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Algılanabilir DLSS, FSR veya XeSS kütüphaneleri olmayan oyunları yok say. Yalnızca OptiScaler ile uyumlu oyunlar eklenecektir.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Yalnizca eksik kapaklari yenile</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Tam taramayi atlar ve yalnizca daha once alinamayan oyunlarin kapak gorsellerini yeniden dener. SteamGridDB API anahtari ayarlandiktan sonra kullanislidir.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Oyunlari duzenle</x:String>
@@ -496,7 +532,44 @@ Bu sürüm indirilemez. İnternet bağlantınızı kontrol edip daha sonra tekra
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">Desteklenen oyunlarda spoofing olmadan DLSS/DLSS-FG girişlerini açığa çıkaran OptiScaler için bir ASI Eklentisi. Intel Arc kullanıcılarının D3D12 hatalarından kaçınmasına yardımcı olur ve Dxgi spoofing'in neden olduğu performans düşüşlerini veya çökmeleri önler.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher indiriliyor...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher yükleniyor...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher yükleniyor...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">Sürüm Yönetimi</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler, OptiPatcher, FSR4 INT8, Fakenvapi ve NukemFG sürümleri Ayarlar'daki Yerel önbellek &amp; Varsayılan sürüm yönetimi bölümünden yönetilebilir.</x:String>
+    <x:String x:Key="TxtSetDefault">Varsayılan Yap</x:String>
+    <x:String x:Key="TxtClearDefault">Temizle</x:String>
+    <x:String x:Key="TxtDefaultBadge">VARSAYILAN</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">Mevcut varsayılan: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">Varsayılan ayarlanmadı</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Ağ ve Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">GitHub API ve indirme bağlantıları için HTTP(S) proxy yapılandırın.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">GitHub API ve indirme bağlantıları için HTTP(S) veya SOCKS5 proxy yapılandırın. Sistem proxy'sini kullanmak için boş bırakın.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Sistem proxy'sini kullan</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Etkinse, işletim sistemi proxy ayarları ve HTTP_PROXY / HTTPS_PROXY ortam değişkenleri kullanılır. Özel proxy ayarlamak için devre dışı bırakın.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy Yapılandırması</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Tür</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.ornek.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Port</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy kimlik doğrulama gerektirir</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Kimlik bilgileri</x:String>
+    <x:String x:Key="TxtNetworkUsername">Kullanıcı adı</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">İsteğe bağlı</x:String>
+    <x:String x:Key="TxtNetworkPassword">Parola</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">İsteğe bağlı</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Bağlantıyı test et</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Bağlandı</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Başarısız</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Test ediliyor…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Değişiklik Günlüğü</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Bu sürümün tüm değişikliklerinin ve yeni özelliklerinin tam listesini GitHub&apos;da görebilirsiniz.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; GitHub&apos;da değişiklik günlüğünü görüntüle</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Başlarken</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Uygulamaya alışmak veya belirli sorularınızı çözmek için Yardım sekmesindeki yerleşik kılavuzu incelemenizi şiddetle tavsiye ederim.</x:String>
+</ResourceDictionary>
 
 
 

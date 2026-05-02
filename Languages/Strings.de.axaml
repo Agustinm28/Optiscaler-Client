@@ -5,8 +5,8 @@
     <x:String x:Key="TxtSettingsTitle">Einstellungen</x:String>
     <x:String x:Key="TxtSettingsDesc">Anwendungseinstellungen verwalten</x:String>
     <x:String x:Key="TxtAppPrefs">Anwendungseinstellungen</x:String>
-    <x:String x:Key="TxtCacheMgmt">Lokale Cache-Verwaltung</x:String>
-    <x:String x:Key="TxtCacheDesc">Heruntergeladene OptiScaler-Versionen aus Ihrem lokalen Speicher anzeigen und löschen, um Speicherplatz freizugeben.</x:String>
+    <x:String x:Key="TxtCacheMgmt">Lokaler Cache &amp; Standard-Versionsverwaltung</x:String>
+    <x:String x:Key="TxtCacheDesc">Heruntergeladene Komponentenversionen anzeigen und verwalten, Standardversionen für Schnellinstallation und Spielverwaltung festlegen und lokalen Speicherplatz freigeben.</x:String>
     <x:String x:Key="TxtManage">&#xE8B7;  Verwalten</x:String>
     <x:String x:Key="TxtLanguage">Anwendungssprache</x:String>
     <x:String x:Key="TxtLanguageDesc">Benutzeroberflächensprache ändern.</x:String>
@@ -65,6 +65,11 @@
     <x:String x:Key="TxtNoVersions">Derzeit keine Versionen heruntergeladen.</x:String>
     <x:String x:Key="TxtToastSuccess">Erfolg</x:String>
     <x:String x:Key="TxtConfirmDelTitle">Löschung bestätigen</x:String>
+    <x:String x:Key="TxtCustomVersions">Benutzerdefinierte OptiScaler-Versionen</x:String>
+    <x:String x:Key="TxtImportArchive">Archiv importieren</x:String>
+    <x:String x:Key="TxtNoCustomVersions">Keine benutzerdefinierten Versionen importiert.</x:String>
+    <x:String x:Key="TxtCustomVersionWarning">⚠ Importiere benutzerdefinierte OptiScaler-Builds als 7z-, zip- oder rar-Archive. Installation/Deinstallation kann fehlschlagen, wenn das Archiv Dateien enthält, die von der App nicht nachverfolgt werden können. Nur OptiScaler-Release-Dateien einfügen.</x:String>
+    <x:String x:Key="TxtImporting">Wird importiert...</x:String>
     <x:String x:Key="TxtConfirmDelMsg">Sind Sie sicher, dass Sie diese Version löschen möchten?</x:String>
     <x:String x:Key="TxtCancel">Abbrechen</x:String>
     <x:String x:Key="TxtDeletePlain">Löschen</x:String>
@@ -91,6 +96,17 @@
     <x:String x:Key="TxtConfirmUninstallTitle">Deinstallation bestätigen</x:String>
     <x:String x:Key="TxtConfirmUninstallMsg">Sind Sie sicher, dass Sie OptiScaler deinstallieren möchten?&#x0a;Nur gesicherte Originaldateien werden wiederhergestellt.</x:String>
     <x:String x:Key="TxtUninstall">✕ Deinstallieren</x:String>
+    <x:String x:Key="TxtFolderCleanup">🗁 Ordner bereinigen</x:String>
+    <x:String x:Key="TxtFolderCleanupTitle">Ordner erzwungen bereinigen</x:String>
+    <x:String x:Key="TxtFolderCleanupMsg">Alle bekannten OptiScaler-Dateien werden aus dem Spielverzeichnis entfernt.&#x0a;&#x0a;Verwenden Sie diese Option, wenn eine vorherige OptiScaler-Installation in einem beschädigten oder unvollständigen Zustand hinterlassen wurde, oder wenn Sie eine saubere Basis vor der Neuinstallation erstellen möchten.</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveHeader">&#x26A0;&#xFE0F; Sensible Dateien — können auch zum Spiel gehören</x:String>
+    <x:String x:Key="TxtFolderCleanupSensitiveNote">Die folgenden Dateien könnten native Spieldateien sein. Das Löschen kann das Spiel beschädigen. Es wird dringend empfohlen, die Dateiüberprüfung Ihres Launchers (z. B. Steam → Integrität der Spieldateien überprüfen) danach auszuführen. Wählen Sie nur die aus, die Sie entfernen möchten:</x:String>
+    <x:String x:Key="TxtFolderCleanupSuccess">Ordnerbereinigung abgeschlossen.</x:String>
+    <x:String x:Key="TxtFolderCleanupFail">Ordnerbereinigung fehlgeschlagen: {0}</x:String>
+    <x:String x:Key="TxtCorruptInstallTitle">Beschädigte Installation erkannt</x:String>
+    <x:String x:Key="TxtCorruptInstallMsg">Im Spielordner wurden OptiScaler-Dateien gefunden, obwohl das Spiel nicht als installiert markiert ist. Dies bedeutet normalerweise, dass eine vorherige Installation nicht ordnungsgemäß deinstalliert wurde.&#x0a;&#x0a;Es wird dringend empfohlen, den Ordner vor der Installation zu bereinigen, um Konflikte zu vermeiden. Sie können jetzt bereinigen, ohne Bereinigung fortfahren oder die Installation abbrechen.</x:String>
+    <x:String x:Key="TxtCorruptInstallClean">🗁 Bereinigen und installieren</x:String>
+    <x:String x:Key="TxtCorruptInstallContinue">Trotzdem fortfahren</x:String>
     <x:String x:Key="TxtVersionLbl">Version:</x:String>
     <x:String x:Key="TxtInjectionLbl">Injektion:</x:String>
     <x:String x:Key="TxtInstallOpti">✦ Automatische Installation</x:String>
@@ -178,6 +194,15 @@
     <x:String x:Key="TxtCustomFolders">Benutzerdefinierte Ordner</x:String>
     <x:String x:Key="TxtAddFolder">+ Ordner hinzufügen</x:String>
     <x:String x:Key="TxtNoCustomFolders">Noch keine benutzerdefinierten Ordner hinzugefügt.</x:String>
+    <x:String x:Key="TxtFilterOptions">Filteroptionen</x:String>
+    <x:String x:Key="TxtFilterShowAllTitle">Alle Spiele scannen</x:String>
+    <x:String x:Key="TxtFilterShowAllDesc">Alle installierten Spiele aus allen aktivierten Quellen erkennen und anzeigen.</x:String>
+    <x:String x:Key="TxtFilterHideTitle">Alle scannen, ohne Upscaler ausblenden</x:String>
+    <x:String x:Key="TxtFilterHideDesc">Alles scannen, aber Spiele ohne erkennbare DLSS-, FSR- oder XeSS-DLLs automatisch ausblenden. Ausgeblendete Spiele bleiben in der Liste und können im Organisieren-Modus angezeigt werden.</x:String>
+    <x:String x:Key="TxtFilterSkipTitle">Spiele ohne Upscaler überspringen</x:String>
+    <x:String x:Key="TxtFilterSkipDesc">Nur Spiele einschließen, bei denen DLSS-, FSR- oder XeSS-DLLs erkannt werden.</x:String>
+    <x:String x:Key="TxtFilterSkipWarning">Einige Spiele unterstützen Upscaler, legen ihre DLLs aber nicht in einem erkennbaren Pfad ab. Diese Spiele erscheinen nicht in der Liste.</x:String>
+    <x:String x:Key="TxtShowNonGameApps">Spiele ohne Upscaler anzeigen (DLSS/FSR/XeSS)</x:String>
     <x:String x:Key="TxtRemove">Entfernen</x:String>
     <x:String x:Key="TxtSave">Speichern</x:String>
     <x:String x:Key="TxtScanSources">Scan-Quellen</x:String>
@@ -207,6 +232,8 @@
     <x:String x:Key="TxtInstallSelected">Ausgewählte installieren</x:String>
     <x:String x:Key="TxtNoGames">Keine Spiele</x:String>
     <x:String x:Key="TxtNoGamesFound">Keine Spiele gefunden. Bitte zuerst nach Spielen scannen.</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundTitle">Keine Spiele erkannt</x:String>
+    <x:String x:Key="TxtNoUpscalersFoundHint">Stelle sicher, dass Spiele installiert sind, und klicke auf Scannen, um erneut zu suchen. Du kannst in den Scanquellen auch benutzerdefinierte Ordner hinzufügen.</x:String>
 
 
     <!-- SteamGridDB -->
@@ -253,7 +280,7 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtFeedbackFeatures">✨ Funktionswünsche: Verwenden Sie die Vorlage "Feature request", um neue Funktionen vorzuschlagen</x:String>
     <x:String x:Key="TxtFeedbackImprovements">🔧 Verbesserungen: Verwenden Sie die Vorlage "Improvement request" für bestehende Funktionen</x:String>
     <x:String x:Key="TxtFeedbackSystem">Geben Sie Ihr Betriebssystem, Ihre GPU und die App-Version an, um schneller Hilfe zu erhalten</x:String>
-    <x:String x:Key="TxtBetaIncludesComponents">Beta-Versionen enthalten bereits Fakenvapi und NukemFG</x:String>
+    <x:String x:Key="TxtBetaIncludesComponents">Diese Version enthält bereits Fakenvapi und NukemFG</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultTitle">FSR4 INT8-Standard</x:String>
     <x:String x:Key="TxtFsr4Int8DefaultDesc">Standard-FSR4-INT8-Modversion, die beim Öffnen eines Spiels vorausgewählt ist. RDNA-4-GPUs (RX-9000-Serie) verwenden automatisch Keine.</x:String>
     <x:String x:Key="TxtDefaultGpuTitle">Standard-GPU</x:String>
@@ -287,7 +314,7 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtHelpPageTroubleshooting">FAQ &amp; Fehlerbehebung</x:String>
     <x:String x:Key="TxtHelpDisclaimerTitle">Haftungsausschluss ⚠️</x:String>
     <x:String x:Key="TxtHelpDisclaimerContent">Dies ist kein offizielles OptiScaler-Projekt. Ich habe keine Verbindung zum OptiScaler-Team. Dies ist ein persönliches Projekt, das ohne kommerzielle Absichten entwickelt wurde. Jeder kann diese Software auf eigenes Risiko ausprobieren und verwenden.&#x0a;&#x0a;Credits: Ein besonderer Dank gilt dem OptiScaler-Team; dieses Tool ist nur dank ihrer unglaublichen Arbeit am Original-Mod möglich.</x:String>
-    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agust&#237;n Monta&#241;a (Agustinm28)&#x0a;&#x0a;Lizenziert unter GPL-3.0-or-later. Dies ist freie Software: Sie können sie unter bestimmten Bedingungen ändern und weitergeben. Weitere Informationen finden Sie in der LICENSE-Datei.&#x0a;&#x0a;Drittanbieterkomponenten (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) unterliegen ihren jeweiligen Lizenzen.</x:String>
+    <x:String x:Key="TxtHelpLicenseContent">Copyright 2026 Agustinm28&#x0a;&#x0a;Lizenziert unter GPL-3.0-or-later. Dies ist freie Software: Sie können sie unter bestimmten Bedingungen ändern und weitergeben. Weitere Informationen finden Sie in der LICENSE-Datei.&#x0a;&#x0a;Drittanbieterkomponenten (OptiScaler, Fakenvapi, NukemFG, FSR4 INT8) unterliegen ihren jeweiligen Lizenzen.</x:String>
     <x:String x:Key="TxtHelpSystemTitle">System</x:String>
     <x:String x:Key="TxtHelpLicenseTitle">Lizenz &amp; Urheberrecht</x:String>
 
@@ -424,6 +451,16 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtHelpFaqUpscText">Überprüfen Sie, ob das Spiel DLSS/FSR/XeSS nativ unterstützt. OptiScaler ersetzt bestehende Hochskalierungsimplementierungen.</x:String>
     <x:String x:Key="TxtHelpFaqDllLabel">Optiscaler.dll oder nvngx.dll nicht gefunden und andere Fehler.</x:String>
     <x:String x:Key="TxtHelpFaqDllText">Verwenden Sie die Schaltfläche zum Löschen des Caches in den Einstellungen; das sollte die meisten Probleme beheben.</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderLabel">Spielordner nach der Deinstallation noch mit OptiScaler-Dateien verschmutzt</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderText">Dies geschieht, wenn eine frühere Installation nicht korrekt verfolgt wurde (z. B. ein Absturz hinterließ verwaiste Dateien). Empfohlene Schritte:</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep1">Versuchen Sie zuerst das pro-Spiel Ordnerbereinigungs-Tool in der App (Spiel → Forciertes Ordnerbereinigen).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep2">Wenn das Ordnerbereinigen das Problem nicht löst, klicken Sie in der App auf Deinstallieren und löschen Sie anschließend manuell alle verbleibenden OptiScaler-Dateien aus dem Spielordner (OptiScaler.dll, OptiScaler.ini, dxgi.dll falls es das Injection-Ziel war, nvapi64.dll usw.).</x:String>
+    <x:String x:Key="TxtHelpFaqDirtyFolderStep3">Die App erkennt beschädigte Installationen standardmäßig und fordert gegebenenfalls dazu auf, den Ordner vor der Installation zu bereinigen.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxLabel">FSR 4 unter Linux nicht sichtbar</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxText">Wenn Sie unter Linux sind und FSR 4 nicht als Option angezeigt wird, beachten Sie Folgendes:</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep1">Sie benötigen die neuesten AMD MESA-Treiber (Version 25.2.0 oder neuer).</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep2">Installieren Sie die neueste verfügbare Version von OptiScaler.</x:String>
+    <x:String x:Key="TxtHelpFaqFsr4LinuxStep3">Es wird empfohlen, GE-Proton zu verwenden, das über Proton Plus oder ProtonUp-Qt verwaltet werden kann.</x:String>
 
     <!-- Help - Profile Bullets -->
     <x:String x:Key="TxtHelpProfDefaultTitle">Standardprofil</x:String>
@@ -453,7 +490,6 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtProfSearchResultFormat">{0} Ergebnis(se) von {1}.</x:String>
     <x:String x:Key="TxtProfNotFound">Keine Profile gefunden.</x:String>
     <x:String x:Key="TxtProfSearchNotFound">Keine passenden Profile gefunden.</x:String>
-    <x:String x:Key="TxtDefaultBadge">Standard</x:String>
 
     <!-- Profile Editor View -->
     <x:String x:Key="TxtEditorBackBtn">← Profile</x:String>
@@ -475,6 +511,8 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtEditorSave">Profil speichern</x:String>
 
     <!-- Games View - Scan & Organize -->
+    <x:String x:Key="TxtSkipNoDllsTitle">Spiele ohne Upscaling-DLLs überspringen</x:String>
+    <x:String x:Key="TxtSkipNoDllsDesc">Spiele ignorieren, die keine erkennbaren DLSS-, FSR- oder XeSS-Bibliotheken haben. Nur mit OptiScaler kompatible Spiele werden hinzugefügt.</x:String>
     <x:String x:Key="TxtRefreshCoversTitle">Nur fehlende Cover aktualisieren</x:String>
     <x:String x:Key="TxtRefreshCoversDesc">Uberspringt den vollstandigen Scan und wiederholt nur das Abrufen von Cover-Bildern fur Spiele, die zuvor nicht gefunden werden konnten. Nutzlich nach dem Einrichten eines SteamGridDB-API-Schluessels.</x:String>
     <x:String x:Key="TxtOrganizeGamesTooltip">Spiele organisieren</x:String>
@@ -496,7 +534,44 @@ Diese Version steht nicht zum Herunterladen zur Verfügung. Überprüfen Sie Ihr
     <x:String x:Key="TxtOptiPatcherLbl">OptiPatcher</x:String>
     <x:String x:Key="TxtOptiPatcherTooltip">Ein ASI-Plugin für OptiScaler, das DLSS/DLSS-FG-Eingaben ohne Spoofing in unterstützten Spielen freilegt. Hilft Intel Arc-Nutzern, D3D12-Fehler zu vermeiden, und verhindert Leistungseinbußen oder Abstürze durch Dxgi-Spoofing.</x:String>
     <x:String x:Key="TxtDownloadingOptiPatcher">OptiPatcher wird heruntergeladen...</x:String>
-    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher wird installiert...</x:String></ResourceDictionary>
+    <x:String x:Key="TxtInstallingOptiPatcher">OptiPatcher wird installiert...</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoTitle">Versionsverwaltung</x:String>
+    <x:String x:Key="TxtVersionMgmtInfoDesc">OptiScaler-, OptiPatcher-, FSR4 INT8-, Fakenvapi- und NukemFG-Versionen können im Bereich Lokaler Cache &amp; Standard-Versionsverwaltung in den Einstellungen verwaltet werden.</x:String>
+    <x:String x:Key="TxtSetDefault">Als Standard</x:String>
+    <x:String x:Key="TxtClearDefault">Löschen</x:String>
+    <x:String x:Key="TxtDefaultBadge">STANDARD</x:String>
+    <x:String x:Key="TxtCurrentDefaultFormat">Aktueller Standard: {0}</x:String>
+    <x:String x:Key="TxtNoDefaultSet">Kein Standard festgelegt</x:String>
+    <!-- Network / Proxy Settings -->
+    <x:String x:Key="TxtNetworkTitle">Netzwerk &amp; Proxy</x:String>
+    <x:String x:Key="TxtNetworkDesc">Konfigurieren Sie einen HTTP(S)-Proxy für die GitHub-API und Download-Verbindungen.</x:String>
+    <x:String x:Key="TxtNetworkWindowDesc">Konfigurieren Sie einen HTTP(S)- oder SOCKS5-Proxy für die GitHub-API und Download-Verbindungen. Leer lassen, um das Systemproxy zu verwenden.</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxy">Systemproxy verwenden</x:String>
+    <x:String x:Key="TxtNetworkUseSystemProxyDesc">Wenn aktiviert, werden die Proxy-Einstellungen des OS und die Umgebungsvariablen HTTP_PROXY / HTTPS_PROXY verwendet. Deaktivieren, um einen benutzerdefinierten Proxy festzulegen.</x:String>
+    <x:String x:Key="TxtNetworkProxyConfig">Proxy-Konfiguration</x:String>
+    <x:String x:Key="TxtNetworkProxyType">Typ</x:String>
+    <x:String x:Key="TxtNetworkProxyHost">Host</x:String>
+    <x:String x:Key="TxtNetworkProxyHostPlaceholder">proxy.beispiel.com</x:String>
+    <x:String x:Key="TxtNetworkProxyPort">Port</x:String>
+    <x:String x:Key="TxtNetworkProxyPortPlaceholder">3128</x:String>
+    <x:String x:Key="TxtNetworkRequiresAuth">Proxy erfordert Authentifizierung</x:String>
+    <x:String x:Key="TxtNetworkCredentials">Anmeldeinformationen</x:String>
+    <x:String x:Key="TxtNetworkUsername">Benutzername</x:String>
+    <x:String x:Key="TxtNetworkUsernamePlaceholder">Optional</x:String>
+    <x:String x:Key="TxtNetworkPassword">Passwort</x:String>
+    <x:String x:Key="TxtNetworkPasswordPlaceholder">Optional</x:String>
+    <x:String x:Key="TxtNetworkTestBtn">Verbindung testen</x:String>
+    <x:String x:Key="TxtNetworkTestOk">✓ Verbunden</x:String>
+    <x:String x:Key="TxtNetworkTestFail">✗ Fehlgeschlagen</x:String>
+    <x:String x:Key="TxtNetworkTestTesting">Test läuft…</x:String>
+
+    <!-- Welcome popup -->
+    <x:String x:Key="TxtWelcomeChangelogTitle">Änderungsprotokoll</x:String>
+    <x:String x:Key="TxtWelcomeChangelogContent">Die vollständige Liste der Änderungen und neuen Funktionen dieser Version ist auf GitHub verfügbar.</x:String>
+    <x:String x:Key="TxtWelcomeChangelogLink">&#x2197; Änderungsprotokoll auf GitHub anzeigen</x:String>
+    <x:String x:Key="TxtWelcomeGuideTitle">Erste Schritte</x:String>
+    <x:String x:Key="TxtWelcomeGuideContent">Ich empfehle dringend, die integrierte Anleitung im Tab „Hilfe“ aufzurufen, um sich mit der App vertraut zu machen oder spezifische Fragen zu klären.</x:String>
+</ResourceDictionary>
 
 
 
