@@ -19,11 +19,11 @@
 
 * Game management
 
-<img width="1140" height="600" alt="1 0 4_B" src="https://github.com/user-attachments/assets/61316142-4a9b-43fd-96e7-7963afcb0489" />
+<img width="1140" height="600" alt="oc_01" src="https://github.com/user-attachments/assets/f8608451-d18e-410f-9df5-5e63a27e0e02" />
 
 * Game management after installation
 
-<img width="1140" height="600" alt="1 0 4_C" src="https://github.com/user-attachments/assets/c129bd7d-005d-478f-b326-90f87ab862bf" />
+<img width="1140" height="621" alt="oc_02" src="https://github.com/user-attachments/assets/cd8e41fc-a6e0-4ca3-a035-ebc8fd4d32bb" />
 
 ---
 
